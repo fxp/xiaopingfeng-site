@@ -1,3 +1,6 @@
 # 旧 landing 页面的应用路径迁移
 /app/the-stall/*  /apps/distance/:splat  301
 /app/*            /apps/:splat           301
+
+# 旧 AI-Buzzwords 博客路径迁移到 /deepdive/
+/blog/ai-buzzwords/*  /deepdive/:splat  301

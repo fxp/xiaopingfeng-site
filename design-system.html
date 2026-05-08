@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="amber">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Design System · AI Buzzwords DeepDive</title>
+<meta name="description" content="档案室 × 实验室 × 新闻编辑部 — Editorial · Dense · Warm · Anti-Hype 设计系统" />
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  /* showcase chrome only — components use colors_and_type.css tokens */
+  body { margin: 0; padding: 0; }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(var(--accent-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--accent-soft) 1px, transparent 1px);
+    background-size: 80px 80px; opacity: 0.5;
+  }
+
+  .ds-wrap {
+    max-width: var(--w-wrap); margin: 0 auto; padding: 0 5vw; position: relative; z-index: 1;
+  }
+  @media (min-width: 1024px) { .ds-wrap { padding: 0 48px; } }
+
+  .ds-strip {
+    border-bottom: var(--border);
+    padding: 14px 0;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: var(--track-mono); text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+  .ds-strip .deepdive { color: var(--accent); letter-spacing: var(--track-eyebrow); }
+  .ds-strip .sep { color: var(--line-bright); }
+  .ds-strip .controls { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .pill {
+    border: var(--border-bright); padding: 4px 12px;
+    font: var(--micro)/1 var(--mono); letter-spacing: var(--track-mono); text-transform: uppercase;
+    color: var(--fg-mute); cursor: pointer;
+    background: transparent;
+    transition: color var(--d-fast), background var(--d-fast), border-color var(--d-fast);
+  }
+  .pill:hover { color: var(--fg); border-color: var(--line-bright); }
+  .pill[aria-current="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+  .ds-hero {
+    padding: 72px 0 48px;
+  }
+  @media (min-width: 1024px) { .ds-hero { padding: 112px 0 80px; } }
+  .ds-hero .eyebrow {
+    font: var(--eyebrow)/1 var(--mono);
+    letter-spacing: var(--track-eyebrow); text-transform: uppercase;
+    color: var(--accent); margin-bottom: 24px;
+  }
+  .ds-hero h1 {
+    margin: 0 0 24px;
+    font-family: var(--display); font-weight: 300;
+    font-size: var(--t-display); line-height: var(--leading-tight);
+    letter-spacing: var(--track-display);
+    max-width: var(--w-content);
+  }
+  .ds-hero h1 em { color: var(--accent); font-weight: 400; }
+  .ds-hero .dek {
+    max-width: var(--w-prose);
+    font-family: var(--serif); font-weight: 400; font-size: 18px; line-height: 1.65;
+    color: var(--fg-dim);
+  }
+
+  .ds-section {
+    padding: 56px 0; border-bottom: var(--border);
+  }
+  @media (min-width: 1024px) { .ds-section { padding: 96px 0; } }
+  .ds-section .head {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (min-width:1024px){ .ds-section .head { grid-template-columns: 120px 1fr; gap: 48px; } }
+  .ds-section .label {
+    font: var(--eyebrow)/1 var(--mono);
+    letter-spacing: var(--track-eyebrow); text-transform: uppercase;
+    color: var(--accent); padding-top: 12px; border-top: var(--border-accent);
+  }
+  .ds-section h2 {
+    margin: 0; font-family: var(--display); font-weight: 300;
+    font-size: var(--t-h1); line-height: 1.05; letter-spacing: var(--track-display);
+  }
+  .ds-section h2 em { color: var(--accent); font-weight: 400; }
+  .ds-body {
+    max-width: var(--w-content);
+  }
+  @media (min-width:1024px){ .ds-body { margin-left: 168px; } }
+
+  /* swatches */
+  .swatch-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 768px) { .swatch-row { grid-template-columns: repeat(4, 1fr); } }
+  .swatch-card {
+    background: var(--bg-2); border: var(--border); padding: var(--s-4);
+  }
+  .swatch-card .chip {
+    aspect-ratio: 5/3; border: 1px solid var(--line);
+    margin-bottom: var(--s-3); position: relative; overflow: hidden;
+  }
+  .swatch-card .meta { font: var(--micro)/1.4 var(--mono); color: var(--fg-mute); letter-spacing: var(--track-mono); text-transform: uppercase; }
+  .swatch-card .name { color: var(--fg); display: block; margin-bottom: 4px; }
+  .swatch-card .hex { color: var(--accent); }
+  .swatch-card .desc { display: block; margin-top: var(--s-2); font: 13px/1.5 var(--serif); color: var(--fg-dim); text-transform: none; letter-spacing: 0; }
+
+  /* token tables */
+  table.tokens {
+    width: 100%; border-collapse: collapse; font: 13px var(--mono);
+    color: var(--fg-dim);
+  }
+  table.tokens th, table.tokens td {
+    text-align: left; padding: 10px 12px; border-bottom: var(--border);
+  }
+  table.tokens th {
+    font-size: var(--micro); letter-spacing: var(--track-mono); text-transform: uppercase;
+    color: var(--fg-mute); font-weight: normal;
+  }
+  table.tokens td { font-family: var(--mono); }
+  table.tokens td.token-name { color: var(--accent); }
+  table.tokens td.note { color: var(--fg-mute); font: 13px var(--serif); }
+
+  /* code block */
+  .code {
+    background: var(--bg-2); border: var(--border);
+    padding: var(--s-4); margin-top: var(--s-4);
+    font: 12px/1.7 var(--mono); color: var(--fg-dim);
+    white-space: pre-wrap; word-break: break-word;
+    overflow-x: auto;
+  }
+
+  /* demo frame */
+  .demo {
+    background: var(--bg-2); border: var(--border);
+    padding: var(--s-5) var(--s-7); margin-top: var(--s-4);
+    position: relative;
+  }
+  .demo::before {
+    content: 'DEMO';
+    position: absolute; top: 8px; right: 12px;
+    font: 9px/1 var(--mono); letter-spacing: var(--track-eyebrow); text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+
+  /* type ladder */
+  .ladder > * { margin: 0 0 var(--s-5); }
+  .ladder .row { padding: var(--s-3) 0; border-bottom: var(--border); display: grid; grid-template-columns: 80px 1fr; gap: var(--s-5); align-items: baseline; }
+  .ladder .row:last-child { border-bottom: none; }
+  .ladder .label { font: var(--micro)/1 var(--mono); letter-spacing: var(--track-mono); text-transform: uppercase; color: var(--fg-mute); }
+
+  /* lang demo cards */
+  .lang-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 768px) { .lang-grid { grid-template-columns: repeat(2, 1fr); } }
+  .lang-card {
+    background: var(--bg-2); border: var(--border); padding: var(--s-5);
+  }
+  .lang-card .tag {
+    display: inline-block; font: 10px var(--mono); letter-spacing: var(--track-mono); text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--accent-soft); padding: 2px 8px; margin-bottom: var(--s-3);
+  }
+  .lang-card h4 {
+    font-family: var(--display); font-weight: 300; font-size: 26px; line-height: 1.2;
+    margin: 0 0 var(--s-3);
+  }
+  .lang-card p {
+    font-family: var(--serif); font-size: 15px; margin: 0;
+    color: var(--fg-dim);
+  }
+
+  /* footer */
+  .ds-footer {
+    padding: 32px 0; font: var(--micro)/1.5 var(--mono);
+    color: var(--fg-mute); letter-spacing: var(--track-mono); text-transform: uppercase;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .ds-footer a { color: inherit; text-decoration: none; }
+  .ds-footer a:hover { color: var(--accent); }
+</style>
+</head>
+
+<body>
+
+<!-- TOP STRIP -->
+<div class="ds-wrap">
+<div class="ds-strip">
+  <span class="lamp"></span>
+  <span class="deepdive">DEEPDIVE</span>
+  <span class="sep">/</span>
+  <span>DESIGN SYSTEM · v2</span>
+  <span class="sep">/</span>
+  <a href="DESIGN.md" class="pill" style="text-decoration:none">↗ DESIGN.md</a>
+  <span class="controls">
+    <span style="font:9px var(--mono);letter-spacing:var(--track-mono);color:var(--fg-mute);text-transform:uppercase">Theme</span>
+    <button class="pill" data-set-theme="red">RED</button>
+    <button class="pill" data-set-theme="signal">SIGNAL</button>
+    <button class="pill" data-set-theme="amber" aria-current="true">AMBER</button>
+    <button class="pill" data-set-theme="mint">MINT</button>
+    <button class="pill" data-toggle-mode aria-pressed="false" style="margin-left:8px">
+      <span data-mode-icon>◐</span> <span data-mode-label>暗色</span>
+    </button>
+  </span>
+</div>
+</div>
+
+<!-- HERO -->
+<div class="ds-wrap"><section class="ds-hero">
+  <div class="eyebrow">DESIGN SYSTEM · v2 · 2026-05</div>
+  <h1>AI Buzzwords ·<br/><em>DeepDive</em> 视觉系统</h1>
+  <p class="dek">档案室 × 实验室 × 新闻编辑部 — Editorial · Dense · Warm · Anti-Hype。
+  四个 accent · 双模式 · 中文 / 日文 / 韩文一等公民 · 零圆角 · 发线优于卡片 · `<em>` 着色而非倾斜。
+  右上角切换主题 + 暗/浅模式查看每个组件的反应。</p>
+</section></div>
+
+<!-- §1 THEMES -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label cursor">§ 01 / Themes</div>
+    <h2>四个 <em>accent</em> 主题</h2>
+  </div>
+  <div class="ds-body">
+    <div class="swatch-row">
+      <div class="swatch-card"><div class="chip" style="background:#e84040"></div><span class="meta name">RED</span><span class="meta hex">#e84040 · 暗模</span><span class="meta hex">#b8302e · 浅模</span><span class="desc">紧迫 · 时效 · 市场冲击 · 劳动 · 裁员</span></div>
+      <div class="swatch-card"><div class="chip" style="background:#d1402c"></div><span class="meta name">SIGNAL</span><span class="meta hex">#d1402c · 暗模</span><span class="meta hex">#b22a17 · 浅模</span><span class="desc">事故 · 泄露 · 单点突发</span></div>
+      <div class="swatch-card"><div class="chip" style="background:#f5a524"></div><span class="meta name">AMBER</span><span class="meta hex">#f5a524 · 暗模</span><span class="meta hex">#b8761a · 浅模</span><span class="desc">分析 · 历史 · 结构 · B2B · 默认</span></div>
+      <div class="swatch-card"><div class="chip" style="background:#7fb88b"></div><span class="meta name">MINT</span><span class="meta hex">#7fb88b · 暗模</span><span class="meta hex">#4a7a55 · 浅模</span><span class="desc">研究 · 发现 · 技术能力 · 硬件</span></div>
+    </div>
+    <p style="margin-top:24px;font:14px/1.6 var(--serif);color:var(--fg-dim)">每页选 <em class="text-accent">一个</em> accent。Light mode 下色值自动深化以保 AA 对比度。组件只引用 <code>var(--accent)</code>，永远不写死 hex。</p>
+  </div>
+</section></div>
+
+<!-- §2 SURFACES -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 02 / Surfaces</div>
+    <h2>暗 / <em>浅</em> 双模 · 表面色</h2>
+  </div>
+  <div class="ds-body">
+    <table class="tokens">
+      <thead><tr><th>Token</th><th>Dark</th><th>Light</th><th>角色</th></tr></thead>
+      <tbody>
+        <tr><td class="token-name">--bg</td><td>#0c0a07</td><td>#f3ede0</td><td class="note">页面背景</td></tr>
+        <tr><td class="token-name">--bg-2</td><td>#161310</td><td>#ebe3d2</td><td class="note">卡片 / 引语 / 侧栏</td></tr>
+        <tr><td class="token-name">--bg-3</td><td>#1e1a15</td><td>#e2d8c2</td><td class="note">hover 态（少用）</td></tr>
+        <tr><td class="token-name">--bg-paper</td><td>#e8e3d8</td><td>#1a1815</td><td class="note">archive 框 / 反向纸面</td></tr>
+        <tr><td class="token-name">--fg</td><td>#f0ebe0</td><td>#1a1815</td><td class="note">主文本</td></tr>
+        <tr><td class="token-name">--fg-dim</td><td>#a09888</td><td>#58524a</td><td class="note">正文段落</td></tr>
+        <tr><td class="token-name">--fg-mute</td><td>#6a6058</td><td>#8a8276</td><td class="note">元信息 / footer</td></tr>
+        <tr><td class="token-name">--line</td><td>rgba(240,235,224,0.10)</td><td>rgba(26,24,21,0.12)</td><td class="note">分隔细线</td></tr>
+        <tr><td class="token-name">--line-bright</td><td>rgba(240,235,224,0.18)</td><td>rgba(26,24,21,0.22)</td><td class="note">strip 分隔 / hover 边</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:24px;font:14px/1.6 var(--serif);color:var(--fg-dim)"><strong style="color:var(--fg)">暗模</strong>是温暖近黑（带红棕底色），不是纯黑。<strong style="color:var(--fg)">浅模</strong>是米白羊皮纸（cream parchment），不是纯白。两边都不用中性灰。</p>
+  </div>
+</section></div>
+
+<!-- §3 TYPOGRAPHY -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 03 / Typography</div>
+    <h2>双衬线 + Mono · <em>CJK 一等公民</em></h2>
+  </div>
+  <div class="ds-body">
+    <table class="tokens">
+      <thead><tr><th>Token</th><th>Family</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td class="token-name">--display</td><td>Fraunces 300/400/500/700 (opsz 9-144)</td><td class="note">主标题、wordmark</td></tr>
+        <tr><td class="token-name">--display-alt</td><td>Spectral 300/400/500/600/700</td><td class="note">备用显示字体（旧页）</td></tr>
+        <tr><td class="token-name">--serif</td><td>EB Garamond 400/500/600/700 + italic</td><td class="note">Latin 正文运行</td></tr>
+        <tr><td class="token-name">--mono</td><td>JetBrains Mono 300/400/500/700</td><td class="note">eyebrow / 元 / 代码 / tag</td></tr>
+        <tr><td class="token-name">--sans</td><td>Inter Tight 400/500/600</td><td class="note">UI chrome（备用）</td></tr>
+        <tr><td class="token-name">--cjk-serif</td><td>Noto Serif SC → TC → JP → KR → 系统 fallback</td><td class="note">中文 / 日文 / 韩文衬线</td></tr>
+        <tr><td class="token-name">--cjk-sans</td><td>PingFang SC → Hiragino Kaku → Apple SD Gothic Neo</td><td class="note">CJK UI sans</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">尺度 / Type scale</h3>
+    <div class="ladder">
+      <div class="row"><span class="label">--t-display</span><span style="font:300 var(--t-display)/0.95 var(--display)">Hero 标题 · <em class="text-accent">accent emphasis</em></span></div>
+      <div class="row"><span class="label">--t-h1</span><span style="font:300 var(--t-h1)/1.05 var(--display)">章节 h2 · <em class="text-accent">关键短语</em></span></div>
+      <div class="row"><span class="label">--t-h2</span><span style="font:400 var(--t-h2)/1.2 var(--display)">文章 h3 标题</span></div>
+      <div class="row"><span class="label">--body-lg</span><span style="font:300 var(--body-lg)/1.65 var(--serif)">Body Large · 19px Garamond — 用于 hero 副标 / lede</span></div>
+      <div class="row"><span class="label">--body</span><span style="font:300 var(--body)/1.65 var(--serif)">Body · 16px Garamond — 主正文</span></div>
+      <div class="row"><span class="label">--eyebrow</span><span class="eyebrow" style="font:11px var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--accent)">EYEBROW · MONO 11px · 0.20em TRACK</span></div>
+    </div>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">CJK 规则 (硬性)</h3>
+    <p style="font:14px/1.7 var(--serif);color:var(--fg-dim);margin-top:12px">
+      Han / Kana / Hangul 永远<em class="text-accent">不斜体</em>。系统在三层强制执行：
+    </p>
+    <pre class="code">:lang(zh), :lang(zh-Hans), :lang(zh-Hant),
+:lang(ja), :lang(ko), .cjk, .cjk * {
+  font-style: normal !important;
+  font-synthesis-style: none;       /* 阻止 UA 合成斜体 */
+  font-feature-settings: "palt" 1;  /* 比例 kana/kanji 度量 */
+}</pre>
+    <p style="font:14px/1.7 var(--serif);color:var(--fg-dim);margin-top:12px">
+      正文行高 1.85（Latin 1.65），letter-spacing 0.02em，<code>text-spacing-trim: trim-start</code>（CSS Text 4 — 修剪 CJK 标点紧贴 Latin 字符的空隙）。
+      标题 line-height 1.1，letter-spacing 0（CJK 永远不负字距）。
+    </p>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">每脚本自动切换</h3>
+    <div class="lang-grid">
+      <div class="lang-card" lang="zh-Hans">
+        <span class="tag">zh-Hans · Noto Serif SC</span>
+        <h4>当 AI 开始<em class="text-accent">"打工"</em></h4>
+        <p>从售货机到 SF 实体店的硬核小实验室——在能力与对齐之间，跑 8 小时之后谁还没疯。</p>
+      </div>
+      <div class="lang-card" lang="zh-Hant">
+        <span class="tag">zh-Hant · Noto Serif TC</span>
+        <h4>當 AI 開始<em class="text-accent">「打工」</em></h4>
+        <p>從售貨機到 SF 實體店的硬核小實驗室——在能力與對齊之間，跑 8 小時之後誰還沒瘋。</p>
+      </div>
+      <div class="lang-card" lang="ja">
+        <span class="tag">ja · Noto Serif JP</span>
+        <h4>AI が<em class="text-accent">「働き始める」</em>とき</h4>
+        <p>自動販売機から実店舗まで——能力と整合性のあいだ、8 時間走ったあと誰がまだ正気か。</p>
+      </div>
+      <div class="lang-card" lang="ko">
+        <span class="tag">ko · Noto Serif KR</span>
+        <h4>AI 가 <em class="text-accent">"일하기"</em> 시작할 때</h4>
+        <p>자판기에서 실제 매장까지——능력과 정렬 사이, 8 시간 뒤에도 누가 미치지 않았는가.</p>
+      </div>
+      <div class="lang-card" lang="en">
+        <span class="tag">en · Fraunces + EB Garamond</span>
+        <h4>When AI starts <em class="text-accent">working</em></h4>
+        <p>From vending machines to brick-and-mortar — between capability and alignment, who's still sane after eight hours.</p>
+      </div>
+      <div class="lang-card">
+        <span class="tag">混合 · &lt;span class="cjk"&gt;</span>
+        <h4>The <em class="text-accent">Context Layer</em> 才是 ToB AI 的护城河</h4>
+        <p>一行里 Latin + CJK 混排时，CJK 字段用 <code>&lt;span class="cjk"&gt;</code> 显式标记，触发 <code>--cjk-serif</code> 字体栈和 <code>palt</code> features。</p>
+      </div>
+    </div>
+  </div>
+</section></div>
+
+<!-- §4 SPACING -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 04 / Spacing</div>
+    <h2>8-pt 编辑 <em>scale</em></h2>
+  </div>
+  <div class="ds-body">
+    <table class="tokens">
+      <thead><tr><th>Token</th><th>值</th><th>建议用法</th></tr></thead>
+      <tbody>
+        <tr><td class="token-name">--s-1</td><td>4px</td><td class="note">紧密图标间距</td></tr>
+        <tr><td class="token-name">--s-2</td><td>8px</td><td class="note">小元素间距</td></tr>
+        <tr><td class="token-name">--s-3</td><td>12px</td><td class="note">eyebrow → 标题</td></tr>
+        <tr><td class="token-name">--s-4</td><td>16px</td><td class="note">段落底部</td></tr>
+        <tr><td class="token-name">--s-5</td><td>24px</td><td class="note">卡片内边距 / 正文行间</td></tr>
+        <tr><td class="token-name">--s-6</td><td>32px</td><td class="note">小节内分组</td></tr>
+        <tr><td class="token-name">--s-7</td><td>48px</td><td class="note">大卡 padding · gap-12</td></tr>
+        <tr><td class="token-name">--s-8</td><td>72px</td><td class="note">section padding 移动端</td></tr>
+        <tr><td class="token-name">--s-9</td><td>112px</td><td class="note">section padding 桌面</td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">三层 max-width</h3>
+    <table class="tokens">
+      <tbody>
+        <tr><td class="token-name">--w-prose</td><td>820px</td><td class="note">单列正文 / pullquote</td></tr>
+        <tr><td class="token-name">--w-content</td><td>1020px</td><td class="note">hero h1 / 偶尔的宽块</td></tr>
+        <tr><td class="token-name">--w-wrap</td><td>1320px</td><td class="note">页面外容器（strip + hero + section）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section></div>
+
+<!-- §5 COMPONENTS -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 05 / Components</div>
+    <h2>复用 <em>组件</em></h2>
+  </div>
+  <div class="ds-body">
+
+    <h3 style="font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">Lamp + Cursor</h3>
+    <div class="demo">
+      <span class="lamp" style="margin-right:12px"></span>
+      <span style="font:11px var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--accent)">DEEPDIVE</span>
+      <div class="cursor" style="margin-top:18px;padding-top:12px;border-top:1px solid var(--accent);font:11px var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--accent)">§ 02 / 章节标签（cursor 闪烁）</div>
+    </div>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">Pullquote</h3>
+    <div class="demo">
+      <div class="pullquote-mark" style="position:relative;max-width:var(--w-prose)">
+        <p style="font-family:var(--display);font-weight:300;font-size:clamp(20px,3vw,30px);line-height:1.25;letter-spacing:-0.005em;color:var(--fg);margin:0">
+          议题的真正前线已不是"会不会发生"，而是"<em class="text-accent">在哪一层、用什么粒度、由谁先观察到</em>"——这是方法论之争。
+        </p>
+        <p style="font:10px/1.5 var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--fg-mute);margin-top:24px">
+          <a href="#" class="cite">Brynjolfsson · Stanford</a> · 2026-05
+        </p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">Cite link</h3>
+    <div class="demo">
+      <p style="font-family:var(--serif);font-weight:300;font-size:16px;line-height:1.75;color:var(--fg-dim);margin:0">
+        2026 年 1-5 年内消失的预测最早由 <a href="#" class="cite">Anthropic CEO Amodei</a> 提出。
+        但 <a href="#" class="cite">Yale Budget Lab</a> 报告显示宏观就业数据尚未呈现显著差异。
+      </p>
+    </div>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">Synthesis block</h3>
+    <div class="demo">
+      <div class="synthesis-label" style="max-width:var(--w-prose)">
+        <p style="font:300 16px/1.7 var(--serif);color:var(--fg);margin:0">
+          数据存在但解读分歧：微观分层方法看到 -16%，宏观聚合看不到。议题的实质从"会不会"转向了
+          <em class="text-accent">"用什么粒度测量"</em>。
+        </p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:48px;font-family:var(--display);font-weight:400;font-size:22px;color:var(--fg)">Stats grid</h3>
+    <div class="demo">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:var(--border);font-family:var(--mono)">
+        <div style="background:var(--bg);padding:24px"><div style="font:300 clamp(28px,5vw,42px)/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums;margin-bottom:8px">1-5</div><div style="font:9px/1.5 var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--fg-mute)">年时间线<br/>来源</div></div>
+        <div style="background:var(--bg);padding:24px"><div style="font:300 clamp(28px,5vw,42px)/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums;margin-bottom:8px">-16%</div><div style="font:9px/1.5 var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--fg-mute)">22-25 岁就业<br/>Brynjolfsson 2025</div></div>
+        <div style="background:var(--bg);padding:24px"><div style="font:300 clamp(28px,5vw,42px)/1 var(--display);color:var(--fg);font-variant-numeric:tabular-nums;margin-bottom:8px">1.6万</div><div style="font:9px/1.5 var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--fg-mute)">企业岗裁员<br/>Amazon Q1</div></div>
+        <div style="background:var(--bg);padding:24px"><div style="font:300 clamp(28px,5vw,42px)/1 var(--display);color:var(--mint);font-variant-numeric:tabular-nums;margin-bottom:8px">2026·05</div><div style="font:9px/1.5 var(--mono);letter-spacing:var(--track-eyebrow);text-transform:uppercase;color:var(--fg-mute)">最新更新<br/>v2</div></div>
+      </div>
+    </div>
+
+  </div>
+</section></div>
+
+<!-- §6 ANIMATION -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 06 / Motion</div>
+    <h2>动画 <em>预算</em>（一次花完）</h2>
+  </div>
+  <div class="ds-body">
+    <table class="tokens">
+      <thead><tr><th>动画</th><th>时长</th><th>缓动</th><th>循环</th></tr></thead>
+      <tbody>
+        <tr><td class="token-name">lamp-pulse</td><td>2.4s</td><td>ease-in-out</td><td>infinite (strip only)</td></tr>
+        <tr><td class="token-name">cursor-blink</td><td>1.1s</td><td>step-end</td><td>infinite (§ labels only)</td></tr>
+        <tr><td class="token-name">hero-fadeUp</td><td>0.7s × 4 stagger (.05/.15/.25/.35)</td><td>ease</td><td>once</td></tr>
+        <tr><td class="token-name">hover</td><td>0.15s · --d-fast</td><td>default</td><td>once</td></tr>
+        <tr><td class="token-name">detail-open</td><td>0.22s</td><td>ease</td><td>once</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:24px;font:14px/1.7 var(--serif);color:var(--fg-dim);max-width:var(--w-prose)">
+      页面应保持<em class="text-accent">安静</em>。多于此清单的动画 = 噪音。无视差，无滚动触发的渐入（hero 例外）。无 hover lift。无卡片阴影（除 lamp glow）。动画是预算，只花一次。
+    </p>
+  </div>
+</section></div>
+
+<!-- §7 DON'TS -->
+<div class="ds-wrap"><section class="ds-section">
+  <div class="head">
+    <div class="label">§ 07 / Don'ts</div>
+    <h2>绝不 <em>做的事</em></h2>
+  </div>
+  <div class="ds-body">
+    <ul style="list-style:none;padding:0;margin:0;font:300 15px/1.75 var(--serif);color:var(--fg-dim);max-width:var(--w-prose)">
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">添加第 5 个主题色</strong>。如果新文章不属于 red/signal/amber/mint，可能不属于 DeepDive。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">在 CJK 字符上设 italic</strong>。系统通过 <code>:lang()</code> 强制 <code>font-style: normal !important</code> + <code>font-synthesis-style: none</code>。<em class="text-accent">唯一例外</em>是 pullquote <code>&lt;cite lang="en"&gt;</code> 行。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">省略 <code>&lt;html lang&gt;</code></strong>。无 lang 属性会落入 SC 默认；多语言页面要在 container 上明确标 <code>lang="ja"</code>/<code>"ko"</code>/<code>"zh-Hant"</code> 让正确字体加载。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">直接写 hex</strong> 进组件 CSS。永远 <code>var(--accent)</code>。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">圆角</strong>。除 6px lamp dot 之外永远 <code>border-radius: 0</code>。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">emoji</strong>。允许的字符是 <code>▮ § № · / ← ⚠</code>，渲染为 mono 字符。</li>
+      <li style="padding:12px 0;border-bottom:var(--border)">✕ <strong style="color:var(--fg)">hover lift / 卡片阴影 / 滚动视差</strong>。页面是 print-flat 的。</li>
+      <li style="padding:12px 0">✕ <strong style="color:var(--fg)">混用 amber 的两个 hex</strong>：旧版 <code>#c4850a</code> vs 新版 <code>#f5a524</code>。新文章必须用 <code>#f5a524</code>。</li>
+    </ul>
+  </div>
+</section></div>
+
+<!-- FOOTER -->
+<div class="ds-wrap"><div class="ds-footer">
+  <span>DEEPDIVE · DESIGN SYSTEM v2 · 2026-05-08</span>
+  <span>
+    <a href="DESIGN.md">DESIGN.md</a> ·
+    <a href="colors_and_type.css">colors_and_type.css</a> ·
+    <a href="kit.css">kit.css</a> ·
+    <a href="CLAUDE.md">CLAUDE.md</a> ·
+    <a href="https://github.com/fxp/AI-Buzzwords">github</a>
+  </span>
+</div></div>
+
+<script src="mode-toggle.js" defer></script>
+<script>
+// Theme switcher
+document.querySelectorAll('[data-set-theme]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const theme = btn.dataset.setTheme;
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelectorAll('[data-set-theme]').forEach((b) => {
+      b.setAttribute('aria-current', b === btn ? 'true' : 'false');
+    });
+  });
+});
+</script>
+
+</body>
+</html>
