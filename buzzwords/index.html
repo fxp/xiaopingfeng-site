@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F5F1E8">
+<title>Buzzwords · 每周分享 — xiaopingfeng.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #E8E2D3;
+    --ink: #1A1714;
+    --ink-soft: #4A4540;
+    --ink-faint: #8A8278;
+    --accent: #C44536;
+    --line: #D4CCB8;
+    --serif: 'Noto Serif SC', serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.6; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 64px 28px 64px; min-height: 100vh; display: flex; flex-direction: column; }
+  .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .meta a { color: var(--ink-faint); text-decoration: none; }
+  .meta a:hover { color: var(--accent); }
+  h1 { font-family: var(--serif); font-weight: 900; font-size: 36px; line-height: 1.1; margin: 48px 0 12px; letter-spacing: -0.02em; }
+  .lede { font-family: var(--serif); font-size: 15px; line-height: 1.75; color: var(--ink-soft); margin: 0 0 48px; }
+  .ep-list { list-style: none; margin: 0; padding: 0; }
+  .ep-item { border-bottom: 1px solid var(--line); }
+  .ep-link {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 0;
+    text-decoration: none;
+    color: inherit;
+    transition: padding-left 0.15s ease;
+  }
+  .ep-link:hover { padding-left: 6px; }
+  .ep-num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; min-width: 40px; }
+  .ep-body { flex: 1; }
+  .ep-title { font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+  .ep-date { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.08em; }
+  .ep-link-disabled { pointer-events: none; opacity: 0.45; }
+  footer { margin-top: auto; padding-top: 32px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="meta">
+    <a href="/">← xiaopingfeng.com</a>
+    <span>每周五 · 12:00 · 清华原点学堂</span>
+  </div>
+
+  <h1>Buzzwords<br>每周分享</h1>
+  <p class="lede">AI Buzzwords 每周五中午分享会的记录归档。行业动态提纯、前沿趋势分析、现场讨论摘要。EP.1 起持续更新。</p>
+
+  <ul class="ep-list" id="ep-list">
+    <!-- 由 JS 从 /buzzwords/data/ 读取并渲染 -->
+  </ul>
+
+  <footer>fxp007 · 2026</footer>
+</div>
+
+<script>
+// Episode 数据将存放在 /buzzwords/data/index.json
+// 格式: [{ ep, date, title, oneliner }]
+async function loadEpisodes() {
+  const list = document.getElementById('ep-list');
+  try {
+    const res = await fetch('/buzzwords/data/index.json');
+    if (!res.ok) throw new Error('no data');
+    const eps = await res.json();
+    // 倒序：最新在前
+    eps.sort((a, b) => b.ep - a.ep);
+    list.innerHTML = eps.map(ep => `
+      <li class="ep-item">
+        <a class="ep-link" href="/buzzwords/${ep.ep}/">
+          <span class="ep-num">EP.${String(ep.ep).padStart(2,'0')}</span>
+          <span class="ep-body">
+            <div class="ep-title">${ep.title}</div>
+            <div class="ep-date">${ep.date}</div>
+          </span>
+        </a>
+      </li>
+    `).join('');
+  } catch {
+    list.innerHTML = '<li style="padding:24px 0;font-family:var(--serif);color:var(--ink-faint);font-size:14px;">Episode 数据加载中，稍后回来看。</li>';
+  }
+}
+loadEpisodes();
+</script>
+</body>
+</html>

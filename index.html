@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F5F1E8">
+<title>xiaopingfeng.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #E8E2D3;
+    --ink: #1A1714;
+    --ink-soft: #4A4540;
+    --ink-faint: #8A8278;
+    --accent: #C44536;
+    --line: #D4CCB8;
+    --serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    --mono: 'JetBrains Mono', 'Menlo', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 64px 28px 64px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .intro {
+    margin: 56px 0 56px;
+  }
+  .intro h1 {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: 40px;
+    line-height: 1.1;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+  .intro p {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .nav-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 18px 20px;
+    background: var(--paper-dark);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 10px;
+    transition: transform 0.15s ease;
+  }
+  .nav-card:hover { transform: translateX(4px); }
+  .nav-card-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .nav-card-desc {
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .nav-card-arrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .nav-card-dim {
+    border-left-color: var(--line);
+  }
+  .nav-card-dim .nav-card-arrow {
+    color: var(--ink-faint);
+  }
+  footer {
+    margin-top: auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="meta">
+    <span>xiaopingfeng.com</span>
+    <span>2026</span>
+  </div>
+
+  <div class="intro">
+    <h1>冯小平</h1>
+    <p>AI 研究者、工具构建者。每周五在清华原点学堂做 AI 行业分析分享，同步写深度文章和在线工具。</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">— 研究 —</div>
+    <a class="nav-card" href="/deepdive/">
+      <div class="nav-card-title">DeepDive · AI 深潜</div>
+      <div class="nav-card-desc">AI 行业关键事件与趋势的深度分析。每篇文章聚焦一个核心议题，有数据、有来源、有观点。</div>
+      <div class="nav-card-arrow">查看所有文章 →</div>
+    </a>
+    <a class="nav-card" href="/buzzwords/">
+      <div class="nav-card-title">Buzzwords · 每周分享</div>
+      <div class="nav-card-desc">每周五中午的 AI Buzzwords 分享会记录。行业动态、前沿趋势、现场讨论摘要。</div>
+      <div class="nav-card-arrow">查看 Episode 列表 →</div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-label">— 工具 —</div>
+    <a class="nav-card" href="/apps/">
+      <div class="nav-card-title">Apps · 在线工具</div>
+      <div class="nav-card-desc">一组实验性的在线工具，从心理测量到 AI 应用。每个工具都是一个具体问题的最小答案。</div>
+      <div class="nav-card-arrow">查看所有工具 →</div>
+    </a>
+  </div>
+
+  <footer>fxp007 · 2026</footer>
+</div>
+</body>
+</html>
