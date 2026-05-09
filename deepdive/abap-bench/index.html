@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>当 AI 坐上 SAP 顾问的位子</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --text: #18181b;
+    --text-2: #52525b;
+    --text-3: #a1a1aa;
+    --accent: #18181b;
+    --accent-soft: #f4f4f5;
+    --border: #e4e4e7;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --green-text: #15803d;
+    --green-bg: #f0fdf4;
+    --amber-text: #b45309;
+    --amber-bg: #fffbeb;
+    --red-text: #dc2626;
+  }
+
+  html { font-size: 17px; scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.8;
+    -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s;
+  }
+
+  /* ---- Selection ---- */
+  ::selection { background: rgba(24,24,27,0.12); }
+  body.dark ::selection { background: rgba(228,228,231,0.18); }
+
+  /* ---- Ornamental Divider ---- */
+  .ornament { text-align: center; margin: 3.5rem 0; color: var(--text-3); font-size: 0.9rem; letter-spacing: 0.6em; user-select: none; }
+
+  /* ---- Drop Cap ---- */
+  .drop-cap::first-letter {
+    float: left; font-size: 3.6em; line-height: 0.8; font-weight: 700;
+    margin: 0.05em 0.12em 0 -0.03em; color: var(--text);
+    font-family: "Georgia", "Noto Serif SC", serif;
+  }
+
+  /* ---- Section Number ---- */
+  .section-num {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 0.3rem; font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Pull Quote ---- */
+  .pull-quote {
+    margin: 3rem -1rem; padding: 2rem 2.5rem; position: relative;
+    font-size: 1.15rem; font-weight: 500; line-height: 1.7;
+    color: var(--text); text-align: center; font-style: italic;
+    font-family: "Georgia", "Noto Serif SC", serif;
+  }
+  .pull-quote::before, .pull-quote::after {
+    content: ''; position: absolute; left: 50%; width: 40px; height: 1px;
+    background: var(--border); transform: translateX(-50%);
+  }
+  .pull-quote::before { top: 0; }
+  .pull-quote::after { bottom: 0; }
+
+  /* ---- Figure + Caption ---- */
+  .fig { margin: 2.5rem 0; }
+  .fig-caption {
+    text-align: center; font-size: 0.68rem; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* ---- Inline Accent Mark ---- */
+  .accent-mark {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--text); opacity: 0.08; margin-right: 0.6rem;
+    vertical-align: middle; flex-shrink: 0;
+  }
+
+  /* ---- Marginal Note ---- */
+  .margin-note {
+    font-size: 0.68rem; color: var(--text-3); font-style: italic;
+    border-left: 1px solid var(--border); padding-left: 0.8rem;
+    margin: 1rem 0; line-height: 1.6;
+  }
+
+  /* ---- Stat Highlight ---- */
+  .stat-row {
+    display: flex; align-items: baseline; gap: 0.6rem;
+    padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-num { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); min-width: 3.5rem; text-align: right; letter-spacing: -0.02em; }
+  .stat-label { font-size: 0.82rem; color: var(--text-2); }
+
+  /* ---- Monogram ---- */
+  .monogram {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.2rem; height: 2.2rem; border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.08em; margin-bottom: 1.2rem; opacity: 0.5;
+  }
+
+  /* ---- Refined Blockquote ---- */
+  .prose blockquote {
+    border-left: none; padding: 1.5rem 2rem; margin: 2rem 0;
+    color: var(--text); font-style: italic; position: relative;
+    font-family: "Georgia", "Noto Serif SC", serif;
+    font-size: 1.05rem; line-height: 1.8;
+    background: transparent;
+  }
+  .prose blockquote::before {
+    content: '\201C'; position: absolute; top: -0.2rem; left: 0;
+    font-size: 3.5rem; color: var(--border); font-family: "Georgia", serif;
+    line-height: 1;
+  }
+
+  /* ---- Dark Mode ---- */
+  body.dark {
+    --bg: #09090b; --surface: #18181b; --text: #e4e4e7; --text-2: #a1a1aa;
+    --text-3: #52525b; --accent: #e4e4e7; --accent-soft: #27272a;
+    --border: #27272a; --blue: #60a5fa; --blue-soft: #172554;
+    --green-text: #4ade80; --green-bg: #052e16; --amber-text: #fbbf24; --amber-bg: #1c1917;
+  }
+
+  .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--text); z-index: 9999; width: 0; transition: width 0.1s; }
+
+  /* ---- Controls ---- */
+  .top-controls { position: fixed; top: 1rem; right: 1rem; z-index: 999; display: flex; gap: 0.5rem; }
+  .ctrl-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 0.9rem; color: var(--text-2); transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .ctrl-btn:hover { background: var(--accent-soft); }
+
+  /* ---- Hero ---- */
+  .hero {
+    background: var(--text); color: var(--bg); padding: 6rem 1.5rem 5rem;
+    position: relative; overflow: hidden;
+  }
+  body.dark .hero { background: #000; }
+  .hero-grain {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+  .hero-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-label {
+    font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+    opacity: 0.4; margin-bottom: 1.5rem;
+  }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.03em; margin-bottom: 1.2rem; }
+  .hero .subtitle { font-size: 1.05rem; opacity: 0.6; line-height: 1.7; max-width: 560px; }
+  .hero-meta { display: flex; gap: 2rem; margin-top: 2.5rem; font-size: 0.75rem; opacity: 0.35; }
+
+  .scroll-cue {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    opacity: 0.2; animation: nudge 2.5s ease infinite;
+  }
+  @keyframes nudge { 0%,100%{ transform: translateX(-50%) translateY(0); } 50%{ transform: translateX(-50%) translateY(5px); } }
+
+  /* ---- Layout ---- */
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 1.5rem; }
+  .prose { margin: 3.5rem 0; }
+  .prose p { margin-bottom: 1.4rem; color: var(--text-2); }
+  .prose strong { color: var(--text); font-weight: 600; }
+  .prose h2 {
+    font-size: 1.4rem; font-weight: 700; color: var(--text); margin: 4rem 0 1rem;
+    letter-spacing: -0.02em;
+  }
+  .prose h3 { font-size: 1.05rem; font-weight: 650; color: var(--text); margin: 2.5rem 0 0.8rem; }
+  .prose ul, .prose ol { margin: 0.5rem 0 1.4rem; padding-left: 1.4rem; color: var(--text-2); }
+  .prose li { margin-bottom: 0.35rem; }
+  .prose code {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    background: var(--accent-soft); border-radius: 3px;
+    padding: 0.12em 0.35em; font-size: 0.84em; color: var(--text);
+  }
+  .prose hr { border: none; height: 1px; background: var(--border); margin: 3.5rem 0; }
+  .prose blockquote {
+    border-left: 2px solid var(--border); padding: 0.5rem 1.2rem; margin: 1.5rem 0;
+    color: var(--text-2); font-style: italic;
+  }
+  .fade-in { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ---- TL;DR ---- */
+  .tldr {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.8rem 2rem; margin: 3rem 0;
+  }
+  .tldr-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.8rem; }
+  .tldr p { color: var(--text-2); font-size: 0.92rem; margin-bottom: 0.6rem; }
+  .tldr ul { list-style: none; padding: 0; }
+  .tldr li { position: relative; padding-left: 1rem; margin-bottom: 0.4rem; font-size: 0.88rem; color: var(--text-2); line-height: 1.7; }
+  .tldr li::before { content: '\2013'; position: absolute; left: 0; color: var(--text-3); }
+
+  /* ---- Callout ---- */
+  .callout {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.4rem 1.6rem; margin: 2rem 0;
+  }
+  .callout p { margin-bottom: 0.5rem; color: var(--text-2); font-size: 0.95rem; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ---- Score Dashboard ---- */
+  .score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin: 2rem 0; }
+  @media (max-width: 600px) { .score-grid { grid-template-columns: 1fr 1fr; } }
+  .score-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.2rem 0.8rem; text-align: center; transition: transform 0.2s;
+  }
+  .score-card:hover { transform: translateY(-2px); }
+  .score-card .num { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--text); }
+  .score-card .num .unit { font-size: 0.85rem; font-weight: 500; color: var(--text-3); }
+  .score-card .lbl { font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.1rem; }
+
+  /* ---- Radar ---- */
+  .radar-section { display: flex; align-items: center; justify-content: center; gap: 2.5rem; margin: 2.5rem 0; flex-wrap: wrap; }
+  .radar-section canvas { max-width: 320px; width: 100%; }
+  .radar-aside { font-size: 0.8rem; color: var(--text-2); line-height: 2; }
+  .radar-aside .val { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* ---- Guess Game ---- */
+  .guess-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 2rem; margin: 2.5rem 0; text-align: center;
+  }
+  .guess-box h4 { font-size: 0.95rem; font-weight: 650; margin-bottom: 0.3rem; color: var(--text); }
+  .guess-box p { font-size: 0.85rem; color: var(--text-3); margin-bottom: 1rem; }
+  .guess-slider {
+    -webkit-appearance: none; width: 100%; max-width: 360px; height: 4px;
+    border-radius: 2px; background: var(--border); outline: none;
+  }
+  .guess-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text); cursor: pointer; border: 3px solid var(--bg);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .guess-val { font-size: 2.2rem; font-weight: 700; margin: 0.6rem 0; color: var(--text); font-variant-numeric: tabular-nums; }
+  .guess-btn {
+    background: var(--text); color: var(--bg); border: none; border-radius: 6px;
+    padding: 0.55rem 1.8rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .guess-btn:hover { opacity: 0.85; }
+  .guess-btn:disabled { opacity: 0.4; cursor: default; }
+  .guess-result { margin-top: 1rem; font-size: 0.88rem; font-weight: 500; display: none; color: var(--text-2); }
+
+  /* ---- Quiz ---- */
+  .quiz {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.8rem 2rem; margin: 2.5rem 0;
+  }
+  .quiz-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.6rem; }
+  .quiz .q { font-size: 0.95rem; color: var(--text); margin-bottom: 1rem; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 0.5rem; }
+  .quiz-opt {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.6rem 1rem; font-size: 0.88rem; background: var(--bg);
+    cursor: pointer; transition: all 0.2s; font-family: inherit; color: var(--text-2);
+  }
+  .quiz-opt:hover { border-color: var(--text-3); }
+  .quiz-opt.correct { border-color: var(--green-text); background: var(--green-bg); color: var(--green-text); font-weight: 600; }
+  .quiz-opt.wrong { border-color: var(--red-text); color: var(--red-text); opacity: 0.7; }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt:disabled:hover { border-color: inherit; }
+  .quiz-expl { margin-top: 1rem; padding: 1rem; border-radius: 6px; font-size: 0.85rem; line-height: 1.7; display: none; background: var(--accent-soft); color: var(--text-2); border: 1px solid var(--border); }
+  .quiz-expl.show { display: block; animation: slideD 0.3s ease; }
+  @keyframes slideD { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---- Moment Cards ---- */
+  .moment {
+    border: 1px solid var(--border); border-radius: 8px; margin: 1.2rem 0;
+    overflow: hidden; background: var(--surface); transition: box-shadow 0.2s;
+  }
+  .moment:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .moment-hd {
+    padding: 1.2rem 1.5rem; cursor: pointer; display: flex; align-items: center;
+    gap: 0.6rem; user-select: none;
+  }
+  .moment-hd .idx {
+    font-size: 0.72rem; font-weight: 700; width: 1.4rem; height: 1.4rem;
+    border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 1.5px solid var(--border); color: var(--text-2);
+  }
+  .moment-hd h4 { font-size: 0.92rem; font-weight: 600; flex: 1; color: var(--text); }
+  .moment-hd .tag { font-size: 0.72rem; color: var(--text-3); white-space: nowrap; }
+  .moment-hd .arrow {
+    width: 16px; height: 16px; flex-shrink: 0; transition: transform 0.3s;
+    color: var(--text-3);
+  }
+  .moment.open .moment-hd .arrow { transform: rotate(180deg); }
+  .moment-bd {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.22,1,0.36,1);
+    padding: 0 1.5rem;
+  }
+  .moment.open .moment-bd { max-height: 800px; padding: 0 1.5rem 1.5rem; }
+  .moment-bd p { font-size: 0.92rem; color: var(--text-2); margin-bottom: 0.6rem; }
+
+  .tag-score { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 0.1em 0.45em; border-radius: 3px; }
+  .tag-score.hi { background: var(--green-bg); color: var(--green-text); }
+  .tag-score.md { background: var(--amber-bg); color: var(--amber-text); }
+  .tag-score.lo { background: #fef2f2; color: var(--red-text); }
+  body.dark .tag-score.lo { background: #1c1917; }
+
+  /* ---- Code Diff ---- */
+  .code-box { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 1rem 0; }
+  .code-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .code-tab {
+    flex: 1; padding: 0.5rem; font-size: 0.72rem; font-weight: 600; text-align: center;
+    cursor: pointer; border: none; background: var(--accent-soft); color: var(--text-3);
+    font-family: inherit; transition: all 0.2s; border-bottom: 2px solid transparent;
+  }
+  .code-tab.active { color: var(--text); background: var(--surface); border-bottom-color: var(--text); }
+  .code-pane { display: none; padding: 1rem; background: var(--surface); }
+  .code-pane.active { display: block; }
+  .code-pane pre { font-family: "SF Mono", Menlo, monospace; font-size: 0.75rem; line-height: 1.7; overflow-x: auto; white-space: pre; color: var(--text-2); }
+  .code-pane .del { color: var(--red-text); opacity: 0.7; text-decoration: line-through; display: block; }
+  .code-pane .add { color: var(--green-text); display: block; }
+  .code-pane .cmt { color: var(--text-3); }
+
+  /* ---- Layer Stack ---- */
+  .layers { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; }
+  .layer {
+    border: 1px solid var(--border); padding: 1rem 1.3rem; background: var(--surface);
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .layer:first-child { border-radius: 8px 8px 0 0; }
+  .layer:last-child { border-radius: 0 0 8px 8px; }
+  .layer:not(:last-child) { border-bottom: none; }
+  .layer:hover { background: var(--accent-soft); }
+  .layer.active { background: var(--accent-soft); }
+  .layer-top { display: flex; align-items: center; gap: 0.7rem; }
+  .layer-num { font-size: 0.7rem; font-weight: 700; color: var(--text-3); width: 1.8rem; }
+  .layer-name { font-weight: 600; font-size: 0.9rem; color: var(--text); flex: 1; }
+  .layer-pct { font-size: 0.75rem; font-weight: 600; color: var(--text-3); }
+  .layer-detail {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin 0.3s;
+    font-size: 0.85rem; color: var(--text-2); line-height: 1.7; margin-top: 0;
+  }
+  .layer.active .layer-detail { max-height: 100px; margin-top: 0.6rem; }
+  .weight-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin: 0.5rem 0; gap: 2px; }
+  .weight-seg { height: 100%; border-radius: 2px; background: var(--text); transition: flex 0.5s; }
+
+  /* ---- Dimension Grid ---- */
+  .dim-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin: 1.5rem 0; }
+  @media (max-width: 600px) { .dim-grid { grid-template-columns: 1fr 1fr; } }
+  .dim-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.8rem 0.9rem; transition: transform 0.2s;
+  }
+  .dim-item:hover { transform: translateY(-1px); }
+  .dim-item .d-name { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+  .dim-item .d-sub { font-size: 0.7rem; color: var(--text-3); }
+  .dim-item .d-cnt { font-size: 0.65rem; color: var(--text-3); margin-top: 0.2rem; }
+
+  /* ---- Two Col ---- */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+  .col-card { border: 1px solid var(--border); border-radius: 8px; padding: 1.3rem 1.4rem; background: var(--surface); }
+  .col-card h4 { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.7rem; }
+  .col-card.yes h4 { color: var(--green-text); }
+  .col-card.no h4 { color: var(--amber-text); }
+  .col-card ul { padding-left: 1.1rem; margin: 0; }
+  .col-card li { font-size: 0.85rem; color: var(--text-2); margin-bottom: 0.25rem; line-height: 1.6; }
+
+  /* ---- Timeline ---- */
+  .timeline { position: relative; margin: 2rem 0; padding-left: 1.5rem; }
+  .timeline::before { content: ''; position: absolute; left: 0.3rem; top: 0.4rem; bottom: 0.4rem; width: 1px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 1.3rem; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -1.35rem; top: 0.5rem;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--border);
+  }
+  .tl-item.done::before { background: var(--text); }
+  .tl-item .tl-t { font-weight: 600; font-size: 0.88rem; color: var(--text); }
+  .tl-item .tl-d { font-size: 0.8rem; color: var(--text-3); }
+
+  /* ---- Footer ---- */
+  .article-footer { margin: 4rem 0 2rem; padding: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+  .article-footer a { color: var(--text); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .article-footer .meta { font-size: 0.72rem; color: var(--text-3); margin-top: 1rem; line-height: 1.8; }
+  .site-footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: var(--text-3); }
+
+  .back-to-top {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; width: 36px; height: 36px;
+    border-radius: 50%; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateY(8px); transition: all 0.3s; z-index: 999;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .back-to-top:hover { background: var(--accent-soft); }
+
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
+  .confetti-piece { position: absolute; animation: cfall linear forwards; }
+  @keyframes cfall { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="top-controls">
+  <button class="ctrl-btn" id="darkToggle" title="Toggle theme">&#9790;</button>
+</div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-grain"></div>
+  <div class="hero-inner">
+    <div class="monogram">AB</div>
+    <div class="hero-label">AI for Enterprise Software &middot; Research</div>
+    <h1>当 AI 坐上<br>SAP 顾问的位子</h1>
+    <p class="subtitle">SAP 迁移项目停滞多年，因为理解遗留代码的成本高于重写代码本身。AI 正在改变这个等式。</p>
+    <div class="hero-meta">
+      <span>April 3, 2026</span>
+      <span>12 min read</span>
+      <span>ABAP-Bench v4.0</span>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- TL;DR -->
+  <div class="tldr fade-in">
+    <div class="tldr-label">Summary</div>
+    <p>我们构建了 <strong>ABAP-Bench</strong>——首个专为 SAP/ABAP 领域设计的 AI 评测基准（60 道专家级任务，9 大维度，三层评分引擎），并用它完整评测了智谱 GLM-5。</p>
+    <ul>
+      <li><strong>GLM-5 得分 61/100</strong>，在中国本土法规合规（67.5%）和迁移风险评估（64.2%）上表现突出</li>
+      <li><strong>能写出可编译的 S/4HANA 代码</strong>——CDS 视图 JOIN + 字段映射 + 现代语法，得分 16/20</li>
+      <li><strong>能精确定位变量作用域级别的隐蔽 bug</strong>，但最深层缺陷仍需人工审查</li>
+      <li><strong>前沿编程范式（RAP / EML）是当前短板</strong>——方向正确但细节精度不足</li>
+      <li><strong>结论：已具备 SAP 初级顾问级别的分析能力</strong>，适合作为人类专家的高效起点</li>
+    </ul>
+  </div>
+
+  <article class="prose">
+
+    <p class="fade-in drop-cap">去年冬天，一位在华东某制造企业工作了 20 年的 SAP 顾问老张退休了。他带走的不只是一张工牌——还有整套 ECC 系统中上百支 ABAP 程序的"活地图"：哪段代码曾经在半夜三点修过一个诡异的税码 bug，哪个 RFC 接口连着金税系统的哪一层认证，哪些 Z 表的字段名虽然叫 <code>SGTXT</code> 但实际上存的是发票备注。</p>
+
+    <p class="fade-in">这些知识没有写在任何文档里。现在，它们消失了。</p>
+
+    <p class="fade-in">老张的故事并非个例。SAP 无处不在——全球超过 77% 的交易收入流经 SAP 系统，财富 500 强中有 87% 在使用。SAP 已宣布 ECC 将于 2027 年终止主流维护。全球数十万家企业必须迁移到 S/4HANA，一个 <strong>480 亿美元</strong>的迁移市场由此诞生。</p>
+
+    <div class="pull-quote fade-in">像老张这样理解这些系统的人，正在一个接一个地离开。</div>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">01</div>
+    <h2 class="fade-in">为什么 SAP 迁移与一般代码迁移不同</h2>
+
+    <p class="fade-in">如果你做过 Web 应用的框架升级，你可能会觉得"代码迁移不就那么回事"。但 SAP 迁移是完全不同的物种。你不只是将熟悉的代码更新到更好的模式——你是在逆向工程一套融合了财务、供应链、人力资源和税务合规的复杂业务系统。</p>
+
+    <div class="callout fade-in">
+      <p><strong>代码是活的文档，而读懂这份文档的人已经不在了。</strong></p>
+      <p>以往的解决办法是组建庞大的顾问团队，花费数月甚至数年梳理工作流。但成本让大多数企业望而却步——于是系统就这么一年又一年地"再等等"。</p>
+    </div>
+
+    <p class="fade-in"><strong>AI 正在改变这一切。</strong> 但具体能改变到什么程度？光靠想象没用，我们决定用数据来回答。</p>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">02</div>
+    <h2 class="fade-in">ABAP-Bench：给 AI 出一张 SAP 顾问资格考试卷</h2>
+
+    <p class="fade-in">现有的 AI 代码评测基准都帮不上忙。SWE-bench 测 GitHub bug 修复，BigCodeBench 测通用编程，HumanEval 只有算法题。<strong>SAP/ABAP 领域在 AI 评测版图上完全是空白。</strong></p>
+
+    <p class="fade-in">所以我们自己建了一个。ABAP-Bench——60 道专家出题的 SAP 迁移任务，覆盖 9 个关键维度。每道题满分 20 分，由三层评分引擎独立评判。<strong>我们给 AI 出了一张 SAP 顾问的资格考试卷，然后认认真真地批了一遍。</strong></p>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">03</div>
+    <h2 class="fade-in">构建 ABAP-Bench</h2>
+
+    <h3 class="fade-in">任务设计</h3>
+
+    <p class="fade-in">每道任务都源自真实的 SAP 迁移项目场景，由领域专家编写。我们不接受泛泛而谈：如果 AI 回答"建议使用 CDS 视图替代 BKPF 表"——零分。你必须说出 <code>I_JournalEntry</code>，字段 <code>BUKRS</code> 映射到 <code>CompanyCode</code>。</p>
+
+    <div class="dim-grid fade-in">
+      <div class="dim-item"><div class="d-name">代码迁移知识</div><div class="d-sub">废弃 API 精确替代</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">缺陷发现</div><div class="d-sub">隐蔽 bug 定位</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">代码改写</div><div class="d-sub">ECC &rarr; S/4HANA</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">中国本土化合规</div><div class="d-sub">增值税 / 数电票 / PIPL</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">迁移风险</div><div class="d-sub">依赖链分析</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">安全与权限</div><div class="d-sub">授权 / SQL 注入防御</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">S/4HANA 架构</div><div class="d-sub">ACDOCA / BP / FI-CO</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">性能工程</div><div class="d-sub">索引 / AMDP / CDS</div><div class="d-cnt">6 tasks</div></div>
+      <div class="dim-item"><div class="d-name">现代生态</div><div class="d-sub">RAP / Fiori / BTP</div><div class="d-cnt">12 tasks</div></div>
+    </div>
+
+    <p class="fade-in">测试代码中使用了中文变量名（如 <code>发票号码</code>、<code>含税金额</code>），这在公开代码库中极为罕见——ABAP-Bench 的"防作弊水印"。</p>
+
+    <h3 class="fade-in">三层评分引擎</h3>
+
+    <p class="fade-in">点击每层了解评分机制：</p>
+
+    <div class="layers fade-in">
+      <div class="layer active" onclick="toggleLayer(this)">
+        <div class="layer-top">
+          <span class="layer-num">L1</span>
+          <span class="layer-name">Rubric Matching</span>
+          <span class="layer-pct">40%</span>
+        </div>
+        <div class="layer-detail">专家编写的评分标准，包含加分和扣分规则。说对了 <code>I_JournalEntry</code> 加分，错误声称"BKPF 是 S/4HANA 的主表"扣 3 分——说错比不说更糟。</div>
+      </div>
+      <div class="layer" onclick="toggleLayer(this)">
+        <div class="layer-top">
+          <span class="layer-num">L2</span>
+          <span class="layer-name">Quality Analysis</span>
+          <span class="layer-pct">30%</span>
+        </div>
+        <div class="layer-detail">检查代码结构质量和回答完整性。堆砌关键词但代码一团乱麻？不行。确保 AI 不能靠"刷关键词"蒙混过关。</div>
+      </div>
+      <div class="layer" onclick="toggleLayer(this)">
+        <div class="layer-top">
+          <span class="layer-num">L3</span>
+          <span class="layer-name">Semantic Similarity</span>
+          <span class="layer-pct">30%</span>
+        </div>
+        <div class="layer-detail">60 篇专家黄金答案（平均 1,300 字符），BM25 算法评估概念覆盖度。可以换表达，但核心知识点必须到位。</div>
+      </div>
+    </div>
+
+    <div class="weight-bar fade-in">
+      <div class="weight-seg" style="flex:4; opacity:1;"></div>
+      <div class="weight-seg" style="flex:3; opacity:0.6;"></div>
+      <div class="weight-seg" style="flex:3; opacity:0.35;"></div>
+    </div>
+
+    <h3 class="fade-in">防止评测"过期"</h3>
+
+    <p class="fade-in">每季度淘汰 10% 的旧题，替换新题目；任务锚定特定版本的 SAP Note 和法规文件。像高考年年换题，ABAP-Bench 的有效性不会随时间衰减。</p>
+
+    <h3 class="fade-in">工程质量</h3>
+
+    <div class="margin-note fade-in">174 项自动化测试 &middot; CI/CD 流水线 &middot; 4 个 LLM 后端 &middot; 断点续跑</div>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">04</div>
+    <h2 class="fade-in">首次实测：GLM-5</h2>
+
+    <p class="fade-in">我们选择智谱 GLM-5 作为首个挑战者——智谱 AI 的推理旗舰模型，具备内部思维链推理能力。评测覆盖 SAP 迁移的完整生命周期，温度固定为 0.1 确保可复现。然后，我们安静地等了 145 分钟。</p>
+
+    <!-- Guess Game -->
+    <div class="guess-box fade-in" id="guessGame">
+      <h4>先猜一猜：GLM-5 能拿多少分？</h4>
+      <p>60 道 SAP 专家级题目，满分 100</p>
+      <input type="range" class="guess-slider" id="guessSlider" min="0" max="100" value="50">
+      <div class="guess-val" id="guessVal">50</div>
+      <button class="guess-btn" id="guessBtn" onclick="revealScore()">揭晓答案</button>
+      <div class="guess-result" id="guessResult"></div>
+    </div>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">05</div>
+    <h2 class="fade-in">评测结果：61 / 100</h2>
+
+    <div class="score-grid fade-in">
+      <div class="score-card"><div class="num"><span class="counter" data-target="61">0</span><span class="unit"> /100</span></div><div class="lbl">Overall</div></div>
+      <div class="score-card"><div class="num"><span class="counter" data-target="67.5" data-decimals="1">0</span><span class="unit">%</span></div><div class="lbl">Best Dim</div></div>
+      <div class="score-card"><div class="num"><span class="counter" data-target="145">0</span><span class="unit"> min</span></div><div class="lbl">Eval Time</div></div>
+      <div class="score-card"><div class="num"><span class="counter" data-target="290" data-suffix="K">0</span></div><div class="lbl">Tokens</div></div>
+    </div>
+
+    <p class="fade-in">第一眼看可能觉得"也就那样"。但深入到具体任务，一幅更生动的画面浮现出来——<strong>这种参差，本身就是最有价值的发现。</strong></p>
+
+    <!-- Radar Chart -->
+    <div class="fig fade-in">
+      <div class="radar-section">
+        <canvas id="radarChart" width="320" height="320"></canvas>
+        <div class="radar-aside">
+          <div>最高 <span class="val">中国合规 67.5%</span></div>
+          <div>次高 <span class="val">迁移风险 64.2%</span></div>
+          <div>中位 <span class="val">安全权限 60.8%</span></div>
+          <div>最低 <span class="val">缺陷发现 54.2%</span></div>
+          <div style="margin-top:0.6rem; font-size:0.72rem; color:var(--text-3);">极差 13.3 个百分点</div>
+        </div>
+      </div>
+      <div class="fig-caption">Fig. 1 &mdash; GLM-5 九维度得分分布</div>
+    </div>
+
+    <!-- Quiz 1 -->
+    <div class="quiz fade-in" id="quiz1">
+      <div class="quiz-label">Interactive</div>
+      <p class="q">你能找到这个 ABAP bug 吗？—— 第一个 <code>LOOP AT gt_bkpf INTO DATA(ls_bkpf)</code> 循环结束后，<code>ls_bkpf</code> 的值会是什么？</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz1')">A. 变量被自动释放，值为初始值</button>
+        <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'quiz1')">B. 保留循环中最后一条记录的值</button>
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz1')">C. 编译报错，LOOP 外不能使用内联声明变量</button>
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz1')">D. 值为内表的第一条记录</button>
+      </div>
+      <div class="quiz-expl" id="quiz1-expl">
+        <strong>Correct.</strong> ABAP 的 <code>DATA()</code> 内联声明变量在循环结束后仍然存在，保留最后一次迭代的值。GLM-5 正确识别了这个 bug，并指出会导致"所有发票的红冲/正常状态判断完全错误"。这是评测中最惊喜的发现之一。
+      </div>
+    </div>
+
+    <h3 class="fade-in">令人惊喜的时刻</h3>
+
+    <div class="moment positive open fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">1</span>
+        <h4>它写出了可以直接编译的 S/4HANA 代码</h4>
+        <span class="tag">T03 &middot; <span class="tag-score hi">16/20</span></span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>把 ECC 时代的嵌套 SELECT（BKPF + BSEG，典型 N+1 灾难）改写为 S/4HANA 兼容版本。</p>
+        <div class="code-box">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this,'before1')">ECC 旧代码</button>
+            <button class="code-tab" onclick="switchTab(this,'after1')">GLM-5 改写</button>
+          </div>
+          <div class="code-pane active" id="before1">
+<pre><span class="cmt">* ECC: N+1 query anti-pattern</span>
+<span class="del">SELECT * FROM bkpf INTO TABLE @DATA(lt_bkpf)</span>
+<span class="del">  WHERE bukrs = @p_bukrs AND gjahr = @p_gjahr.</span>
+<span class="del">LOOP AT lt_bkpf INTO DATA(ls_bkpf).</span>
+<span class="del">  SELECT * FROM bseg INTO TABLE @DATA(lt_bseg)</span>
+<span class="del">    WHERE bukrs = @ls_bkpf-bukrs</span>
+<span class="del">      AND belnr = @ls_bkpf-belnr</span>
+<span class="del">      AND gjahr = @ls_bkpf-gjahr.</span>
+<span class="del">ENDLOOP.</span></pre>
+          </div>
+          <div class="code-pane" id="after1">
+<pre><span class="cmt">* GLM-5: CDS View JOIN, single query</span>
+<span class="add">SELECT</span>
+<span class="add">  j~CompanyCode,</span>
+<span class="add">  j~AccountingDocument,</span>
+<span class="add">  j~FiscalYear,</span>
+<span class="add">  i~AccountingDocumentItem,</span>
+<span class="add">  i~GLAccount,</span>
+<span class="add">  i~AmountInCompanyCodeCurrency</span>
+<span class="add">FROM I_JournalEntry AS j</span>
+<span class="add">  INNER JOIN I_JournalEntryItem AS i</span>
+<span class="add">    ON j~CompanyCode = i~CompanyCode</span>
+<span class="add">   AND j~AccountingDocument = i~AccountingDocument</span>
+<span class="add">   AND j~FiscalYear = i~FiscalYear</span>
+<span class="add">WHERE j~CompanyCode = @p_bukrs</span>
+<span class="add">  AND j~FiscalYear = @p_gjahr</span>
+<span class="add">INTO TABLE @DATA(lt_result).</span></pre>
+          </div>
+        </div>
+        <p>正确选择 CDS 视图 JOIN，精确映射字段名（<code>BUKRS</code> &rarr; <code>CompanyCode</code>），使用现代内联声明语法。<strong>这段代码可以直接编译运行。</strong></p>
+      </div>
+    </div>
+
+    <div class="moment positive fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">2</span>
+        <h4>像细心的 code reviewer 一样找到隐蔽 bug</h4>
+        <span class="tag">T02 &middot; <span class="tag-score md">12/20</span></span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>VAT 发票处理程序中埋了 5 个 bug。GLM-5 精准命中了最重要的一颗：变量 <code>ls_bkpf</code> 在循环结束后的残留值问题，并准确描述了业务影响——"所有发票的红冲/正常状态判断完全错误，导致税务申报数据严重失真"。</p>
+        <p><strong>这不是背书式的回答，而是真正理解 ABAP 运行时行为和增值税业务语境的回答。</strong></p>
+      </div>
+    </div>
+
+    <div class="moment positive fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">3</span>
+        <h4>中国本土法规是它的主场</h4>
+        <span class="tag">T16 &middot; <span class="tag-score hi">17/20</span></span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>全场最高分。准确识别了五险一金计算规则、个税累计预扣法的具体字段、<code>HR_READ_INFOTYPE</code> 函数模块的标准用法。Rubric 满分，结构质量满分。</p>
+        <p>增值税红字发票规则、数电票影响、PIPL 数据合规——这些答案散落在中文政策文件和 SAP 配置深处，连资深顾问都需要查阅半天。</p>
+      </div>
+    </div>
+
+    <div class="moment positive fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">4</span>
+        <h4>堪比初级顾问的风险分析</h4>
+        <span class="tag">T43 &middot; <span class="tag-score hi">16/20</span></span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>评估 800 个自定义表的 ECC 系统迁移风险。GLM-5 识别了 Pool/Cluster 表影响、引用已删除字段的 Z 表问题，准确提到 SAP Readiness Check 2.0 和 ABAP Test Cockpit 的具体规则集名称。</p>
+        <p>这种分析以往需要资深顾问花数天完成。AI 在不到 4 分钟内给出了合格的初稿。</p>
+      </div>
+    </div>
+
+    <!-- Quiz 2 -->
+    <div class="quiz fade-in" id="quiz2">
+      <div class="quiz-label">Interactive</div>
+      <p class="q">GLM-5 在哪个维度得分最低？</p>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz2')">A. 性能工程</button>
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz2')">B. 现代生态（RAP / Fiori）</button>
+        <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'quiz2')">C. 缺陷发现</button>
+        <button class="quiz-opt" data-correct="false" onclick="checkQuiz(this,'quiz2')">D. 安全与权限</button>
+      </div>
+      <div class="quiz-expl" id="quiz2-expl">
+        <strong>Correct.</strong> 缺陷发现 54.2% 是最低分。找深层 bug 需要一种"被坑过"才会有的直觉——有经验的开发者看到 <code>LOOP...ENDLOOP</code> 后紧跟 <code>IF sy-subrc = 0</code> 就会本能皱眉。这种直觉目前还是人类独有的优势。
+      </div>
+    </div>
+
+    <h3 class="fade-in">值得关注的局限</h3>
+
+    <div class="moment caution fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">1</span>
+        <h4>熟悉的路走得稳，陌生的路会绊倒</h4>
+        <span class="tag"><span class="tag-score hi">16</span> vs <span class="tag-score lo">5</span></span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>T03（经典 CDS 改写）16/20，T37（RAP EML 改写）5/20。经典场景文档充分；前沿范式资料稀缺。GLM-5 在 T37 中方向正确（<code>I_Product</code>、<code>MODIFY ENTITIES</code>），但 EML 语法有细微错误。</p>
+        <p><strong>就像一位刚入行的顾问：知道该走哪条路，但还不熟悉路上的每一块石头。</strong></p>
+      </div>
+    </div>
+
+    <div class="moment caution fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">2</span>
+        <h4>最隐蔽的 bug，仍然属于人类</h4>
+        <span class="tag">5 bugs, hit 3</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>T02 的 5 个 bug 按隐蔽程度分级。命中前 3 个，最深的 2 个失手——内表/结构体类型混淆，以及多层 LOOP 中 <code>SY-SUBRC</code> 被意外覆盖。</p>
+        <p><strong>AI 可以学习知识，但来自"被坑过"的直觉，目前还是人类独有的优势。</strong></p>
+      </div>
+    </div>
+
+    <div class="moment caution fade-in">
+      <div class="moment-hd" onclick="toggleMoment(this.parentElement)">
+        <span class="idx">3</span>
+        <h4>思考越久不代表答得越好</h4>
+        <span class="tag">155s &rarr; 17分 &nbsp; 447s &rarr; 6分</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="moment-bd">
+        <p>推理模型每题平均 145 秒。得分最高的 T16（<span class="tag-score hi">17/20</span>）用了 155 秒，得分最低区间的 T36（<span class="tag-score lo">6/20</span>）却用了 447 秒。思考更久并不能弥补知识盲区。</p>
+      </div>
+    </div>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">06</div>
+    <h2 class="fade-in">人 + AI：SAP 迁移的最优解</h2>
+
+    <div class="pull-quote fade-in">不要问 AI 能不能替代 SAP 顾问，<br>而要问 AI 能在哪些环节帮顾问节省最多时间。</div>
+
+    <div class="two-col fade-in">
+      <div class="col-card yes">
+        <h4>AI 今天就能承担</h4>
+        <ul>
+          <li>迁移前风险评估与路线图初稿</li>
+          <li>中国本土化合规梳理</li>
+          <li>架构方案讨论（FI-CO / ACDOCA / CDS）</li>
+          <li>经典场景的代码改写</li>
+        </ul>
+      </div>
+      <div class="col-card no">
+        <h4>仍需人类把关</h4>
+        <ul>
+          <li>前沿编程范式的生产级代码</li>
+          <li>深层缺陷的最终确认</li>
+          <li>性能优化的落地实施</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout fade-in">
+      <p><strong>这不是 AI 取代人的故事，而是 AI 改变人的工作方式的故事。</strong></p>
+      <p>过去，资深顾问花两周写迁移评估报告。现在，AI 几小时生成初稿，顾问从"从零撰写"变为"审核优化"——效率提升数倍，质量不降反升。</p>
+    </div>
+
+    <div class="ornament fade-in">&middot;&ensp;&middot;&ensp;&middot;</div>
+
+    <div class="section-num fade-in">07</div>
+    <h2 class="fade-in">结语：这个未来比想象的更近</h2>
+
+    <p class="fade-in">SAP 迁移停滞多年，本质是经济学问题：理解遗留系统的成本太高了。</p>
+
+    <p class="fade-in">AI 正在打破这个成本壁垒。61/100 不是"刚及格"——它是一个信号：AI 在 SAP 领域已经跨过了"玩具"阶段，进入了"可用"的起点。它能写出可编译的 S/4HANA 代码，能找到变量作用域 bug，能给出带具体工具和步骤的迁移风险报告。</p>
+
+    <p class="fade-in">它暴露的短板——前沿语法精确度、最深层缺陷捕获——恰恰指明了下一步方向。这些不是根本性障碍，而是随训练数据丰富可以持续改进的能力边界。</p>
+
+    <div class="callout fade-in" style="border-color:var(--border);">
+      <p><strong>480 亿美元的 S/4HANA 迁移市场等不了，而像老张这样的顾问已经回不来了。</strong></p>
+      <p>好在，新的帮手已经到场——它不完美，但它 24 小时在线，不会忘记任何一个字段映射，而且每天都在变得更好。</p>
+    </div>
+
+  </article>
+
+  <!-- Timeline -->
+  <div style="margin:3rem 0;" class="fade-in">
+    <div class="section-num">Appendix</div>
+    <h3 style="font-size:0.95rem; font-weight:650; margin-bottom:1rem; color:var(--text);">评测时间线</h3>
+    <div class="timeline">
+      <div class="tl-item done"><div class="tl-t">构建 ABAP-Bench v4.0</div><div class="tl-d">60 tasks &middot; 3-layer engine &middot; 174 tests &middot; Q1 2026</div></div>
+      <div class="tl-item done"><div class="tl-t">首轮评测：GLM-5</div><div class="tl-d">145 min &middot; 290K tokens &middot; 61/100 &middot; 2026-04-03</div></div>
+      <div class="tl-item"><div class="tl-t">更多模型加入评测</div><div class="tl-d">DeepSeek R1, Grok 4, Qwen3 235B, MiniMax M2.7...</div></div>
+      <div class="tl-item"><div class="tl-t">v4.1 季度轮换</div><div class="tl-d">淘汰 6 题，替换新题目 &middot; 2026-07 计划</div></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="article-footer fade-in">
+    <p style="font-size:0.95rem; font-weight:600; margin-bottom:0.5rem;">完整评测数据和评分引擎已开源</p>
+    <p><a href="https://github.com/fxp/abap-bench">github.com/fxp/abap-bench</a></p>
+    <p style="margin-top:0.6rem"><a href="leaderboard" style="font-weight:600;">→ 查看 v2.0 完整排行榜（12 个模型）</a></p>
+    <div class="meta">
+      评测模型：GLM-5 (zhipuai) &nbsp;|&nbsp; Temperature: 0.1<br>
+      评分引擎：3-layer (rubric 40% + quality 30% + semantic 30%)<br>
+      评测日期：2026-04-03
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div style="margin-bottom:0.6rem; opacity:0.3; letter-spacing:0.5em; font-size:0.6rem;">&#9670;</div>
+  ABAP-Bench &copy; 2026 &middot; CC-BY-4.0
+</footer>
+
+<button class="back-to-top" id="backToTop">
+  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+// Dark mode
+const dt = document.getElementById('darkToggle');
+dt.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  dt.textContent = document.body.classList.contains('dark') ? '\u2600' : '\u263E';
+  drawRadar(); // redraw radar with new colors
+});
+
+// Progress bar
+function updateProgress() {
+  const s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (h > 0 ? s / h * 100 : 0) + '%';
+}
+const btt = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  updateProgress();
+  btt.classList.toggle('visible', window.scrollY > 500);
+}, { passive: true });
+btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// Fade in
+const fObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); fObs.unobserve(e.target); } }), { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => fObs.observe(el));
+
+// Counters
+const cObs = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, t = parseFloat(el.dataset.target), d = parseInt(el.dataset.decimals||'0'), suf = el.dataset.suffix||'';
+  const st = performance.now(), dur = 1000;
+  (function tick(now) {
+    const p = Math.min((now - st) / dur, 1), eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = (t * eased).toFixed(d) + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  })(st);
+  cObs.unobserve(el);
+}), { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => cObs.observe(el));
+
+// Layer stack
+function toggleLayer(el) {
+  const was = el.classList.contains('active');
+  el.parentElement.querySelectorAll('.layer').forEach(i => i.classList.remove('active'));
+  if (!was) el.classList.add('active');
+}
+
+// Moment accordion
+function toggleMoment(card) { card.classList.toggle('open'); }
+
+// Code tabs
+function switchTab(btn, id) {
+  const wrap = btn.closest('.code-box');
+  wrap.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  wrap.querySelectorAll('.code-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const box = document.getElementById(qid), expl = document.getElementById(qid + '-expl');
+  const opts = box.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    expl.classList.add('show');
+  } else {
+    btn.classList.add('wrong');
+    opts.forEach(o => { if (o.dataset.correct === 'true') o.classList.add('correct'); });
+    expl.innerHTML = '<strong>Not quite.</strong> ' + expl.innerHTML.replace(/^<strong>.*?<\/strong>\s*/, '');
+    expl.classList.add('show');
+  }
+}
+
+// Guess game
+const slider = document.getElementById('guessSlider'), gv = document.getElementById('guessVal');
+slider.addEventListener('input', () => gv.textContent = slider.value);
+function revealScore() {
+  const g = parseInt(slider.value), actual = 61, diff = Math.abs(g - actual);
+  const r = document.getElementById('guessResult'), b = document.getElementById('guessBtn');
+  b.disabled = true; slider.disabled = true;
+  let msg;
+  if (diff <= 3) { msg = 'Impressive\u2014only ' + diff + ' off. Are you an SAP expert?'; launchConfetti(); }
+  else if (diff <= 10) msg = 'Close! Actual: 61/100. You were ' + diff + ' off.';
+  else if (g > actual) msg = 'You overestimated\u2014actual score is 61. SAP domain is harder than it looks.';
+  else msg = 'You underestimated GLM-5! Actual: 61/100, ' + diff + ' higher than your guess.';
+  r.textContent = msg; r.style.display = 'block';
+}
+function launchConfetti() {
+  const c = document.getElementById('confetti'), cols = ['#18181b','#52525b','#a1a1aa','#d4d4d8'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div'); p.className = 'confetti-piece';
+    p.style.left = Math.random()*100+'%'; p.style.top = '-10px';
+    p.style.background = cols[Math.floor(Math.random()*cols.length)];
+    p.style.width = p.style.height = (4+Math.random()*6)+'px';
+    p.style.borderRadius = Math.random()>0.5?'50%':'1px';
+    p.style.animationDuration = (1.5+Math.random()*2)+'s';
+    p.style.animationDelay = Math.random()*0.6+'s';
+    c.appendChild(p);
+  }
+  setTimeout(() => c.innerHTML = '', 4000);
+}
+
+// Radar chart (pure canvas)
+const labels = ['代码迁移','缺陷发现','代码改写','中国合规','迁移风险','安全权限','架构','性能','现代生态'];
+const scores = [62.5,54.2,59.2,67.5,64.2,60.8,63.3,56.7,58.3];
+let radarAnimated = false;
+
+function drawRadar(progress) {
+  const canvas = document.getElementById('radarChart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio||1, W=320, H=320;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const isDark = document.body.classList.contains('dark');
+  const n=labels.length, cx=W/2, cy=H/2, R=115;
+  const step=2*Math.PI/n, start=-Math.PI/2;
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#a1a1aa' : '#52525b';
+  const fillColor = isDark ? 'rgba(161,161,170,0.12)' : 'rgba(24,24,27,0.06)';
+  const strokeColor = isDark ? '#a1a1aa' : '#18181b';
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  for (let ring=1; ring<=5; ring++) {
+    const r=R*ring/5;
+    ctx.beginPath();
+    for (let i=0;i<=n;i++) { const a=start+step*(i%n), x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=gridColor; ctx.lineWidth=1; ctx.stroke();
+  }
+  // Axes
+  for (let i=0;i<n;i++) { const a=start+step*i; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); ctx.strokeStyle=gridColor; ctx.stroke(); }
+
+  // Data
+  const p = typeof progress === 'number' ? progress : 1;
+  ctx.beginPath();
+  for (let i=0;i<=n;i++) { const idx=i%n, a=start+step*idx, v=scores[idx]/100*p; const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.fillStyle=fillColor; ctx.fill();
+  ctx.strokeStyle=strokeColor; ctx.lineWidth=1.5; ctx.stroke();
+
+  // Dots
+  for (let i=0;i<n;i++) { const a=start+step*i, v=scores[i]/100*p; ctx.beginPath(); ctx.arc(cx+R*v*Math.cos(a),cy+R*v*Math.sin(a),3,0,2*Math.PI); ctx.fillStyle=strokeColor; ctx.fill(); }
+
+  // Labels
+  ctx.fillStyle=textColor; ctx.font='11px -apple-system, sans-serif';
+  for (let i=0;i<n;i++) {
+    const a=start+step*i, lx=cx+(R+20)*Math.cos(a), ly=cy+(R+20)*Math.sin(a);
+    ctx.textBaseline = ly<cy-10?'bottom':ly>cy+10?'top':'middle';
+    ctx.textAlign = lx<cx-10?'right':lx>cx+10?'left':'center';
+    ctx.fillText(labels[i],lx,ly);
+  }
+}
+
+const rObs = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting || radarAnimated) return;
+  radarAnimated = true;
+  const st = performance.now(), dur = 800;
+  (function tick(now) {
+    const p = Math.min((now-st)/dur,1), eased = 1-Math.pow(1-p,3);
+    drawRadar(eased);
+    if (p<1) requestAnimationFrame(tick);
+  })(st);
+  rObs.unobserve(e.target);
+}), { threshold: 0.3 });
+const rc = document.getElementById('radarChart');
+if (rc) { rObs.observe(rc); drawRadar(0); }
+</script>
+
+</body>
+</html>

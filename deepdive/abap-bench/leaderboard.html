@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard — ABAP-Bench v2.0</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fafafa; --surface: #ffffff; --text: #18181b; --text-2: #52525b;
+    --text-3: #a1a1aa; --border: #e4e4e7; --accent-soft: #f4f4f5;
+    --blue: #2563eb; --green-text: #15803d; --green-bg: #f0fdf4;
+    --amber-text: #b45309; --amber-bg: #fffbeb; --red-text: #dc2626;
+  }
+  body.dark {
+    --bg: #09090b; --surface: #18181b; --text: #e4e4e7; --text-2: #a1a1aa;
+    --text-3: #52525b; --border: #27272a; --accent-soft: #27272a;
+    --blue: #60a5fa; --green-text: #4ade80; --green-bg: #052e16;
+    --amber-text: #fbbf24; --amber-bg: #1c1917;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans SC", "PingFang SC", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+    -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s;
+  }
+  ::selection { background: rgba(24,24,27,0.12); }
+  body.dark ::selection { background: rgba(228,228,231,0.18); }
+
+  /* Controls */
+  .top-controls { position: fixed; top: 1rem; right: 1rem; z-index: 999; display: flex; gap: 0.5rem; }
+  .ctrl-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 0.9rem; color: var(--text-2);
+    transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .ctrl-btn:hover { background: var(--accent-soft); }
+
+  /* Hero */
+  .hero {
+    background: var(--text); color: var(--bg); padding: 5rem 1.5rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  body.dark .hero { background: #000; }
+  .hero-grain {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-nav { margin-bottom: 2rem; }
+  .hero-nav a { font-size: 0.75rem; opacity: 0.45; color: inherit; text-decoration: none; letter-spacing: 0.08em; transition: opacity 0.2s; }
+  .hero-nav a:hover { opacity: 0.75; }
+  .hero-nav span { opacity: 0.25; margin: 0 0.5rem; }
+  .hero-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.4; margin-bottom: 1rem; }
+  .hero h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .hero .subtitle { font-size: 0.95rem; opacity: 0.55; line-height: 1.7; max-width: 540px; }
+  .hero-meta { display: flex; gap: 2rem; margin-top: 2rem; font-size: 0.72rem; opacity: 0.3; flex-wrap: wrap; }
+
+  /* Layout */
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Summary stats */
+  .stat-band {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin: 2.5rem 0;
+  }
+  @media(max-width:600px){ .stat-band { grid-template-columns: 1fr 1fr; } }
+  .stat-cell {
+    background: var(--surface); padding: 1.4rem 1.2rem; text-align: center;
+  }
+  .stat-cell .n { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .stat-cell .l { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); margin-top: 0.15rem; }
+
+  /* Section header */
+  .section-hd { margin: 3rem 0 1.2rem; display: flex; align-items: baseline; gap: 1rem; }
+  .section-hd h2 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+  .section-hd .sub { font-size: 0.75rem; color: var(--text-3); }
+
+  /* Leaderboard table */
+  .lb-table { width: 100%; border-collapse: collapse; margin: 0 0 3rem; font-size: 0.88rem; }
+  .lb-table thead th {
+    text-align: left; padding: 0.5rem 0.8rem; font-size: 0.65rem;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-3); border-bottom: 1px solid var(--border);
+  }
+  .lb-table thead th.num { text-align: right; }
+  .lb-table tbody tr { cursor: pointer; transition: background 0.15s; }
+  .lb-table tbody tr:hover { background: var(--accent-soft); }
+  .lb-table tbody tr.expanded { background: var(--accent-soft); }
+  .lb-table td { padding: 0.85rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .lb-table td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .lb-table .expand-row td { padding: 0; border-bottom: 1px solid var(--border); }
+  .lb-table .expand-inner { padding: 1.2rem 1.5rem; display: none; }
+  .lb-table .expand-row.open .expand-inner { display: block; }
+
+  /* Rank badge */
+  .rank { font-size: 0.75rem; font-weight: 700; color: var(--text-3); width: 1.8rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .rank.gold { color: #a16207; }
+  .rank.silver { color: #6b7280; }
+  .rank.bronze { color: #92400e; }
+
+  /* Model name */
+  .model-name { font-weight: 600; color: var(--text); }
+  .model-org { font-size: 0.72rem; color: var(--text-3); margin-top: 0.1rem; }
+
+  /* Score bar */
+  .score-wrap { display: flex; align-items: center; gap: 0.75rem; min-width: 160px; }
+  .score-num { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 2.4rem; text-align: right; }
+  .score-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; min-width: 80px; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: var(--text); transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+  .score-ci { font-size: 0.7rem; color: var(--text-3); white-space: nowrap; }
+
+  /* Backend badge */
+  .badge { display: inline-block; font-size: 0.62rem; font-weight: 600; padding: 0.12em 0.5em; border-radius: 3px; border: 1px solid var(--border); color: var(--text-3); }
+
+  /* Dimension grid in expand */
+  .dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 0.8rem; }
+  @media(max-width:600px){ .dim-grid { grid-template-columns: 1fr 1fr; } }
+  .dim-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.8rem; }
+  .dim-cell .dn { font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.3rem; }
+  .dim-cell .dp { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .dim-cell .dp .unit { font-size: 0.7rem; font-weight: 500; color: var(--text-3); }
+
+  .pct-hi { color: var(--green-text); }
+  .pct-md { color: var(--amber-text); }
+  .pct-lo { color: var(--red-text); }
+
+  /* Performance row */
+  .perf-row { display: flex; gap: 1.5rem; margin-top: 0.6rem; flex-wrap: wrap; }
+  .perf-item { font-size: 0.78rem; color: var(--text-3); }
+  .perf-item strong { color: var(--text-2); }
+
+  /* Radar section */
+  .radar-wrap { margin: 1.5rem 0 3rem; display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 1rem; }
+  .radar-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+  .radar-model-btn {
+    font-size: 0.72rem; padding: 0.3rem 0.7rem; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-2);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .radar-model-btn:hover { border-color: var(--text-3); }
+  .radar-model-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .radar-canvas-wrap { position: relative; }
+
+  /* Note */
+  .note { font-size: 0.75rem; color: var(--text-3); line-height: 1.7; padding: 1rem 1.2rem; border-left: 2px solid var(--border); margin: 2rem 0; }
+  .note strong { color: var(--text-2); }
+
+  /* Footer */
+  footer { margin: 4rem 0 3rem; text-align: center; font-size: 0.72rem; color: var(--text-3); line-height: 2; }
+  footer a { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* Fade in */
+  .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* Arrow */
+  .arrow-icon { width: 14px; height: 14px; flex-shrink: 0; color: var(--text-3); transition: transform 0.3s; }
+  tr.expanded .arrow-icon { transform: rotate(180deg); }
+
+  /* Compare toggle */
+  .compare-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0 0 2rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+  .compare-bar label { font-size: 0.78rem; color: var(--text-2); display: flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+  .compare-bar input[type=checkbox] { accent-color: var(--text); }
+  .compare-bar .cb-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+</style>
+</head>
+<body>
+
+<div class="top-controls">
+  <button class="ctrl-btn" id="darkBtn" title="切换暗色模式" aria-label="dark mode">🌙</button>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-grain"></div>
+  <div class="hero-inner">
+    <div class="hero-nav">
+      <a href="/deepdive/abap-bench/">ABAP-Bench</a>
+      <span>/</span>
+      <span style="opacity:0.7">Leaderboard v2.0</span>
+    </div>
+    <div class="hero-label">ABAP-Bench · Benchmark Results</div>
+    <h1>v2.0 模型排行榜</h1>
+    <p class="subtitle">12 个前沿模型在 60 道 SAP ABAP 与 S/4HANA 迁移题目上的完整评测结果。评测时间：2026 年 4 月。</p>
+    <div class="hero-meta">
+      <span>60 tasks · 9 dimensions · 1200 pts</span>
+      <span>3-layer scoring</span>
+      <span>12 models</span>
+      <span>2026-04-09</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Summary Stats -->
+  <div class="stat-band fade-in">
+    <div class="stat-cell">
+      <div class="n">12</div>
+      <div class="l">Models Tested</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">68</div>
+      <div class="l">Top Score /100</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">±3.2</div>
+      <div class="l">Avg 95% CI</div>
+    </div>
+    <div class="stat-cell">
+      <div class="n">59.3</div>
+      <div class="l">Median Score</div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="section-hd fade-in">
+    <h2>总排名</h2>
+    <span class="sub">点击任意模型查看维度细分 · 95% CI 基于 60 题标准误差</span>
+  </div>
+
+  <div class="fade-in">
+  <table class="lb-table" id="lbTable">
+    <thead>
+      <tr>
+        <th style="width:2.5rem">#</th>
+        <th>模型</th>
+        <th style="width:220px">得分</th>
+        <th class="num" style="width:90px">原始分</th>
+        <th class="num" style="width:80px">延迟</th>
+        <th class="num" style="width:60px">Token</th>
+        <th style="width:60px"></th>
+      </tr>
+    </thead>
+    <tbody id="lbBody"></tbody>
+  </table>
+  </div>
+
+  <!-- Radar Comparison -->
+  <div class="section-hd fade-in">
+    <h2>维度雷达图</h2>
+    <span class="sub">选择最多 3 个模型对比各维度表现</span>
+  </div>
+  <div class="radar-wrap fade-in">
+    <div class="radar-controls" id="radarControls"></div>
+    <div class="radar-canvas-wrap">
+      <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="note fade-in">
+    <strong>统计说明：</strong>
+    当前 n=60 道题，整体 95% CI ≈ ±3–6 pts，每维度（n=6）CI ≈ ±7 pts。
+    得分差距在 5 pts 以内的模型在统计上无法区分排名。
+    v2.0 完整版将扩展至 135 道题（每维度 15 题），届时 CI 将缩小至 ±8 pts/维度。
+    <br><br>
+    <strong>评分方法：</strong>3 层加权评分 — Rubric 匹配（40%）+ 代码/结构质量（30%）+ BM25 语义相似度（30%）。
+    所有模型使用 temperature=0.1 单次采样（n=1）。
+  </div>
+
+  <!-- Dimension Reference -->
+  <div class="section-hd fade-in">
+    <h2>维度说明</h2>
+  </div>
+  <div class="fade-in" style="margin-bottom:3rem">
+    <table class="lb-table">
+      <thead><tr>
+        <th>维度</th>
+        <th>题目数</th>
+        <th>考察重点</th>
+        <th class="num">均分</th>
+      </tr></thead>
+      <tbody id="dimBody"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <div>ABAP-Bench · Apache 2.0 · <a href="https://github.com/fxp/abap-bench" target="_blank">github.com/fxp/abap-bench</a></div>
+    <div style="margin-top:0.3rem">v2.0 完整版（135题）开发中，预计 2026-Q3 发布</div>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script>
+// ─── Data ───────────────────────────────────────────────────────────────────
+const MODELS = [
+  { rank:1,  name:"Claude Opus 4.6",       org:"Anthropic",  score:68, raw:818,  ci:2.9, tokens:2979, latency:49.9, backend:"OpenRouter",
+    dims:{ "代码迁移":65.0,"缺陷发现":65.0,"代码改写":58.3,"中国合规":74.2,"迁移风险":74.2,"安全权限":63.3,"架构":69.2,"性能":65.8,"现代生态":73.3 } },
+  { rank:2,  name:"Claude Sonnet 4.6",     org:"Anthropic",  score:61, raw:727,  ci:5.9, tokens:2534, latency:40.5, backend:"OpenRouter",
+    dims:{ "代码迁移":55.8,"缺陷发现":65.0,"代码改写":60.8,"中国合规":72.5,"迁移风险":70.8,"安全权限":55.8,"架构":35.8,"性能":44.2,"现代生态":72.5 } },
+  { rank:3,  name:"GPT-5.4",               org:"OpenAI",     score:60, raw:724,  ci:2.9, tokens:1412, latency:21.9, backend:"OpenRouter",
+    dims:{ "代码迁移":58.3,"缺陷发现":54.2,"代码改写":57.5,"中国合规":64.2,"迁移风险":60.8,"安全权限":58.3,"架构":63.3,"性能":56.7,"现代生态":65.0 } },
+  { rank:4,  name:"Grok 4.20Beta 0309",    org:"xAI",        score:60, raw:721,  ci:2.9, tokens:1055, latency:5.5,  backend:"OpenRouter",
+    dims:{ "代码迁移":56.7,"缺陷发现":53.3,"代码改写":58.3,"中国合规":59.2,"迁移风险":66.7,"安全权限":59.2,"架构":64.2,"性能":56.7,"现代生态":63.3 } },
+  { rank:5,  name:"Kimi K2.5",             org:"月之暗面",   score:60, raw:717,  ci:3.4, tokens:2919, latency:91.9, backend:"OpenRouter",
+    dims:{ "代码迁移":54.2,"缺陷发现":60.0,"代码改写":58.3,"中国合规":63.3,"迁移风险":61.7,"安全权限":61.7,"架构":65.8,"性能":42.5,"现代生态":65.0 } },
+  { rank:6,  name:"Gemini 3.1Pro Preview", org:"Google",     score:60, raw:715,  ci:2.8, tokens:3843, latency:48.2, backend:"OpenRouter",
+    dims:{ "代码迁移":58.3,"缺陷发现":57.5,"代码改写":58.3,"中国合规":60.0,"迁移风险":60.0,"安全权限":60.0,"架构":66.7,"性能":53.3,"现代生态":60.8 } },
+  { rank:7,  name:"DeepSeekV3.2",          org:"DeepSeek",   score:59, raw:709,  ci:2.7, tokens:953,  latency:35.2, backend:"OpenRouter",
+    dims:{ "代码迁移":50.8,"缺陷发现":55.8,"代码改写":59.2,"中国合规":59.2,"迁移风险":61.7,"安全权限":60.8,"架构":61.7,"性能":53.3,"现代生态":64.2 } },
+  { rank:8,  name:"GLM-5.1",               org:"智谱 BigModel",score:59,raw:706, ci:3.2, tokens:4887, latency:91.0, backend:"BigModel",
+    dims:{ "代码迁移":50.0,"缺陷发现":54.2,"代码改写":57.5,"中国合规":63.3,"迁移风险":65.0,"安全权限":58.3,"架构":63.3,"性能":52.5,"现代生态":62.1 } },
+  { rank:9,  name:"MiMo-V2-Pro",           org:"Xiaomi",     score:59, raw:712,  ci:3.1, tokens:2617, latency:33.2, backend:"OpenRouter",
+    dims:{ "代码迁移":47.5,"缺陷发现":57.5,"代码改写":58.3,"中国合规":64.2,"迁移风险":65.8,"安全权限":59.2,"架构":59.2,"性能":58.3,"现代生态":61.7 } },
+  { rank:10, name:"Gemma 4 31B",           org:"Google",     score:56, raw:677,  ci:4.0, tokens:890,  latency:49.8, backend:"OpenRouter",
+    dims:{ "代码迁移":42.5,"缺陷发现":46.7,"代码改写":57.5,"中国合规":60.8,"迁移风险":59.2,"安全权限":55.8,"架构":65.0,"性能":54.2,"现代生态":61.3 } },
+  { rank:11, name:"Qwen3.5 397B A17B",     org:"阿里",       score:55, raw:660,  ci:3.5, tokens:4346, latency:68.5, backend:"OpenRouter",
+    dims:{ "代码迁移":50.0,"缺陷发现":51.7,"代码改写":54.2,"中国合规":51.7,"迁移风险":58.3,"安全权限":59.2,"架构":58.3,"性能":49.2,"现代生态":58.8 } },
+  { rank:12, name:"MiniMax M2.7",          org:"MiniMax",    score:54, raw:650,  ci:5.6, tokens:4229, latency:90.9, backend:"OpenRouter",
+    dims:{ "代码迁移":48.3,"缺陷发现":48.3,"代码改写":41.7,"中国合规":52.5,"迁移风险":65.8,"安全权限":60.0,"架构":60.8,"性能":55.8,"现代生态":54.2 } },
+];
+
+const DIM_INFO = [
+  { name:"代码迁移", full:"Code Migration Knowledge", tasks:6, desc:"识别 S/4HANA 精确替代 API（CDS 视图名、字段映射）" },
+  { name:"缺陷发现", full:"Defect Discovery",         tasks:6, desc:"发现 ABAP 代码中隐藏的运行时逻辑错误" },
+  { name:"代码改写", full:"Code Rewriting",           tasks:6, desc:"将 ECC 代码改写为现代 ABAP / RAP 风格" },
+  { name:"中国合规", full:"China Compliance",         tasks:6, desc:"中国税务（数电票）、HR、PIPL 在 SAP 中的实现" },
+  { name:"迁移风险", full:"Migration Risk",           tasks:6, desc:"量化 ECC→S/4HANA 迁移风险和影响评估" },
+  { name:"安全权限", full:"Security & Authorization", tasks:6, desc:"ABAP 安全漏洞、授权对象、动态 SQL 防御" },
+  { name:"架构",     full:"S/4HANA Architecture",    tasks:6, desc:"ACDOCA 简化、FI-CO 集成、RAP/OData V4 架构" },
+  { name:"性能",     full:"Performance Engineering",  tasks:6, desc:"CDS 下推计算、AMDP、并行处理" },
+  { name:"现代生态", full:"Modern Ecosystem",         tasks:12, desc:"Clean Core、BTP 扩展、abapGit、SAP Build" },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function pctClass(v) { return v >= 65 ? 'pct-hi' : v >= 52 ? 'pct-md' : 'pct-lo'; }
+function rankLabel(r) {
+  if (r === 1) return '<span class="rank gold">🥇</span>';
+  if (r === 2) return '<span class="rank silver">🥈</span>';
+  if (r === 3) return '<span class="rank bronze">🥉</span>';
+  return `<span class="rank">${r}</span>`;
+}
+
+// ─── Render Leaderboard ──────────────────────────────────────────────────────
+function renderLeaderboard() {
+  const tbody = document.getElementById('lbBody');
+  let html = '';
+  MODELS.forEach((m, i) => {
+    const barW = Math.round(m.score / 100 * 100);
+    const dimHtml = Object.entries(m.dims).map(([k,v]) => `
+      <div class="dim-cell">
+        <div class="dn">${k}</div>
+        <div class="dp ${pctClass(v)}">${v.toFixed(1)}<span class="unit">%</span></div>
+      </div>`).join('');
+
+    html += `
+      <tr data-idx="${i}" class="model-row">
+        <td>${rankLabel(m.rank)}</td>
+        <td>
+          <div class="model-name">${m.name}</div>
+          <div class="model-org">${m.org} · <span class="badge">${m.backend}</span></div>
+        </td>
+        <td>
+          <div class="score-wrap">
+            <span class="score-num">${m.score}</span>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:0%" data-w="${barW}%"></div></div>
+            <span class="score-ci">±${m.ci}</span>
+          </div>
+        </td>
+        <td class="num">${m.raw}<span style="color:var(--text-3);font-size:0.72rem">/1200</span></td>
+        <td class="num">${m.latency}s</td>
+        <td class="num">${m.tokens >= 1000 ? (m.tokens/1000).toFixed(1)+'k' : m.tokens}</td>
+        <td style="text-align:center">
+          <svg class="arrow-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 6l4 4 4-4"/>
+          </svg>
+        </td>
+      </tr>
+      <tr class="expand-row" data-idx="${i}">
+        <td colspan="7">
+          <div class="expand-inner">
+            <div class="dim-grid">${dimHtml}</div>
+            <div class="perf-row" style="margin-top:1rem">
+              <div class="perf-item">平均延迟 <strong>${m.latency}s</strong></div>
+              <div class="perf-item">平均 Token <strong>${m.tokens.toLocaleString()}</strong></div>
+              <div class="perf-item">原始分 <strong>${m.raw}/1200</strong></div>
+              <div class="perf-item">95% CI <strong>±${m.ci} pts</strong></div>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+  });
+  tbody.innerHTML = html;
+
+  // Animate bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.score-bar-fill').forEach(el => {
+      setTimeout(() => { el.style.width = el.dataset.w; }, 100);
+    });
+  });
+
+  // Row click
+  document.querySelectorAll('.model-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const idx = row.dataset.idx;
+      const expRow = document.querySelector(`.expand-row[data-idx="${idx}"]`);
+      row.classList.toggle('expanded');
+      expRow.classList.toggle('open');
+    });
+  });
+}
+
+// ─── Render Dimension Table ───────────────────────────────────────────────────
+function renderDimTable() {
+  const tbody = document.getElementById('dimBody');
+  const dimAvg = {};
+  DIM_INFO.forEach(d => {
+    const vals = MODELS.map(m => m.dims[d.name] || 0);
+    dimAvg[d.name] = vals.reduce((a,b)=>a+b,0)/vals.length;
+  });
+  tbody.innerHTML = DIM_INFO.map(d => `
+    <tr>
+      <td><strong>${d.name}</strong><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.1rem">${d.full}</div></td>
+      <td>${d.tasks}</td>
+      <td style="font-size:0.82rem;color:var(--text-2)">${d.desc}</td>
+      <td class="num ${pctClass(dimAvg[d.name])}" style="font-weight:700">${dimAvg[d.name].toFixed(1)}%</td>
+    </tr>`).join('');
+}
+
+// ─── Radar Chart ─────────────────────────────────────────────────────────────
+const DIM_LABELS = ["代码迁移","缺陷发现","代码改写","中国合规","迁移风险","安全权限","架构","性能","现代生态"];
+const RADAR_COLORS = [
+  ['rgba(24,24,27,0.8)','rgba(24,24,27,0.1)'],
+  ['rgba(37,99,235,0.8)','rgba(37,99,235,0.1)'],
+  ['rgba(220,38,38,0.7)','rgba(220,38,38,0.08)'],
+];
+let selectedModels = [0]; // indices into MODELS
+
+function renderRadarControls() {
+  const c = document.getElementById('radarControls');
+  c.innerHTML = MODELS.map((m,i) => `
+    <button class="radar-model-btn ${selectedModels.includes(i)?'active':''}" data-idx="${i}">${m.name}</button>`).join('');
+  c.querySelectorAll('.radar-model-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      if (selectedModels.includes(idx)) {
+        if (selectedModels.length > 1) selectedModels = selectedModels.filter(x=>x!==idx);
+      } else {
+        if (selectedModels.length < 3) selectedModels.push(idx);
+        else { selectedModels.shift(); selectedModels.push(idx); }
+      }
+      renderRadarControls();
+      drawRadar();
+    });
+  });
+}
+
+function drawRadar() {
+  const canvas = document.getElementById('radarChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = 380, H = 380;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  const isDark = document.body.classList.contains('dark');
+  const n = DIM_LABELS.length, cx = W/2, cy = H/2, R = 130;
+  const step = 2*Math.PI/n, start = -Math.PI/2;
+  const gridCol = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+  const textCol = isDark ? '#71717a' : '#71717a';
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid rings
+  for (let ring=1; ring<=5; ring++) {
+    const r = R*ring/5;
+    ctx.beginPath();
+    for (let i=0;i<=n;i++) { const a=start+step*(i%n),x=cx+r*Math.cos(a),y=cy+r*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=gridCol; ctx.lineWidth=1; ctx.stroke();
+    if (ring===5) { ctx.fillStyle=textCol; ctx.font=`10px -apple-system,sans-serif`; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillText('100%',cx-R-4,cy); }
+  }
+  // Axes
+  for (let i=0;i<n;i++) { const a=start+step*i; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); ctx.strokeStyle=gridCol; ctx.lineWidth=1; ctx.stroke(); }
+
+  // Model polygons
+  selectedModels.forEach((mIdx, ci) => {
+    const m = MODELS[mIdx];
+    const [stroke, fill] = RADAR_COLORS[ci % RADAR_COLORS.length];
+    ctx.beginPath();
+    DIM_LABELS.forEach((lbl, i) => {
+      const a = start+step*i, v = (m.dims[lbl]||0)/100;
+      const x = cx+R*v*Math.cos(a), y = cy+R*v*Math.sin(a);
+      i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill();
+    ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke();
+    DIM_LABELS.forEach((lbl, i) => {
+      const a = start+step*i, v = (m.dims[lbl]||0)/100;
+      ctx.beginPath(); ctx.arc(cx+R*v*Math.cos(a), cy+R*v*Math.sin(a), 3.5, 0, 2*Math.PI);
+      ctx.fillStyle=stroke; ctx.fill();
+    });
+  });
+
+  // Labels
+  ctx.fillStyle = textCol; ctx.font = `bold 11px -apple-system,sans-serif`;
+  DIM_LABELS.forEach((lbl, i) => {
+    const a = start+step*i, lx = cx+(R+22)*Math.cos(a), ly = cy+(R+22)*Math.sin(a);
+    ctx.textBaseline = ly < cy-8 ? 'bottom' : ly > cy+8 ? 'top' : 'middle';
+    ctx.textAlign = lx < cx-8 ? 'right' : lx > cx+8 ? 'left' : 'center';
+    ctx.fillText(lbl, lx, ly);
+  });
+}
+
+// ─── Dark Mode ───────────────────────────────────────────────────────────────
+document.getElementById('darkBtn').addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark'));
+  drawRadar();
+});
+if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
+
+// ─── Fade In ─────────────────────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+renderLeaderboard();
+renderDimTable();
+renderRadarControls();
+drawRadar();
+</script>
+</body>
+</html>
