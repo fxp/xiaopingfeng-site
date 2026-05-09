@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>claude-code-migration — Claude 全生态迁移工具集</title>
+<meta name="description" content="从 Claude Code / Chat / Cowork 迁移到 Hermes / OpenCode / Cursor / Windsurf / neuDrive 的 Python 包 + Claude Code Skill 套件">
+<link rel="canonical" href="https://fxp.github.io/claude-code-migration/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0f'/%3E%3Ctext x='32' y='42' font-family='ui-monospace,monospace' font-size='34' font-weight='700' text-anchor='middle' fill='%23d97757'%3E%E2%8C%98%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fxp.github.io/claude-code-migration/">
+<meta property="og:title" content="claude-code-migration — Claude 全生态迁移工具集">
+<meta property="og:description" content="先备份，再迁移。通过 Workspace Dossier 把 Claude Code / Chat / Cowork 跨平台搬到 Hermes / OpenCode / Cursor / Windsurf。">
+<meta property="og:site_name" content="claude-code-migration">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="claude-code-migration — Claude 全生态迁移工具集">
+<meta name="twitter:description" content="先备份，再迁移。通过 Workspace Dossier 把 Claude Code / Chat / Cowork 跨平台搬到 Hermes / OpenCode / Cursor / Windsurf。">
+<style>
+  :root {
+    --bg: #0b0b0f;
+    --bg-soft: #15151c;
+    --bg-card: #1a1a22;
+    --border: rgba(255,255,255,0.08);
+    --border-soft: rgba(255,255,255,0.04);
+    --text: #e6e6ef;
+    --text-dim: #9a9aa8;
+    --text-mute: #6a6a78;
+    --accent: #d97757;
+    --accent-soft: rgba(217,119,87,0.12);
+    --green: #5dd39e;
+    --yellow: #e9c46a;
+    --mono: ui-monospace, "SF Mono", Monaco, Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: var(--mono); font-size: 13px; }
+  code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+  pre { background: var(--bg-card); padding: 14px 18px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+  pre code { background: transparent; padding: 0; color: var(--text); }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    padding: 100px 0 70px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: 50%;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, var(--accent-soft) 0%, transparent 60%);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    margin-bottom: 28px;
+    background: var(--bg-soft);
+  }
+  .logo-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+  .hero h1 {
+    font-size: 56px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .hero h1 .gradient {
+    background: linear-gradient(135deg, var(--accent) 0%, #f4a672 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .tagline {
+    font-size: 20px;
+    color: var(--text-dim);
+    max-width: 680px;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    transition: all 120ms;
+    text-decoration: none;
+  }
+  .btn:hover { border-color: var(--text-mute); text-decoration: none; transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #0b0b0f; font-weight: 600; }
+  .btn-primary:hover { background: #e8875f; border-color: #e8875f; }
+  .btn-icon { font-size: 16px; }
+
+  .hero-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin: 28px 0 12px;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    min-width: 180px;
+  }
+  .flow-num {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .flow-label {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .flow-step code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 2px 0;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    color: var(--text-mute);
+  }
+  @media (max-width: 640px) {
+    .flow-arrow { transform: rotate(90deg); margin: 0 auto; }
+    .hero-flow { flex-direction: column; align-items: stretch; }
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+  }
+  .stat-num { font-size: 28px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .stat-label { font-size: 13px; color: var(--text-mute); margin-top: 4px; font-family: var(--mono); }
+
+  /* Section */
+  section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+  .section-header { margin-bottom: 48px; }
+  .section-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+  .section-title {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .section-sub { color: var(--text-dim); font-size: 16px; max-width: 640px; }
+
+  /* Problem */
+  .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .problem-card {
+    padding: 24px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .problem-card .icon { font-size: 22px; margin-bottom: 12px; }
+  .problem-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .problem-card p { color: var(--text-dim); font-size: 14px; }
+
+  /* Ownership · before / after contrast */
+  .own-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 22px;
+    align-items: stretch;
+    margin-bottom: 32px;
+  }
+  .own-col {
+    padding: 24px 26px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .own-col-before {
+    border-color: rgba(200, 80, 80, 0.35);
+    background: rgba(200, 80, 80, 0.04);
+  }
+  .own-col-after {
+    border-color: rgba(217, 119, 87, 0.45);
+    background: rgba(217, 119, 87, 0.05);
+  }
+  .own-label {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text);
+  }
+  .own-col-before .own-label { color: #c85050; }
+  .own-col-after .own-label  { color: var(--accent); }
+  .own-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .own-list li {
+    padding-left: 14px;
+    position: relative;
+  }
+  .own-list li::before {
+    content: "·";
+    position: absolute;
+    left: 2px;
+    top: -2px;
+    font-size: 18px;
+    color: var(--text-mute);
+  }
+  .own-list code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px;
+    border-radius: 3px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+  .own-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: var(--accent);
+    opacity: 0.6;
+    font-weight: 300;
+  }
+  .own-manifesto {
+    padding: 20px 24px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    max-width: 860px;
+  }
+  .own-manifesto strong { color: var(--accent); }
+  @media (max-width: 820px) {
+    .own-grid { grid-template-columns: 1fr; }
+    .own-arrow { transform: rotate(90deg); padding: 4px 0; }
+  }
+
+  /* How it works — three step cards, stack vertically by default,
+     go side-by-side only on very wide viewports where each card still
+     gets ~360px+ of breathing room. Default to stacked because the
+     horizontal flow metaphor is already covered by .hero-flow strip. */
+  .hiw-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .hiw-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    column-gap: 28px;
+    row-gap: 16px;
+    align-items: start;
+  }
+  .hiw-card > h3 {
+    grid-column: 2;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+    align-self: center;
+  }
+  .hiw-badge {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    padding: 8px 14px;
+    border-radius: 6px;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .hiw-io {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;    /* crucial: prevents grid child from overflowing */
+  }
+  .hiw-io-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .hiw-io-tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .hiw-io code,
+  .hiw-cmd code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+    padding: 2px 7px;
+    border-radius: 4px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+  .hiw-cmd {
+    grid-column: 2;
+    margin: 4px 0 0 0;
+    padding: 10px 14px;
+    background: rgba(217, 119, 87, 0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+  }
+  .hiw-cmd code {
+    background: transparent;
+    padding: 0;
+    color: var(--accent);
+  }
+  /* The arrow between cards, shown as a subtle vertical chevron */
+  .hiw-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--accent);
+    opacity: 0.5;
+    line-height: 1;
+    transform: rotate(90deg);
+    margin: -8px 0;
+  }
+  .hiw-note {
+    margin-top: 26px;
+    padding: 16px 20px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .hiw-note code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  /* Narrow viewports: collapse the badge column, stack everything */
+  @media (max-width: 720px) {
+    .hiw-card {
+      grid-template-columns: 1fr;
+      padding: 20px 22px;
+      row-gap: 12px;
+    }
+    .hiw-badge {
+      grid-row: auto;
+      grid-column: 1;
+      width: auto;
+      align-self: flex-start;
+    }
+    .hiw-card > h3,
+    .hiw-io,
+    .hiw-cmd {
+      grid-column: 1;
+    }
+  }
+
+  /* Skills grid */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .skill-card {
+    display: block;
+    padding: 24px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all 150ms;
+    text-decoration: none;
+    color: inherit;
+  }
+  .skill-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-card);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .skill-card .hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .skill-card code {
+    font-size: 14px;
+    padding: 3px 8px;
+    background: var(--bg-card);
+    color: var(--accent);
+  }
+  .skill-card:hover code { background: var(--accent-soft); }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(93,211,158,0.12);
+    color: var(--green);
+    border: 1px solid rgba(93,211,158,0.2);
+  }
+  .badge.meta { background: rgba(233,196,106,0.12); color: var(--yellow); border-color: rgba(233,196,106,0.2); }
+  .skill-card p { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
+
+  /* Targets grid */
+  .targets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .target {
+    padding: 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .target-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .target-desc { font-size: 12px; color: var(--text-mute); font-family: var(--mono); }
+
+  /* Quick start */
+  .qs-block { position: relative; }
+  .qs-block pre { padding-right: 60px; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--text-mute); }
+
+  /* Ecosystem SVG Diagram */
+  .eco-diagram {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 12px;
+    overflow-x: auto;
+  }
+  .eco-diagram svg { width: 100%; height: auto; min-width: 760px; display: block; }
+
+  /* Lane labels */
+  .eco-lane-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    fill: var(--text-mute);
+    font-weight: 500;
+  }
+
+  /* Nodes */
+  .eco-rect {
+    fill: var(--bg-card);
+    stroke: var(--border);
+    stroke-width: 1;
+    transition: all 150ms;
+  }
+  .eco-source-sub .eco-rect { stroke: rgba(217,119,87,0.25); }
+  .eco-target .eco-rect { stroke: rgba(230,230,239,0.15); }
+  .eco-node:hover .eco-rect { stroke: var(--accent); stroke-width: 1.5; }
+
+  /* Source 子节点 hover */
+  .eco-source-sub:hover .eco-rect { stroke: var(--accent); stroke-width: 1.5; }
+
+  /* 强调型 sub 标签（Code 的 "47 种数据类型"） */
+  .eco-sub-strong {
+    fill: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    dominant-baseline: middle;
+  }
+
+  /* [分组] Claude.ai 大容器 */
+  .eco-claudeai-rect {
+    fill: rgba(217,119,87,0.05);
+    stroke: rgba(217,119,87,0.3);
+    stroke-width: 1.5;
+    stroke-dasharray: 6,4;
+  }
+  .eco-claudeai-label {
+    fill: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  /* Claude Code 在 Claude.ai 容器内，强调主源 */
+  .eco-rect-source-primary {
+    fill: var(--bg-card);
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    transition: all 150ms;
+  }
+  .eco-source-sub:hover .eco-rect-source-primary { stroke-width: 2.5; }
+
+  /* [分组] Other Agents 反向源容器 */
+  .eco-agent-source-rect {
+    fill: rgba(230,230,239,0.03);
+    stroke: rgba(230,230,239,0.2);
+    stroke-width: 1.5;
+    stroke-dasharray: 6,4;
+  }
+  .eco-agent-source-label {
+    fill: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  /* 紧凑标题/副标题（用于小框） */
+  .eco-title-sm {
+    fill: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    dominant-baseline: middle;
+  }
+  .eco-sub-sm {
+    fill: var(--text-mute);
+    font-size: 10.5px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+
+  /* [中央] Canonical IR 卡片 */
+  .eco-rect-ir {
+    fill: #1f1a17;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    filter: brightness(1.05);
+  }
+  .eco-ir-title {
+    fill: var(--accent);
+    font-size: 22px;
+    font-weight: 800;
+    font-family: var(--mono);
+    letter-spacing: -0.01em;
+  }
+  .eco-ir-sub {
+    fill: var(--text-dim);
+    font-size: 11.5px;
+    font-family: var(--mono);
+  }
+  .eco-ir-field {
+    fill: var(--text);
+    font-size: 12.5px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+
+  /* [分组] Targets 容器 */
+  .eco-targets-rect {
+    fill: rgba(217,119,87,0.04);
+    stroke: rgba(217,119,87,0.25);
+    stroke-width: 1.5;
+    stroke-dasharray: 6,4;
+  }
+  .eco-targets-label {
+    fill: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* parse()/apply() 中轴标签 */
+  .eco-edge-label-center {
+    fill: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  /* [中间] neuDrive Hub */
+  .eco-rect-hub {
+    fill: #1f1a17;
+    stroke: var(--accent);
+    stroke-width: 2;
+    opacity: 0.92;
+  }
+  .eco-hub-title {
+    fill: var(--accent);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    dominant-baseline: middle;
+  }
+  .eco-hub-sub {
+    fill: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+  .eco-hub-badge {
+    fill: var(--accent);
+    opacity: 0.85;
+  }
+  .eco-hub-badge-text {
+    fill: #0b0b0f;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  /* [中间] 本项目 claude-code-migration — 主角，最大最显眼 */
+  .eco-rect-this-repo {
+    fill: #1f1a17;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    filter: brightness(1.05);
+  }
+  .eco-repo-emoji {
+    font-size: 26px;
+    dominant-baseline: middle;
+  }
+  .eco-repo-title {
+    fill: var(--accent);
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: -0.01em;
+    dominant-baseline: middle;
+  }
+  .eco-repo-sub {
+    fill: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    dominant-baseline: middle;
+  }
+  .eco-repo-skill {
+    fill: var(--text-dim);
+    font-size: 11.5px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+  .eco-repo-badge {
+    fill: var(--accent);
+  }
+  .eco-repo-badge-text {
+    fill: #0b0b0f;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: var(--mono);
+    letter-spacing: 0.03em;
+  }
+
+  .eco-emoji, .eco-hub-emoji {
+    font-size: 20px;
+    dominant-baseline: middle;
+  }
+  .eco-hub-emoji { font-size: 26px; }
+
+  .eco-title {
+    fill: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    dominant-baseline: middle;
+  }
+  .eco-sub {
+    fill: var(--text-mute);
+    font-size: 11px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+  .eco-hub-title {
+    fill: var(--accent);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    dominant-baseline: middle;
+  }
+  .eco-hub-sub {
+    fill: var(--text-dim);
+    font-size: 11px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+
+  .eco-target-title {
+    fill: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    dominant-baseline: middle;
+  }
+  .eco-target-sub {
+    fill: var(--text-mute);
+    font-size: 10px;
+    font-family: var(--mono);
+    dominant-baseline: middle;
+  }
+  .eco-target-ghost .eco-rect { fill: transparent; }
+  .eco-target-ghost .eco-target-title { fill: var(--text-mute); font-size: 20px; }
+
+  /* Connections */
+  .eco-line {
+    fill: none;
+    stroke: rgba(230,230,239,0.2);
+    stroke-width: 1.5;
+  }
+  .eco-line-accent {
+    fill: none;
+    stroke: rgba(217,119,87,0.5);
+    stroke-width: 1.8;
+  }
+  .eco-line-accent-bold {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 3px rgba(217,119,87,0.3));
+  }
+
+  /* Edge labels */
+  .eco-edge-label {
+    fill: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-anchor: middle;
+  }
+  .eco-edge-strong {
+    fill: var(--accent);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+
+  /* Legend */
+  .eco-legend {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 22px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+  }
+  .eco-legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .eco-legend-item strong { color: var(--text); }
+  .eco-legend-item code {
+    font-size: 12.5px;
+    background: var(--bg-card);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+  .eco-legend-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+    box-shadow: 0 0 6px rgba(217,119,87,0.6);
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    color: var(--text-mute);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer a { color: var(--text-dim); }
+  footer a:hover { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero { padding: 60px 0 40px; }
+    .hero h1 { font-size: 36px; }
+    .hero .tagline { font-size: 17px; }
+    .section-title { font-size: 26px; }
+    section { padding: 50px 0; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="logo">
+      <span class="logo-dot"></span>
+      <span>claude-code-migration · v1.0.0</span>
+    </div>
+    <h1>当你担心 Claude 账号被封<br><span class="gradient">先备份，再迁移</span></h1>
+    <p class="tagline">
+      通过 <strong>Workspace Dossier（项目档案）</strong>，任意 Agent 平台之间互相迁移：
+      <strong>Claude Code / Chat / Cowork / Cursor / OpenCode / Hermes / Windsurf</strong> 两两互通。
+    </p>
+    <div class="hero-flow">
+      <div class="flow-step"><span class="flow-num">①</span><span class="flow-label">指项目</span><code>--project &lt;dir&gt;</code></div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="flow-num">②</span><span class="flow-label">导出档案</span><code>ccm export</code></div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="flow-num">③</span><span class="flow-label">生成目标</span><code>ccm apply --target &lt;agent&gt;</code></div>
+    </div>
+    <div class="cta-row">
+      <a href="#quickstart" class="btn btn-primary">
+        <span class="btn-icon">→</span>
+        开始迁移
+      </a>
+      <a href="#how-it-works" class="btn">
+        <span class="btn-icon">⚙</span>
+        工作原理（3 步）
+      </a>
+      <a href="https://github.com/fxp/claude-code-migration" class="btn">
+        <span class="btn-icon">★</span>
+        GitHub
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">7</div><div class="stat-label">SOURCES (源)</div></div>
+      <div><div class="stat-num">4</div><div class="stat-label">TARGETS (目标)</div></div>
+      <div><div class="stat-num">60+</div><div class="stat-label">数据类型覆盖</div></div>
+      <div><div class="stat-num">N+M</div><div class="stat-label">VIA WORKSPACE DOSSIER</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">PROBLEM</span>
+      <h2 class="section-title">你的 Claude 资产比想象中多</h2>
+      <p class="section-sub">多年积累的对话、定制 Agent、项目记忆、MCP 配置、Skill 库——一次风控就可能全部失联。</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">📝</div>
+        <h3>CLAUDE.md + 项目记忆</h3>
+        <p>60+ 种数据：agents、skills、hooks、MCP、<strong>会话正文 + 子 agent 轨迹 + tool-results 侧车</strong>、shell 快照、file-history、每项目 state。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">💬</div>
+        <h3>Claude.ai 对话</h3>
+        <p>N 年的对话、Projects、Artifacts、附件——官方 ZIP 导出后还需要解析转换。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">👥</div>
+        <h3>Cowork 团队空间</h3>
+        <p>共享项目、团队 Skills、Connected Tools、成员归属——admin 导出后才是开始。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🔐</div>
+        <h3>嵌入的密钥</h3>
+        <p>settings.local.json、mcpServers headers 里的 Bearer Token 不能明文外带。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ownership">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">OWNERSHIP</span>
+      <h2 class="section-title">Workspace 本应属于你，而不是 Agent</h2>
+      <p class="section-sub">
+        你跟 Claude Code 工作一年攒下的东西——项目记忆、定制 agents、积累的 skills、配置好的 MCP、shell 环境——
+        被锁死在 <code>~/.claude/</code> 的专有格式里。账号被封、Anthropic 改价、想换到 Cursor / Hermes / Codex？
+        那一刻你会发现：<strong>你一直在为 Agent 工作，而不是 Agent 为你工作。</strong>
+      </p>
+    </div>
+
+    <div class="own-grid">
+      <div class="own-col own-col-before">
+        <div class="own-label">❌ 数据绑定厂商</div>
+        <ul class="own-list">
+          <li><code>~/.claude/projects/*/*.jsonl</code> · 只有 Claude Code 能读</li>
+          <li>settings.json hooks · 换 Agent 就得重写</li>
+          <li>MCP 配置 · 每家 Agent 一套 schema</li>
+          <li>Skills · SKILL.md 格式各家有差异</li>
+          <li>密钥 · 散落在 headers 和 env 里</li>
+        </ul>
+      </div>
+
+      <div class="own-arrow">→</div>
+
+      <div class="own-col own-col-after">
+        <div class="own-label">✅ 数据归你所有</div>
+        <ul class="own-list">
+          <li>一份 <code>dossier.json</code> · 存在你选的磁盘、你的云盘</li>
+          <li>纯 JSON schema · 厂商中立，任何人能读写</li>
+          <li>60+ 数据类型归一 · session 正文 / memory / skills / MCP / hooks</li>
+          <li>密钥 auto-redact + 0600 权限 · 给哪个 Agent 用你说了算</li>
+          <li>同一份档案 · 生成 Hermes / OpenCode / Cursor / Windsurf 配置</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="own-manifesto">
+      <strong>Workspace Dossier（项目档案）</strong> ——
+      把你跟 Agent 的交互过程从"工具内部状态"提升为"你的个人数据资产"。
+      未来要换 Codex？写一个 adapter。飞书接入？写一个 adapter。
+      你的 workspace 保持不变，搬家的是 Agent，不是你。
+    </p>
+  </div>
+</section>
+
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">HOW IT WORKS</span>
+      <h2 class="section-title">3 步走 · 与你的心智模型对齐</h2>
+      <p class="section-sub">添加项目 → 导出为 Workspace Dossier（项目档案）→ 生成目标 Agent 项目。每步有独立产物，可审计、可复用、可换 target。</p>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-badge">① ADD</div>
+        <h3>告诉工具项目在哪</h3>
+        <div class="hiw-io">
+          <div class="hiw-io-row"><span class="hiw-io-tag">INPUT</span><code>--project /path/to/your-project</code></div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">PROCESS</span>定位 Claude Code 本地数据（项目目录 + <code>~/.claude/</code>）</div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">OUTPUT</span>无副作用，只是参数</div>
+        </div>
+      </div>
+      <div class="hiw-arrow">→</div>
+      <div class="hiw-card">
+        <div class="hiw-badge">② EXPORT</div>
+        <h3>自动识别 + 导出为项目档案</h3>
+        <div class="hiw-io">
+          <div class="hiw-io-row"><span class="hiw-io-tag">INPUT</span>Claude Code / Cursor / OpenCode / Hermes / Windsurf / Chat ZIP / Cowork ZIP</div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">PROCESS</span>扫描 60+ 种数据类型 · 归一到 <strong>Workspace Dossier</strong> · 敏感数据检测</div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">OUTPUT</span><code>dossier.json</code>（纯 JSON，密钥自动 redact，权限 0600）</div>
+        </div>
+        <div class="hiw-cmd"><code>ccm export --project &lt;dir&gt; --out dossier.json</code></div>
+      </div>
+      <div class="hiw-arrow">→</div>
+      <div class="hiw-card">
+        <div class="hiw-badge">③ APPLY</div>
+        <h3>生成目标 Agent 项目</h3>
+        <div class="hiw-io">
+          <div class="hiw-io-row"><span class="hiw-io-tag">INPUT</span><code>dossier.json</code> + <code>--target &lt;hermes|opencode|cursor|windsurf&gt;</code></div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">PROCESS</span>适配器按目标格式渲染（<code>.hermes/</code> / <code>.cursor/</code> / <code>AGENTS.md</code> / <code>mcp_config.json</code>）</div>
+          <div class="hiw-io-row"><span class="hiw-io-tag">OUTPUT</span>开箱即用的目标项目目录（默认 staging，不动真实项目）</div>
+        </div>
+        <div class="hiw-cmd"><code>ccm apply --dossier dossier.json --target hermes</code></div>
+      </div>
+    </div>
+    <p class="hiw-note">
+      同一份 <code>dossier.json</code> 可以反复 <code>apply</code> 到不同 target，不用重扫 —— 大项目的 session JSONL 常常几十 MB。
+      想一把梭？<code>ccm migrate</code> 把 ② + ③ 串起来一次跑完。
+    </p>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">SKILLS</span>
+      <h2 class="section-title">6 个 Skill，落在 3 步的不同位置</h2>
+      <p class="section-sub">
+        <strong>② Export</strong>：<code>/chat-migration</code>、<code>/cowork-migration</code>（处理 ZIP 源）。
+        <strong>③ Apply</strong>：<code>/code-migration</code>（多目标）、<code>/hermes-migration</code>（Hermes 专用）、<code>/neudrive-sync</code>（推 Hub）。
+        <strong>一键编排</strong>：<code>/claude-full-migration</code>。无 Python 环境时用 skill，有就用 <code>ccm</code>。
+      </p>
+    </div>
+    <div class="skills-grid">
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/claude-full-migration/SKILL.md">
+        <div class="hdr"><code>/claude-full-migration</code><span class="badge meta">META</span></div>
+        <p>一键入口。自动发现数据源，规划执行计划，编排下面 5 个 skill，断点续跑，汇总审计。</p>
+      </a>
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/code-migration/SKILL.md">
+        <div class="hdr"><code>/code-migration</code><span class="badge">v1.0</span></div>
+        <p>Claude Code → <strong>多目标</strong>：Hermes / OpenCode / Cursor / Windsurf。同一份扫描数据，4 种目标格式。</p>
+      </a>
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/hermes-migration/SKILL.md">
+        <div class="hdr"><code>/hermes-migration</code><span class="badge">v4.0</span></div>
+        <p>Claude Code → Hermes 专用，60+ 种数据类型全量扫描，含 SQLite FTS5 会话导入 + Vault 密钥管理。</p>
+      </a>
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/chat-migration/SKILL.md">
+        <div class="hdr"><code>/chat-migration</code><span class="badge">v1.0</span></div>
+        <p>Claude.ai 官方 ZIP 解析。处理 content[] 结构化消息、Artifacts 去重、附件 URL 过期下载、分支对话重建。</p>
+      </a>
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/cowork-migration/SKILL.md">
+        <div class="hdr"><code>/cowork-migration</code><span class="badge">v1.0</span></div>
+        <p>Team workspace 导出，按成员分目录，团队密钥扫描，可选 Chrome MCP 补齐 Skills / Connectors。</p>
+      </a>
+      <a class="skill-card" href="https://github.com/fxp/claude-code-migration/blob/main/skills/neudrive-sync/SKILL.md">
+        <div class="hdr"><code>/neudrive-sync</code><span class="badge">v1.0</span></div>
+        <p>推送到 neuDrive 统一枢纽。AES-256-GCM Vault，4 级信任，MCP 接入让多 Agent 共享同一份身份+记忆+技能。</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="targets">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">TARGETS</span>
+      <h2 class="section-title">支持的目标平台</h2>
+      <p class="section-sub">每个目标有自己的数据格式、MCP 方言、密钥机制。我们都处理好了。</p>
+    </div>
+    <div class="targets-grid">
+      <div class="target"><div class="target-name">Hermes Agent</div><div class="target-desc">Nous Research · glm-5</div></div>
+      <div class="target"><div class="target-name">OpenCode</div><div class="target-desc">sst/opencode · opencode.json</div></div>
+      <div class="target"><div class="target-name">Cursor</div><div class="target-desc">.cursor/rules/*.mdc</div></div>
+      <div class="target"><div class="target-name">Windsurf</div><div class="target-desc">~/.codeium/windsurf/</div></div>
+      <div class="target"><div class="target-name">neuDrive Hub</div><div class="target-desc">agi-bar/neuDrive · 对话枢纽</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">QUICK START</span>
+      <h2 class="section-title">跑起来 · 按 3 步或一把梭</h2>
+      <p class="section-sub">Python 包（<code>ccm</code>）可脚本化、可测试、可 CI；Skills 版本无需 Python 环境，在 Claude Code 里直接 <code>/claude-full-migration</code>。</p>
+    </div>
+
+    <h3 style="margin-bottom:12px;font-size:18px;color:var(--accent);">方式 A · Python 包（推荐）</h3>
+    <div class="qs-block">
+      <pre><code>pip install claude-code-migration
+# 或 pipx install claude-code-migration (全局 CLI 隔离)</code></pre>
+    </div>
+
+    <p style="color:var(--text-dim);margin:14px 0 10px;"><strong>3 步走</strong> — 添加项目 → 导出为档案 → 按目标生成：</p>
+    <div class="qs-block">
+      <pre><code># ① 告诉工具项目在哪 + ② 自动识别 60+ 种数据 → Workspace Dossier（项目档案）
+ccm export --project /path/to/your-project --out ./ccm-output/dossier.json
+
+# ③ 同一份档案生成任意目标（可反复跑，不必重扫）
+ccm apply --dossier ./ccm-output/dossier.json --target hermes   --out ./ccm-output
+ccm apply --dossier ./ccm-output/dossier.json --target opencode --out ./ccm-output
+ccm apply --dossier ./ccm-output/dossier.json --target cursor,windsurf --out ./ccm-output</code></pre>
+    </div>
+
+    <p style="color:var(--text-dim);margin:14px 0 10px;">一次跑完（<code>export + apply</code> 打包）：</p>
+    <div class="qs-block">
+      <pre><code>ccm migrate --project /path/to/your-project \
+            --target hermes,opencode,cursor,windsurf \
+            --out ./ccm-output</code></pre>
+    </div>
+
+    <p style="color:var(--text-dim);margin:14px 0 10px;">🆕 <strong>任意 source → 任意 target</strong>（v0.2.0+）：</p>
+    <div class="qs-block">
+      <pre><code># Cursor → OpenCode（直接互迁，无需经过 Claude）
+ccm migrate --source cursor --project ~/my-cursor-proj \
+            --target opencode --out ./ccm-output
+
+# Hermes → Windsurf
+ccm migrate --source hermes --target windsurf --out ./ccm-output
+
+# OpenCode → Cursor
+ccm migrate --source opencode --project ~/oc-proj \
+            --target cursor --out ./ccm-output</code></pre>
+    </div>
+
+    <p style="color:var(--text-dim);margin:14px 0 10px;">可选：加上 Claude.ai 官方导出 ZIP：</p>
+    <div class="qs-block">
+      <pre><code>ccm migrate --project /path/to/your-project \
+            --cowork-zip ~/Downloads/claude-data-export.zip \
+            --target hermes,opencode --out ./ccm-output</code></pre>
+    </div>
+
+    <p style="color:var(--text-dim);margin:14px 0 10px;">推送到 neuDrive Hub（走 legacy scan.json 格式）：</p>
+    <div class="qs-block">
+      <pre><code>ccm scan     --project /path/to/your-project --out ./ccm-output/scan.json
+ccm push-hub --scan   ./ccm-output/scan.json --token $NEUDRIVE_TOKEN</code></pre>
+    </div>
+
+    <h3 style="margin: 40px 0 12px;font-size:18px;color:var(--text-dim);">方式 B · Claude Code Skills（无 Python 环境）</h3>
+    <div class="qs-block">
+      <pre><code>git clone https://github.com/fxp/claude-code-migration
+mkdir -p ~/.claude/skills
+cp -r claude-code-migration/skills/* ~/.claude/skills/</code></pre>
+    </div>
+    <p style="color:var(--text-dim);margin:14px 0 10px;">然后在 Claude Code 里：</p>
+    <div class="qs-block">
+      <pre><code>claude
+&gt; /claude-full-migration</code></pre>
+    </div>
+
+    <h3 style="margin: 40px 0 12px;font-size:17px;">推荐配 BigModel GLM-5</h3>
+    <p style="color:var(--text-dim);margin-bottom:8px;">
+      <strong>2000 万 tokens 免费额度</strong>，性能对标 Claude Opus / GPT-5。
+      <a href="https://open.bigmodel.cn/">注册 →</a>
+    </p>
+    <p style="color:var(--text-dim);margin-bottom:14px;">
+      Adapter 自动为每个目标生成对应 provider 配置（Hermes YAML / OpenCode JSON）。
+    </p>
+
+    <h3 style="margin: 40px 0 12px;font-size:17px;">测试</h3>
+    <p style="color:var(--text-dim);margin-bottom:14px;">
+      仓库含 45 个端到端测试（format-level 验证 + 真实子进程执行 + 任意 source → Dossier → 任意 target 互迁）：
+    </p>
+    <div class="qs-block">
+      <pre><code>pip install pytest
+pytest tests/             # 45 passed</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">ARCHITECTURE</span>
+      <h2 class="section-title">生态全景</h2>
+      <p class="section-sub">不做 N×M 点对点迁移。所有源 parse 到 <strong>Workspace Dossier</strong>（代码里叫 Canonical IR / CanonicalData），所有目标从同一份档案生成配置。新增任一 Agent 只需一个 parser 或 writer，自动获得和其他 Agent 的互通能力。</p>
+    </div>
+
+    <div class="eco-diagram">
+      <svg viewBox="0 0 1080 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Workspace Dossier-centric 架构图">
+        <defs>
+          <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#d97757"/>
+          </marker>
+          <radialGradient id="irGlow">
+            <stop offset="0%" stop-color="#d97757" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#d97757" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.4"/>
+          </filter>
+        </defs>
+
+        <!-- ─── Lane 标签 ─── -->
+        <text x="70" y="30" class="eco-lane-label" text-anchor="middle">SOURCES (N)</text>
+        <text x="540" y="30" class="eco-lane-label" text-anchor="middle">MIDDLE LAYER</text>
+        <text x="1010" y="30" class="eco-lane-label" text-anchor="middle">TARGETS (M)</text>
+
+        <!-- ═══════════════════════════════════════════════════════
+             LEFT: 7 SOURCES (parsers)
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- Claude.ai 组（Chat + Cowork + Code） -->
+        <g transform="translate(20,50)">
+          <rect width="240" height="230" rx="12" class="eco-claudeai-rect"/>
+          <text x="16" y="24" class="eco-claudeai-label">☁️ Claude.ai</text>
+
+          <g transform="translate(12,40)">
+            <rect width="216" height="52" rx="8" class="eco-rect"/>
+            <text x="16" y="22" class="eco-emoji">💬</text>
+            <text x="44" y="24" class="eco-title-sm">Chat</text>
+            <text x="44" y="42" class="eco-sub-sm">conversations.json</text>
+          </g>
+          <g transform="translate(12,102)">
+            <rect width="216" height="52" rx="8" class="eco-rect"/>
+            <text x="16" y="22" class="eco-emoji">👥</text>
+            <text x="44" y="24" class="eco-title-sm">Cowork</text>
+            <text x="44" y="42" class="eco-sub-sm">+ workspace_id</text>
+          </g>
+          <g transform="translate(12,164)">
+            <rect width="216" height="52" rx="8" class="eco-rect-source-primary"/>
+            <text x="16" y="22" class="eco-emoji">💻</text>
+            <text x="44" y="24" class="eco-title-sm">Claude Code</text>
+            <text x="44" y="42" class="eco-sub-sm">~/.claude/ · 60+ 种</text>
+          </g>
+        </g>
+
+        <!-- 其他 Agent 源（可反向迁移）-->
+        <g transform="translate(20,300)">
+          <rect width="240" height="240" rx="12" class="eco-agent-source-rect"/>
+          <text x="16" y="24" class="eco-agent-source-label">🔁 Other Agents (reverse)</text>
+
+          <g transform="translate(12,40)">
+            <rect width="216" height="40" rx="8" class="eco-rect"/>
+            <text x="14" y="26" class="eco-title-sm">✎ Cursor</text>
+            <text x="120" y="26" class="eco-sub-sm">.cursor/rules + mcp.json</text>
+          </g>
+          <g transform="translate(12,88)">
+            <rect width="216" height="40" rx="8" class="eco-rect"/>
+            <text x="14" y="26" class="eco-title-sm">◇ OpenCode</text>
+            <text x="120" y="26" class="eco-sub-sm">opencode.json</text>
+          </g>
+          <g transform="translate(12,136)">
+            <rect width="216" height="40" rx="8" class="eco-rect"/>
+            <text x="14" y="26" class="eco-title-sm">🔱 Hermes</text>
+            <text x="120" y="26" class="eco-sub-sm">state.db + memories/</text>
+          </g>
+          <g transform="translate(12,184)">
+            <rect width="216" height="40" rx="8" class="eco-rect"/>
+            <text x="14" y="26" class="eco-title-sm">⚡ Windsurf</text>
+            <text x="120" y="26" class="eco-sub-sm">.windsurfrules</text>
+          </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════
+             CENTER: Canonical IR
+             ═══════════════════════════════════════════════════════ -->
+
+        <circle cx="540" cy="310" r="180" fill="url(#irGlow)"/>
+
+        <!-- IR big hexagon-style card -->
+        <g transform="translate(380,180)">
+          <rect width="320" height="260" rx="16" class="eco-rect-ir" filter="url(#shadow)"/>
+          <text x="160" y="40" class="eco-ir-title" text-anchor="middle">⬡ Workspace Dossier</text>
+          <text x="160" y="60" class="eco-ir-sub" text-anchor="middle">项目档案 · src/canonical.py · v1.0.0</text>
+
+          <!-- Field list -->
+          <text x="20" y="95" class="eco-ir-field">▸ Identity / Memory / Rules</text>
+          <text x="20" y="117" class="eco-ir-field">▸ Projects / Documents</text>
+          <text x="20" y="139" class="eco-ir-field">▸ Conversations / Messages</text>
+          <text x="20" y="161" class="eco-ir-field">▸ Artifacts / Attachments</text>
+          <text x="20" y="183" class="eco-ir-field">▸ Skills / Agents</text>
+          <text x="20" y="205" class="eco-ir-field">▸ McpEndpoints / Plugins</text>
+          <text x="20" y="227" class="eco-ir-field">▸ Hooks / ScheduledTasks</text>
+
+          <rect x="100" y="240" width="120" height="20" rx="4" class="eco-hub-badge"/>
+          <text x="160" y="250" class="eco-hub-badge-text" text-anchor="middle" dominant-baseline="central">档案层 · N+M</text>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════
+             RIGHT: 4 TARGETS (writers / adapters)
+             ═══════════════════════════════════════════════════════ -->
+
+        <g transform="translate(820,60)">
+          <rect width="240" height="480" rx="12" class="eco-targets-rect"/>
+          <text x="16" y="24" class="eco-targets-label">⚙ Adapters (4)</text>
+
+          <g transform="translate(12,40)">
+            <rect width="216" height="80" rx="8" class="eco-rect"/>
+            <text x="16" y="28" class="eco-emoji">🔱</text>
+            <text x="50" y="30" class="eco-title-sm">Hermes Agent</text>
+            <text x="16" y="50" class="eco-sub-sm">config.yaml + state.db</text>
+            <text x="16" y="66" class="eco-sub-sm">SQLite FTS5 对话恢复</text>
+          </g>
+
+          <g transform="translate(12,130)">
+            <rect width="216" height="80" rx="8" class="eco-rect"/>
+            <text x="16" y="28" class="eco-emoji">◇</text>
+            <text x="50" y="30" class="eco-title-sm">OpenCode</text>
+            <text x="16" y="50" class="eco-sub-sm">opencode.json</text>
+            <text x="16" y="66" class="eco-sub-sm">provider + mcp + skills</text>
+          </g>
+
+          <g transform="translate(12,220)">
+            <rect width="216" height="80" rx="8" class="eco-rect"/>
+            <text x="16" y="28" class="eco-emoji">✎</text>
+            <text x="50" y="30" class="eco-title-sm">Cursor</text>
+            <text x="16" y="50" class="eco-sub-sm">.cursor/rules/*.mdc</text>
+            <text x="16" y="66" class="eco-sub-sm">+ mcp.json</text>
+          </g>
+
+          <g transform="translate(12,310)">
+            <rect width="216" height="80" rx="8" class="eco-rect"/>
+            <text x="16" y="28" class="eco-emoji">⚡</text>
+            <text x="50" y="30" class="eco-title-sm">Windsurf</text>
+            <text x="16" y="50" class="eco-sub-sm">.windsurfrules</text>
+            <text x="16" y="66" class="eco-sub-sm">+ mcp_config.json (serverUrl)</text>
+          </g>
+
+          <g class="eco-node eco-target-ghost" transform="translate(12,400)">
+            <rect width="216" height="68" rx="8" class="eco-rect" stroke-dasharray="4,3"/>
+            <text x="108" y="32" class="eco-target-title" text-anchor="middle">+ 更多</text>
+            <text x="108" y="52" class="eco-target-sub" text-anchor="middle">加 1 个 writer 即可覆盖</text>
+          </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════
+             连接线：Sources → IR (multi-incoming) + IR → Targets (multi-outgoing)
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- Sources → IR (7 条箭头汇聚到中心) -->
+        <path d="M 260 92   Q 320 180, 380 250" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 260 152  Q 320 200, 380 275" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 260 214  Q 320 240, 380 300" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+
+        <path d="M 260 360  Q 320 340, 380 320" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 260 408  Q 320 380, 380 345" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 260 456  Q 320 420, 380 370" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 260 504  Q 320 460, 380 395" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+
+        <text x="320" y="320" class="eco-edge-label-center" text-anchor="middle">parse()</text>
+
+        <!-- IR → Targets (4 条箭头发散) -->
+        <path d="M 700 240  Q 760 200, 820 100" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 700 280  Q 760 260, 820 190" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 700 325  Q 760 310, 820 280" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+        <path d="M 700 370  Q 760 360, 820 370" class="eco-line-accent" marker-end="url(#arrow-accent)"/>
+
+        <text x="760" y="320" class="eco-edge-label-center" text-anchor="middle">apply()</text>
+
+        <!-- 底部说明 -->
+        <text x="540" y="600" class="eco-edge-label-center" text-anchor="middle" style="font-size:13px;fill:var(--text-dim);">
+          任何 source × 任何 target = 7 × 4 = 28 条迁移路径（不用写 28 份代码，只用 11 份）
+        </text>
+      </svg>
+    </div>
+
+    <div class="eco-legend">
+      <div class="eco-legend-item">
+        <span class="eco-legend-dot" style="background:#d97757;"></span>
+        <span><strong>Hub 路径</strong> — 💬 Chat 经 <code>neuDrive</code> 枢纽：对话归档 + 全文搜索，通过 MCP 让各 Agent 共享</span>
+      </div>
+      <div class="eco-legend-item">
+        <span class="eco-legend-dot" style="background:#d97757;"></span>
+        <span><strong>本项目路径</strong> — 👥 Cowork + 💻 Claude Code 经 <code>claude-code-migration</code>：Skill 套件直迁多个 Agent 框架</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <a href="https://github.com/fxp/claude-code-migration">GitHub</a> ·
+      <a href="https://github.com/fxp/claude-code-migration/blob/main/MIGRATION_STRATEGY.md">完整策略</a> ·
+      <a href="https://github.com/fxp/claude-code-migration/blob/main/docs/neudrive-study.md">neuDrive 调研</a> ·
+      <a href="https://github.com/nousresearch/hermes-agent">Hermes Agent</a> ·
+      <a href="https://github.com/agi-bar/neuDrive">neuDrive</a>
+    </p>
+    <p style="margin-top:16px;">MIT License · 2026</p>
+  </div>
+</footer>
+
+<script>
+  // 复制按钮
+  document.querySelectorAll('.qs-block').forEach(block => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+      const code = block.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Copied';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    };
+    block.appendChild(btn);
+  });
+</script>
+
+</body>
+</html>

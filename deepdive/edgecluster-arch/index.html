@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdgeCluster One — 架构图</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --cyan: #39d0d8;
+  --blue: #58a6ff;
+  --purple: #a371f7;
+  --green: #3fb950;
+  --amber: #d29922;
+  --red: #f85149;
+  --orange: #e3b341;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'SF Pro Text', 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+/* ── Header ── */
+.header {
+  padding: 20px 32px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.header h1 { font-size: 18px; font-weight: 600; }
+.header .meta { color: var(--muted); font-size: 12px; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.tab {
+  padding: 11px 18px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s;
+  user-select: none;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ── Content ── */
+.content { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.section-title {
+  font-size: 15px; font-weight: 600; margin-bottom: 6px;
+}
+.section-sub {
+  color: var(--muted); font-size: 12px; margin-bottom: 22px;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 600;
+}
+.badge-green  { background: rgba(63,185,80,.14);  color: var(--green);  border: 1px solid rgba(63,185,80,.3);  }
+.badge-gray   { background: rgba(139,148,158,.12); color: var(--muted);  border: 1px solid rgba(139,148,158,.25);}
+.badge-amber  { background: rgba(210,153,34,.14);  color: var(--amber);  border: 1px solid rgba(210,153,34,.3);  }
+.badge-blue   { background: rgba(88,166,255,.14);  color: var(--blue);   border: 1px solid rgba(88,166,255,.3);  }
+.badge-purple { background: rgba(163,113,247,.14); color: var(--purple); border: 1px solid rgba(163,113,247,.3); }
+
+/* ══════════════════════════════════════════════════
+   TAB 1 — 系统总览
+══════════════════════════════════════════════════ */
+
+/* Legend bar */
+.legend-bar {
+  display: flex; align-items: center; gap: 20px;
+  padding: 10px 16px; margin-bottom: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--muted);
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.legend-dash {
+  width: 14px; height: 2px; border: 1.5px dashed currentColor;
+  border-radius: 2px;
+}
+
+/* Status ring on completed components */
+.comp.done {
+  position: relative;
+}
+.comp.done::before {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: 9px;
+  border: 1.5px solid rgba(63,185,80,.45);
+  pointer-events: none;
+}
+
+/* Dashed border for planned */
+.comp.planned {
+  border-style: dashed;
+  opacity: .45;
+}
+
+/* Layer "now" glow */
+.layer-live {
+  box-shadow: inset 3px 0 0 0 var(--green);
+}
+.layer-planned-glow {
+  box-shadow: inset 3px 0 0 0 rgba(139,148,158,.3);
+}
+
+/* Component status chip */
+.comp-status {
+  margin-top: 5px;
+  font-size: 10px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 1px 6px; border-radius: 10px;
+}
+.cs-live   { background: rgba(63,185,80,.14);  color: var(--green);  }
+.cs-plan   { background: rgba(139,148,158,.12); color: var(--muted);  }
+.cs-cloud  { background: rgba(210,153,34,.14);  color: var(--amber);  }
+
+/* "Now" scope bracket */
+.scope-label {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 0 0; padding: 6px 12px;
+  font-size: 11px; font-weight: 600;
+  color: var(--green);
+  background: rgba(63,185,80,.07);
+  border-top: 1px solid rgba(63,185,80,.2);
+  border-bottom: 1px solid rgba(63,185,80,.2);
+}
+.scope-label-plan {
+  color: var(--muted);
+  background: transparent;
+  border-top: 1px solid rgba(48,54,61,.6);
+  border-bottom: 1px solid rgba(48,54,61,.6);
+}
+
+.stack {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.layer {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.layer:last-child { border-bottom: none; }
+.layer-hd {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.layer-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; padding: 2px 7px;
+  border-radius: 4px; flex-shrink: 0;
+}
+.layer-name { font-weight: 600; font-size: 13px; }
+
+.layer-l4 { background: rgba(57,208,216,.06); }
+.layer-l3 { background: rgba(88,166,255,.06); }
+.layer-l3-mcp { background: rgba(163,113,247,.06); }
+.layer-l2 { background: rgba(210,153,34,.06); }
+.layer-l1 { background: rgba(248,81,73,.06); }
+.layer-l5 { background: rgba(63,185,80,.06); }
+
+.layer-tag-l4  { background: rgba(57,208,216,.18);  color: var(--cyan);   }
+.layer-tag-l3  { background: rgba(88,166,255,.18);  color: var(--blue);   }
+.layer-tag-mcp { background: rgba(163,113,247,.18); color: var(--purple); }
+.layer-tag-l2  { background: rgba(210,153,34,.18);  color: var(--amber);  }
+.layer-tag-l1  { background: rgba(248,81,73,.18);   color: var(--red);    }
+.layer-tag-l5  { background: rgba(63,185,80,.18);   color: var(--green);  }
+
+.comps { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+
+.comp {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 3px;
+  min-width: 140px;
+}
+.comp-name  { font-size: 13px; font-weight: 600; }
+.comp-sub   { font-size: 11px; color: var(--muted); }
+.comp-port  { font-size: 10px; font-family: monospace; color: var(--cyan); margin-top: 2px; }
+.comp.c-kilo   { border-color: rgba(57,208,216,.35); }
+.comp.c-lite   { border-color: rgba(88,166,255,.35); }
+.comp.c-agent  { border-color: rgba(163,113,247,.35); }
+.comp.c-big    { border-color: rgba(210,153,34,.35); }
+.comp.c-vllm   { border-color: rgba(139,148,158,.2); opacity: .55; }
+.comp.c-gpu    { border-color: rgba(248,81,73,.2); opacity: .55; }
+.comp.c-admin  { border-color: rgba(63,185,80,.2); opacity: .55; }
+
+.layer-sep {
+  display: flex; align-items: center;
+  padding: 0 22px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  gap: 8px; height: 28px;
+}
+.sep-label { font-size: 10px; color: var(--muted); font-family: monospace; }
+.sep-arrow { color: var(--muted); font-size: 13px; }
+
+/* ══════════════════════════════════════════════════
+   TAB 2 — 网关层详图
+══════════════════════════════════════════════════ */
+.gw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.gw-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.gw-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.gw-dot { width: 10px; height: 10px; border-radius: 50%; }
+.gw-title { font-weight: 600; font-size: 14px; }
+.gw-port  { font-size: 11px; color: var(--muted); font-family: monospace; margin-left: auto; }
+.gw-body  { padding: 18px; }
+
+.pipeline {
+  display: flex; flex-direction: column; gap: 0;
+}
+.pipe-step {
+  display: flex; gap: 12px;
+  padding: 9px 0;
+  position: relative;
+}
+.pipe-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.pipe-step:not(:last-child) .pipe-num::after {
+  content: '';
+  position: absolute;
+  top: 22px; left: 50%; transform: translateX(-50%);
+  width: 1px; height: calc(100% + 8px);
+  background: var(--border);
+}
+.pipe-body { flex: 1; padding-top: 1px; }
+.pipe-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.pipe-detail { font-size: 11px; color: var(--muted); font-family: monospace; }
+.pipe-tag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-size: 10px; font-family: monospace; margin-top: 4px;
+}
+
+/* ══════════════════════════════════════════════════
+   TAB 3 — 数据流
+══════════════════════════════════════════════════ */
+.flows-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.flow-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.flow-head {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600; font-size: 13px;
+  display: flex; align-items: center; gap: 8px;
+}
+.flow-icon { font-size: 15px; }
+.flow-body { padding: 16px 18px; }
+
+.fnode {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 9px 13px;
+}
+.fnode-name { font-size: 12px; font-weight: 600; }
+.fnode-desc { font-size: 10px; color: var(--muted); font-family: monospace; margin-top: 2px; }
+
+.fconn {
+  display: flex; align-items: center;
+  padding: 4px 13px; gap: 6px;
+}
+.fconn-arrow { font-size: 14px; color: var(--muted); flex-shrink: 0; }
+.fconn-label { font-size: 10px; color: var(--muted); font-family: monospace; }
+
+/* Model route table */
+.route-section { margin-top: 28px; }
+.rtable {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+.rtable th {
+  text-align: left; padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .06em;
+  background: var(--surface2);
+}
+.rtable td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(48,54,61,.6);
+  font-size: 12px;
+}
+.rtable tr:last-child td { border-bottom: none; }
+.rtable tr:hover td { background: rgba(255,255,255,.02); }
+.mname { font-family: monospace; color: var(--cyan); }
+.uname { font-family: monospace; color: var(--amber); }
+.note  { color: var(--muted); font-size: 11px; }
+
+/* ══════════════════════════════════════════════════
+   TAB 4 — 演进路径
+══════════════════════════════════════════════════ */
+.evo-track {
+  display: flex; gap: 0;
+  position: relative; margin-bottom: 32px;
+}
+.evo-track::before {
+  content: '';
+  position: absolute; top: 28px; left: 5%; right: 5%; height: 2px;
+  background: linear-gradient(90deg, var(--green) 0%, var(--blue) 50%, var(--purple) 100%);
+  border-radius: 2px;
+}
+.evo-stage {
+  flex: 1; padding: 0 12px; padding-top: 50px; position: relative;
+}
+.evo-node {
+  position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%);
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 3px solid var(--bg); z-index: 1;
+}
+.evo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+}
+.evo-card-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.evo-card-sub   { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.evo-items      { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.evo-item       { font-size: 12px; display: flex; gap: 6px; }
+.evo-item .dot  { color: var(--muted); flex-shrink: 0; }
+
+/* Config diff box */
+.config-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin-top: 28px;
+}
+.config-box-head {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  background: var(--surface2);
+  display: flex; align-items: center; gap: 8px;
+}
+.config-box-body { padding: 16px; }
+pre {
+  font-family: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+  font-size: 12px; line-height: 1.7;
+  color: var(--text); white-space: pre;
+  overflow-x: auto;
+}
+.hl-comment { color: var(--muted); }
+.hl-key     { color: var(--blue); }
+.hl-val     { color: var(--green); }
+.hl-url     { color: var(--amber); }
+.hl-add     { color: var(--green); }
+.hl-dim     { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>EdgeCluster One &mdash; 架构图</h1>
+  <span class="meta">DOC-2026-EDGE-001-ARCH · v1.2 · 2026-04-30</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="show(0)">系统总览</div>
+  <div class="tab" onclick="show(1)">网关层详图</div>
+  <div class="tab" onclick="show(2)">数据流</div>
+  <div class="tab" onclick="show(3)">模型路由</div>
+  <div class="tab" onclick="show(4)">演进路径</div>
+  <div class="tab" onclick="show(5)" style="border-left:1px solid var(--border);margin-left:8px;padding-left:20px">📋 进展日志</div>
+</div>
+
+<div class="content">
+
+<!-- ════════════════════════════════════════
+     PANEL 0 — 系统总览
+════════════════════════════════════════ -->
+<div class="panel active">
+  <div class="section-title">五层架构总览</div>
+  <div class="section-sub">绿色实线框 = 已完成并运行；虚线框 = 规划中</div>
+
+  <!-- Legend -->
+  <div class="legend-bar">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--green)"></div>
+      已完成 &amp; 运行中
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--amber)"></div>
+      云端上游（当前临时方案）
+    </div>
+    <div class="legend-item">
+      <div class="legend-dash" style="color:var(--muted)"></div>
+      规划中，尚未实现
+    </div>
+    <div style="margin-left:auto; display:flex; align-items:center; gap:6px; font-size:12px; color:var(--green); font-weight:600">
+      <span>✓</span> 已完成 14 个组件
+      <span style="color:var(--muted); font-weight:400; margin-left:4px">/ 33 个 · AMD 395 (Windows/Ollama) 已接入 · L2 多节点在线</span>
+    </div>
+  </div>
+
+  <div class="stack">
+
+    <!-- scope: NOW implemented -->
+    <div class="scope-label">▶ 当前已实现范围 (MVP)</div>
+
+    <!-- L4 -->
+    <div class="layer layer-l4 layer-live">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-l4">L4</span>
+        <span class="layer-name">客户端层</span>
+        <span class="badge badge-green">✓ 已接入</span>
+      </div>
+      <div class="comps">
+        <div class="comp c-kilo done">
+          <div class="comp-name">Kilo Code</div>
+          <div class="comp-sub">VS Code AI 编程插件</div>
+          <div class="comp-port">OpenAI Compatible + MCP SSE</div>
+          <div class="comp-status cs-live">✓ 已配置</div>
+        </div>
+        <div class="comp c-kilo done">
+          <div class="comp-name">Claude Code</div>
+          <div class="comp-sub">Anthropic CLI Agent</div>
+          <div class="comp-port">Anthropic SDK / OpenAI SDK</div>
+          <div class="comp-status cs-live">✓ 兼容接入</div>
+        </div>
+        <div class="comp c-kilo planned">
+          <div class="comp-name">Hermes Agent</div>
+          <div class="comp-sub">企业 Agent 框架</div>
+          <div class="comp-port">OpenAI Compatible</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-kilo planned">
+          <div class="comp-name">OpenCode</div>
+          <div class="comp-sub">开源编程 Agent</div>
+          <div class="comp-port">OpenAI Compatible</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sep L4→L3 -->
+    <div class="layer-sep" style="background:rgba(63,185,80,.04)">
+      <span class="sep-arrow" style="color:var(--green)">↓</span>
+      <span class="sep-label" style="color:var(--green)">LLM 请求 &nbsp;POST /v1/chat/completions &nbsp;·&nbsp; Bearer ec-dev</span>
+      <span style="margin-left:auto; margin-right:16px; color:var(--purple)" class="sep-arrow">↓</span>
+      <span class="sep-label" style="color:var(--purple)">MCP 工具调用 &nbsp;HTTP/SSE &nbsp;JSON-RPC 2.0</span>
+    </div>
+
+    <!-- L3 LiteLLM -->
+    <div class="layer layer-l3 layer-live">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-l3">L3 LLM</span>
+        <span class="layer-name">LiteLLM Proxy</span>
+        <span class="badge badge-green">✓ 运行中</span>
+        <span class="badge badge-blue" style="margin-left:4px">:8080</span>
+      </div>
+      <div class="comps">
+        <div class="comp c-lite done">
+          <div class="comp-name">OpenAI 兼容</div>
+          <div class="comp-sub">POST /v1/chat/completions</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-lite done">
+          <div class="comp-name">模型路由</div>
+          <div class="comp-sub">别名 → 上游 mapping</div>
+          <div class="comp-status cs-live">✓ 5 个别名</div>
+        </div>
+        <div class="comp c-lite done">
+          <div class="comp-name">API Key 鉴权</div>
+          <div class="comp-sub">LITELLM_MASTER_KEY</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-lite done">
+          <div class="comp-name">重试 &amp; Fallback</div>
+          <div class="comp-sub">429/5xx 最多重试 2 次</div>
+          <div class="comp-status cs-live">✓ num_retries=2</div>
+        </div>
+        <div class="comp c-lite done">
+          <div class="comp-name">参数清理</div>
+          <div class="comp-sub">drop_params=true</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-lite planned">
+          <div class="comp-name">审计日志 DB</div>
+          <div class="comp-sub">需 PostgreSQL（Prisma）</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- L3 agentgateway -->
+    <div class="layer layer-l3-mcp layer-live">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-mcp">L3 MCP</span>
+        <span class="layer-name">agentgateway</span>
+        <span class="badge badge-green">✓ 运行中</span>
+        <span class="badge badge-purple" style="margin-left:4px">:8081 / :15000</span>
+      </div>
+      <div class="comps">
+        <div class="comp c-agent done">
+          <div class="comp-name">MCP SSE 端点</div>
+          <div class="comp-sub">HTTP/SSE · JSON-RPC 2.0</div>
+          <div class="comp-port">:8081/sse</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-agent done">
+          <div class="comp-name">stdio 包装</div>
+          <div class="comp-sub">npx MCP Server 子进程</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-agent done">
+          <div class="comp-name">Tool 审计 UI</div>
+          <div class="comp-sub">Admin 可观测性</div>
+          <div class="comp-port">:15000/ui</div>
+          <div class="comp-status cs-live">✓ 运行</div>
+        </div>
+        <div class="comp c-agent done">
+          <div class="comp-name">filesystem × 14</div>
+          <div class="comp-sub">read/write/search 等工具</div>
+          <div class="comp-status cs-live">✓ 已验证</div>
+        </div>
+        <div class="comp c-agent planned">
+          <div class="comp-name">GitHub MCP</div>
+          <div class="comp-sub">@mcp/server-github</div>
+          <div class="comp-status cs-plan">⏳ 已预留槽位</div>
+        </div>
+        <div class="comp c-agent planned">
+          <div class="comp-name">EdgeCluster Ops</div>
+          <div class="comp-sub">自研运维 MCP Server</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sep L3→L2 -->
+    <div class="layer-sep" style="background:rgba(63,185,80,.04)">
+      <span class="sep-arrow" style="color:var(--green)">↓</span>
+      <span class="sep-label" style="color:var(--green)">OpenAI-Compatible API &nbsp;·&nbsp; BIGMODEL_API_KEY &nbsp;·&nbsp; 当前上游</span>
+    </div>
+
+    <!-- L2 -->
+    <div class="layer layer-l2 layer-live">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-l2">L2</span>
+        <span class="layer-name">推理层</span>
+        <span class="badge badge-green" style="margin-left:6px">✓ AMD 395 已接入 (Windows/Ollama)</span>
+      </div>
+      <div class="comps">
+        <div class="comp c-big done" style="border-color:rgba(210,153,34,.5)">
+          <div class="comp-name">BigModel API</div>
+          <div class="comp-sub">智谱 GLM-4.6 / GLM-4-Flash</div>
+          <div class="comp-port">open.bigmodel.cn</div>
+          <div class="comp-status cs-cloud">✓ 云端上游</div>
+        </div>
+        <!-- Ollama — AMD 395 (Windows) 已接入 -->
+        <div class="comp done" style="border-color:rgba(63,185,80,.5);background:rgba(63,185,80,.04)">
+          <div class="comp-name" style="color:var(--green)">Ollama (AMD 395 · Windows)</div>
+          <div class="comp-sub">10.253.212.178 · Ollama v0.21.1 · 已接入 ✅</div>
+          <div class="comp-sub" style="margin-top:2px">gemma4:latest (8B Q4_K_M) · edgecluster-gemma4</div>
+          <div class="comp-port">:11434 · think=false / think=true 双模式</div>
+          <div class="comp-status cs-ok">✓ 在线</div>
+        </div>
+        <!-- Ollama — 更多模型待拉取 -->
+        <div class="comp done" style="border-color:rgba(249,115,22,.5);background:rgba(249,115,22,.05)">
+          <div class="comp-name" style="color:#f97316">Ollama (AMD 395 · 更多模型)</div>
+          <div class="comp-sub">同一节点 · ROCm 加速待验证</div>
+          <div class="comp-sub" style="margin-top:2px">Llama 3.3 70B · Qwen2.5 72B 待拉取</div>
+          <div class="comp-port">:11434/v1 · OpenAI-compatible</div>
+          <div class="comp-status" style="background:rgba(249,115,22,.15);color:#f97316;border-radius:10px;padding:1px 6px;font-size:10px;margin-top:5px;font-weight:600">⏳ 待拉取模型</div>
+        </div>
+        <div class="comp c-vllm planned">
+          <div class="comp-name">vLLM 节点 (PoC)</div>
+          <div class="comp-sub">4× DGX Spark · TP=4 · 70B</div>
+          <div class="comp-port">:8000/v1 · 配置已预留</div>
+          <div class="comp-status cs-plan">⏳ 待硬件</div>
+        </div>
+        <div class="comp c-vllm planned">
+          <div class="comp-name">vLLM 300B 集群</div>
+          <div class="comp-sub">16 节点 · TP=4 PP=4</div>
+          <div class="comp-port">多节点负载均衡</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- scope: PLANNED -->
+    <div class="scope-label scope-label-plan">⏳ 规划范围</div>
+
+    <!-- Sep L2→L1 -->
+    <div class="layer-sep">
+      <span class="sep-arrow">↓</span>
+      <span class="sep-label">GPU 计算 · 推理引擎 · Tensor Parallel</span>
+    </div>
+
+    <!-- L1 -->
+    <div class="layer layer-l1" style="box-shadow:inset 3px 0 0 0 rgba(248,81,73,.4)">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-l1">L1</span>
+        <span class="layer-name">硬件层</span>
+        <span class="badge badge-green">✓ AMD 395 已接入</span>
+      </div>
+      <div class="comps">
+        <!-- AMD 395 — Windows + Ollama，已接入 -->
+        <div class="comp c-gpu done" style="border-color:rgba(63,185,80,.5);min-width:200px;background:rgba(63,185,80,.04)">
+          <div class="comp-name" style="color:var(--green)">AMD Ryzen AI Max 395</div>
+          <div class="comp-sub">Strix Halo · 40-core RDNA3.5 iGPU · 128GB 统一内存</div>
+          <div class="comp-sub" style="margin-top:2px">Windows · Ollama v0.21.1 · gemma4:latest ✅</div>
+          <div class="comp-port">10.253.212.178:11434 · 已注册 EdgeCluster 节点</div>
+          <div class="comp-status cs-ok">✓ 在线 · ROCm 待验证</div>
+        </div>
+        <div class="comp c-gpu planned">
+          <div class="comp-name">DGX Spark (NVIDIA)</div>
+          <div class="comp-sub">128GB 统一内存 / 节点</div>
+          <div class="comp-sub">vLLM · TP=4</div>
+          <div class="comp-status cs-plan">⏳ 采购中</div>
+        </div>
+        <div class="comp c-gpu planned">
+          <div class="comp-name">AMD RX 9070 XT</div>
+          <div class="comp-sub">16GB GDDR6 · ROCm</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-gpu planned">
+          <div class="comp-name">摩尔线程 MTT S80</div>
+          <div class="comp-sub">80GB · 国产化首选</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-gpu planned">
+          <div class="comp-name">高速互联</div>
+          <div class="comp-sub">25/100GbE · RDMA RoCE v2</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- L5 -->
+    <div class="layer layer-l5 layer-planned-glow">
+      <div class="layer-hd">
+        <span class="layer-tag layer-tag-l5">L5</span>
+        <span class="layer-name">运维管理层</span>
+        <span class="badge badge-gray">⏳ 规划</span>
+      </div>
+      <div class="comps">
+        <div class="comp c-admin planned">
+          <div class="comp-name">管理后台</div>
+          <div class="comp-sub">React + Ant Design</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-admin planned">
+          <div class="comp-name">SSO</div>
+          <div class="comp-sub">LDAP / SAML / OIDC</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-admin planned">
+          <div class="comp-name">审计日志</div>
+          <div class="comp-sub">PostgreSQL · Prisma</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-admin planned">
+          <div class="comp-name">监控告警</div>
+          <div class="comp-sub">Prometheus + Grafana</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+        <div class="comp c-admin planned">
+          <div class="comp-name">Token 统计</div>
+          <div class="comp-sub">用量报表 · Chargeback</div>
+          <div class="comp-status cs-plan">⏳ 规划</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .stack -->
+</div><!-- panel 0 -->
+
+
+<!-- ════════════════════════════════════════
+     PANEL 1 — 网关层详图
+════════════════════════════════════════ -->
+<div class="panel">
+  <div class="section-title">L3 网关层 — 组件内部结构</div>
+  <div class="section-sub">LiteLLM（LLM 流量）与 agentgateway（MCP 工具流量）并列运行，互不依赖</div>
+
+  <div class="gw-grid">
+
+    <!-- LiteLLM -->
+    <div class="gw-card">
+      <div class="gw-head">
+        <div class="gw-dot" style="background:var(--blue)"></div>
+        <div class="gw-title">LiteLLM Proxy</div>
+        <div class="gw-port">port 8080</div>
+      </div>
+      <div class="gw-body">
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">入口端点</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div class="pipe-tag" style="background:rgba(88,166,255,.1);color:var(--blue);font-size:11px;padding:4px 8px">POST /v1/chat/completions &nbsp;&nbsp;← 主要入口</div>
+            <div class="pipe-tag" style="background:rgba(88,166,255,.08);color:var(--muted);font-size:11px;padding:4px 8px">GET  /v1/models</div>
+            <div class="pipe-tag" style="background:rgba(88,166,255,.08);color:var(--muted);font-size:11px;padding:4px 8px">GET  /health/liveliness &nbsp;&nbsp;← 健康检查（无鉴权）</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">请求处理管线</div>
+
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--blue);color:var(--blue)">1</div>
+            <div class="pipe-body">
+              <div class="pipe-title">鉴权校验</div>
+              <div class="pipe-detail">Bearer token = LITELLM_MASTER_KEY</div>
+              <div class="pipe-tag" style="background:rgba(248,81,73,.1);color:var(--red)">401 → 拒绝</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--blue);color:var(--blue)">2</div>
+            <div class="pipe-body">
+              <div class="pipe-title">模型路由</div>
+              <div class="pipe-detail">model_name → litellm_params（api_base + key）</div>
+              <div class="pipe-tag" style="background:rgba(57,208,216,.1);color:var(--cyan)">edgecluster-glm → GLM-4.6</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--blue);color:var(--blue)">3</div>
+            <div class="pipe-body">
+              <div class="pipe-title">参数清理</div>
+              <div class="pipe-detail">drop_params=true：丢弃上游不支持字段</div>
+              <div class="pipe-tag" style="background:rgba(210,153,34,.1);color:var(--amber)">reasoning_content 等 GLM 专有字段</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--blue);color:var(--blue)">4</div>
+            <div class="pipe-body">
+              <div class="pipe-title">转发至上游</div>
+              <div class="pipe-detail">HTTP POST → BigModel / vLLM</div>
+              <div class="pipe-tag" style="background:rgba(63,185,80,.1);color:var(--green)">支持 stream=true SSE 透传</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--blue);color:var(--blue)">5</div>
+            <div class="pipe-body">
+              <div class="pipe-title">重试逻辑</div>
+              <div class="pipe-detail">429 / 5xx → 最多 2 次重试，retry_after=0</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600">⚠ 注意：Anthropic 透传</div>
+          <div style="font-size:11px;color:var(--muted)"><code style="color:var(--red)">/anthropic/v1/messages</code> → 直连真实 Anthropic，不走 model_list<br>如需路由到 BigModel，使用 <code style="color:var(--cyan)">/v1/chat/completions</code> + Claude 别名</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- agentgateway -->
+    <div class="gw-card">
+      <div class="gw-head">
+        <div class="gw-dot" style="background:var(--purple)"></div>
+        <div class="gw-title">agentgateway</div>
+        <div class="gw-port">port 8081 · admin 15000</div>
+      </div>
+      <div class="gw-body">
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">入口端点</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div class="pipe-tag" style="background:rgba(163,113,247,.1);color:var(--purple);font-size:11px;padding:4px 8px">GET  /sse &nbsp;&nbsp;← SSE 连接（客户端订阅）</div>
+            <div class="pipe-tag" style="background:rgba(163,113,247,.08);color:var(--muted);font-size:11px;padding:4px 8px">POST /   &nbsp;&nbsp;← JSON-RPC 请求端点</div>
+            <div class="pipe-tag" style="background:rgba(63,185,80,.08);color:var(--muted);font-size:11px;padding:4px 8px">GET  /ui &nbsp;&nbsp;← Admin UI（:15000）</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">MCP 会话生命周期</div>
+
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--purple);color:var(--purple)">1</div>
+            <div class="pipe-body">
+              <div class="pipe-title">SSE 握手</div>
+              <div class="pipe-detail">GET /sse → 建立持久事件流</div>
+              <div class="pipe-tag" style="background:rgba(163,113,247,.1);color:var(--purple)">客户端收到 endpoint 事件</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--purple);color:var(--purple)">2</div>
+            <div class="pipe-body">
+              <div class="pipe-title">initialize</div>
+              <div class="pipe-detail">协商协议版本、声明能力</div>
+              <div class="pipe-tag" style="background:rgba(163,113,247,.1);color:var(--purple)">protocolVersion: 2024-11-05</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--purple);color:var(--purple)">3</div>
+            <div class="pipe-body">
+              <div class="pipe-title">tools/list</div>
+              <div class="pipe-detail">返回 14 个 filesystem 工具描述</div>
+              <div class="pipe-tag" style="background:rgba(63,185,80,.1);color:var(--green)">name + description + inputSchema</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--purple);color:var(--purple)">4</div>
+            <div class="pipe-body">
+              <div class="pipe-title">tools/call（循环）</div>
+              <div class="pipe-detail">{"name":"read_file","arguments":{...}}</div>
+              <div class="pipe-tag" style="background:rgba(163,113,247,.1);color:var(--purple)">转发至 stdio MCP Server 子进程</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num" style="border-color:var(--purple);color:var(--purple)">5</div>
+            <div class="pipe-body">
+              <div class="pipe-title">stdio → 子进程</div>
+              <div class="pipe-detail">npx @modelcontextprotocol/server-filesystem</div>
+              <div class="pipe-tag" style="background:rgba(210,153,34,.1);color:var(--amber)">作用域: /Users/xiaopingfeng</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600">扩展 MCP Server</div>
+          <div style="font-size:11px;color:var(--muted)">在 <code style="color:var(--cyan)">agentgateway/config.yaml</code> 的 targets 下追加即可：<br>GitHub、EdgeCluster 运维工具等（已预留注释槽位）</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- gw-grid -->
+</div><!-- panel 1 -->
+
+
+<!-- ════════════════════════════════════════
+     PANEL 2 — 数据流
+════════════════════════════════════════ -->
+<div class="panel">
+  <div class="section-title">端到端数据流</div>
+  <div class="section-sub">LLM 推理请求（左）与 MCP 工具调用（右）并行独立运行</div>
+
+  <div class="flows-grid">
+
+    <!-- LLM Flow -->
+    <div class="flow-card">
+      <div class="flow-head">
+        <span class="flow-icon">🧠</span>
+        LLM 推理请求流
+        <span class="badge badge-blue" style="margin-left:auto">OpenAI API</span>
+      </div>
+      <div class="flow-body">
+
+        <div class="fnode" style="border-color:rgba(57,208,216,.35)">
+          <div class="fnode-name" style="color:var(--cyan)">Kilo Code</div>
+          <div class="fnode-desc">POST /v1/chat/completions<br>Authorization: Bearer ec-dev<br>{"model":"edgecluster-glm","stream":true}</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">HTTP · 本地 127.0.0.1</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(88,166,255,.35)">
+          <div class="fnode-name" style="color:var(--blue)">LiteLLM Proxy :8080</div>
+          <div class="fnode-desc">① 鉴权 Bearer token<br>② 查找 model_name → litellm_params<br>③ drop_params 清理字段<br>④ 构造上游请求 + BIGMODEL_API_KEY</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">HTTPS · open.bigmodel.cn/api/paas/v4</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(210,153,34,.35)">
+          <div class="fnode-name" style="color:var(--amber)">BigModel API (GLM-4.6)</div>
+          <div class="fnode-desc">推理执行<br>reasoning_content（内部消耗）<br>→ content token 流式输出</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">SSE 流 · data: {"choices":[{"delta":{...}}]}</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(88,166,255,.35)">
+          <div class="fnode-name" style="color:var(--blue)">LiteLLM（SSE 透传）</div>
+          <div class="fnode-desc">直接透传 SSE 流至客户端<br>无额外转换开销</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">SSE 流 · HTTP 分块传输</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(57,208,216,.35)">
+          <div class="fnode-name" style="color:var(--cyan)">Kilo Code</div>
+          <div class="fnode-desc">实时渲染 streaming token<br>显示在编辑器内联</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MCP Flow -->
+    <div class="flow-card">
+      <div class="flow-head">
+        <span class="flow-icon">🔧</span>
+        MCP 工具调用流
+        <span class="badge badge-purple" style="margin-left:auto">JSON-RPC 2.0</span>
+      </div>
+      <div class="flow-body">
+
+        <div class="fnode" style="border-color:rgba(57,208,216,.35)">
+          <div class="fnode-name" style="color:var(--cyan)">Kilo Code Agent</div>
+          <div class="fnode-desc">LLM 决策需要调用工具<br>e.g. 读取文件辅助推理</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">GET /sse · 建立 SSE 持久连接</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(163,113,247,.35)">
+          <div class="fnode-name" style="color:var(--purple)">agentgateway :8081</div>
+          <div class="fnode-desc">① initialize 握手<br>② tools/list → 返回 14 个工具清单<br>③ tools/call 分发至目标</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">JSON-RPC over stdin/stdout</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(210,153,34,.35)">
+          <div class="fnode-name" style="color:var(--amber)">MCP Server（Node.js 子进程）</div>
+          <div class="fnode-desc">@modelcontextprotocol/server-filesystem<br>作用域: /Users/xiaopingfeng<br>执行实际文件系统操作</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">stdout · JSON-RPC result</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(163,113,247,.35)">
+          <div class="fnode-name" style="color:var(--purple)">agentgateway</div>
+          <div class="fnode-desc">封装结果 → SSE 事件推送<br>同时写入 audit log（Admin UI）</div>
+        </div>
+
+        <div class="fconn">
+          <div class="fconn-arrow">↓</div>
+          <div class="fconn-label">SSE 事件 · tool result JSON</div>
+        </div>
+
+        <div class="fnode" style="border-color:rgba(57,208,216,.35)">
+          <div class="fnode-name" style="color:var(--cyan)">Kilo Code Agent</div>
+          <div class="fnode-desc">工具结果注入 Agent 上下文<br>继续向 LiteLLM 发起下一轮推理</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- flows-grid -->
+
+  <!-- Startup flow -->
+  <div style="margin-top:24px">
+    <div class="section-title" style="margin-bottom:12px">启动序列</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px">
+      <div style="display:flex;gap:0;align-items:stretch">
+
+        <div style="display:flex;flex-direction:column;align-items:center;margin-right:12px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(88,166,255,.15);border:1px solid rgba(88,166,255,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0">1</div>
+          <div style="flex:1;width:1px;background:var(--border);margin:4px 0"></div>
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(163,113,247,.15);border:1px solid rgba(163,113,247,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--purple);flex-shrink:0">2</div>
+          <div style="flex:1;width:1px;background:var(--border);margin:4px 0"></div>
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--green);flex-shrink:0">3</div>
+          <div style="flex:1;width:1px;background:var(--border);margin:4px 0"></div>
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--green);flex-shrink:0">4</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div style="padding:8px 12px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--blue)">
+            <div style="font-size:12px;font-weight:600;color:var(--blue)">停止旧进程</div>
+            <div style="font-size:11px;color:var(--muted);font-family:monospace;margin-top:2px">lsof 查找 :8080 / :8081 → kill PID</div>
+          </div>
+          <div style="padding:8px 12px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--purple)">
+            <div style="font-size:12px;font-weight:600;color:var(--purple)">启动 LiteLLM + agentgateway</div>
+            <div style="font-size:11px;color:var(--muted);font-family:monospace;margin-top:2px">nohup 后台启动，PID 写入 /tmp/edgecluster/*.pid</div>
+          </div>
+          <div style="padding:8px 12px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--green)">
+            <div style="font-size:12px;font-weight:600;color:var(--green)">等待 LiteLLM 就绪</div>
+            <div style="font-size:11px;color:var(--muted);font-family:monospace;margin-top:2px">curl /health/liveliness · 超时 30s → 报错</div>
+          </div>
+          <div style="padding:8px 12px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--green)">
+            <div style="font-size:12px;font-weight:600;color:var(--green)">等待 agentgateway 就绪</div>
+            <div style="font-size:11px;color:var(--muted);font-family:monospace;margin-top:2px">MCP initialize 探针（需带 Content-Type + Accept 头）</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- panel 2 -->
+
+
+<!-- ════════════════════════════════════════
+     PANEL 3 — 模型路由
+════════════════════════════════════════ -->
+<div class="panel">
+  <div class="section-title">模型路由机制</div>
+  <div class="section-sub">客户端发送的 model 名 → LiteLLM 路由 → 实际上游，上游切换对客户端透明</div>
+
+  <table class="rtable">
+    <thead>
+      <tr>
+        <th>客户端 model 名</th>
+        <th>路由到</th>
+        <th>实际上游</th>
+        <th>用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="mname">edgecluster-glm</span></td>
+        <td><span class="uname">openai/glm-4.6</span></td>
+        <td><span style="color:var(--amber)">BigModel</span></td>
+        <td><span class="note">主力推理，Kilo Code 默认配置</span></td>
+      </tr>
+      <tr>
+        <td><span class="mname">edgecluster-glm-flash</span></td>
+        <td><span class="uname">openai/glm-4-flash</span></td>
+        <td><span style="color:var(--amber)">BigModel</span></td>
+        <td><span class="note">轻量快速，节约成本场景</span></td>
+      </tr>
+      <tr>
+        <td><span class="mname">claude-3-5-sonnet-20241022</span></td>
+        <td><span class="uname">openai/glm-4.6</span></td>
+        <td><span style="color:var(--amber)">BigModel</span></td>
+        <td><span class="note">Kilo Code / Claude Code 默认请求名</span></td>
+      </tr>
+      <tr>
+        <td><span class="mname">claude-sonnet-4-5</span></td>
+        <td><span class="uname">openai/glm-4.6</span></td>
+        <td><span style="color:var(--amber)">BigModel</span></td>
+        <td><span class="note">Anthropic SDK 别名</span></td>
+      </tr>
+      <tr>
+        <td><span class="mname">claude-3-haiku-20240307</span></td>
+        <td><span class="uname">openai/glm-4-flash</span></td>
+        <td><span style="color:var(--amber)">BigModel</span></td>
+        <td><span class="note">映射到 Flash 变体节约成本</span></td>
+      </tr>
+      <tr style="opacity:.5">
+        <td><span class="mname">edgecluster-70b</span> <span class="note">⏳</span></td>
+        <td><span class="uname">openai/edgecluster-70b</span></td>
+        <td><span style="color:var(--green)">vLLM :8000</span></td>
+        <td><span class="note">PoC 阶段，硬件就绪后启用</span></td>
+      </tr>
+      <tr style="opacity:.5">
+        <td><span class="mname">edgecluster-300b</span> <span class="note">⏳</span></td>
+        <td><span class="uname">openai/edgecluster-300b</span></td>
+        <td><span style="color:var(--green)">vLLM 多节点</span></td>
+        <td><span class="note">生产阶段，same-name 多后端 → 负载均衡</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--blue)">Kilo Code 接入（OpenAI 模式）</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">
+        Provider : OpenAI Compatible<br>
+        Base URL : http://127.0.0.1:8080/v1<br>
+        API Key  : ec-dev<br>
+        Model ID : edgecluster-glm<br>
+        <br>
+        MCP URL  : http://127.0.0.1:8081/sse
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--purple)">Claude Code 接入（环境变量）</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">
+        ANTHROPIC_BASE_URL=<br>
+        &nbsp;&nbsp;http://127.0.0.1:8080<br>
+        ANTHROPIC_API_KEY=ec-dev<br>
+        <br>
+        <span style="color:var(--red)">⚠ /anthropic/* 透传真实 Anthropic</span><br>
+        <span style="color:var(--green)">✓ 改用 /v1/ + claude 别名绕过</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">同名多后端 — 负载均衡原理</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">在 model_list 中注册相同 model_name 的多个 litellm_params，LiteLLM Router 自动 simple-shuffle（随机分发）：</div>
+    <pre><span class="hl-comment"># litellm/config.yaml — 规划：vLLM 多节点</span>
+<span class="hl-key">- model_name</span>: <span class="hl-val">edgecluster-300b</span>
+  litellm_params:
+    model: openai/edgecluster-300b
+    api_base: <span class="hl-url">http://192.168.1.11:8000/v1</span>   <span class="hl-comment"># node-01</span>
+<span class="hl-add">- model_name</span>: <span class="hl-val">edgecluster-300b</span>   <span class="hl-comment"># 同名 = 自动负载均衡</span>
+  litellm_params:
+    model: openai/edgecluster-300b
+    api_base: <span class="hl-url">http://192.168.1.12:8000/v1</span>   <span class="hl-comment"># node-02</span></pre>
+  </div>
+
+</div><!-- panel 3 -->
+
+
+<!-- ════════════════════════════════════════
+     PANEL 4 — 演进路径
+════════════════════════════════════════ -->
+<div class="panel">
+  <div class="section-title">演进路径</div>
+  <div class="section-sub">三个阶段，上游切换只需改配置，客户端零改动</div>
+
+  <div class="evo-track">
+
+    <div class="evo-stage">
+      <div class="evo-node" style="background:var(--green)"></div>
+      <div class="evo-card" style="border-color:rgba(63,185,80,.3)">
+        <div class="badge badge-green" style="margin-bottom:8px">当前 ✓</div>
+        <div class="evo-card-title">MVP</div>
+        <div class="evo-card-sub">本地开发验证</div>
+        <ul class="evo-items">
+          <li class="evo-item"><span class="dot">·</span>LiteLLM :8080</li>
+          <li class="evo-item"><span class="dot">·</span>agentgateway :8081</li>
+          <li class="evo-item"><span class="dot">·</span>Kilo Code 接入</li>
+          <li class="evo-item"><span class="dot">·</span>BigModel GLM-4.6 上游</li>
+          <li class="evo-item"><span class="dot">·</span>filesystem MCP × 14 工具</li>
+          <li class="evo-item"><span class="dot">·</span>start-all.sh 一键启动</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="evo-stage">
+      <div class="evo-node" style="background:var(--blue)"></div>
+      <div class="evo-card" style="border-color:rgba(88,166,255,.3)">
+        <div class="badge badge-amber" style="margin-bottom:8px">⏳ PoC 阶段</div>
+        <div class="evo-card-title">本地 vLLM</div>
+        <div class="evo-card-sub">4× DGX Spark · 70B 推理</div>
+        <ul class="evo-items">
+          <li class="evo-item"><span class="dot">·</span>取消注释 vLLM 配置</li>
+          <li class="evo-item"><span class="dot">·</span>TP=4 张量并行</li>
+          <li class="evo-item"><span class="dot">·</span>Llama-3 70B AWQ</li>
+          <li class="evo-item"><span class="dot">·</span>PostgreSQL 审计日志</li>
+          <li class="evo-item"><span class="dot">·</span>Prometheus + Grafana</li>
+          <li class="evo-item"><span class="dot">·</span>LiteLLM UI 用量统计</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="evo-stage">
+      <div class="evo-node" style="background:var(--purple)"></div>
+      <div class="evo-card" style="border-color:rgba(163,113,247,.3)">
+        <div class="badge badge-gray" style="margin-bottom:8px">⏳ 生产阶段</div>
+        <div class="evo-card-title">300B 集群</div>
+        <div class="evo-card-sub">16 节点 · TP=4 PP=4</div>
+        <ul class="evo-items">
+          <li class="evo-item"><span class="dot">·</span>300B AWQ Q4 量化</li>
+          <li class="evo-item"><span class="dot">·</span>多节点负载均衡</li>
+          <li class="evo-item"><span class="dot">·</span>100GbE + RDMA 互联</li>
+          <li class="evo-item"><span class="dot">·</span>SSO 登录（LDAP/OIDC）</li>
+          <li class="evo-item"><span class="dot">·</span>合规审计 + Chargeback</li>
+          <li class="evo-item"><span class="dot">·</span>标杆客户部署</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- evo-track -->
+
+  <!-- Config diff for switching to vLLM -->
+  <div class="config-box">
+    <div class="config-box-head">
+      <span>⚡</span>
+      切换到本地 vLLM — 只需改 3 行配置，重启 LiteLLM
+    </div>
+    <div class="config-box-body">
+<pre><span class="hl-comment"># litellm/config.yaml</span>
+
+model_list:
+  <span class="hl-comment"># 现有 BigModel 配置保持不变（可作为 Fallback）</span>
+  - model_name: edgecluster-glm
+    litellm_params:
+      model: openai/glm-4.6
+      api_base: https://open.bigmodel.cn/api/paas/v4
+      api_key: os.environ/BIGMODEL_API_KEY
+
+  <span class="hl-add"># 取消下面注释 ↓ 填入真实 vLLM 节点 IP</span>
+  <span class="hl-add">- model_name: edgecluster-70b</span>
+  <span class="hl-add">  litellm_params:</span>
+  <span class="hl-add">    model: openai/edgecluster-70b</span>
+  <span class="hl-add">    api_base: http://192.168.1.11:8000/v1    ← 填入实际 IP</span>
+  <span class="hl-add">    api_key: none</span>
+
+<span class="hl-comment"># 重启: ./start-all.sh
+# Kilo Code 侧 model 改为 edgecluster-70b，其余不变</span></pre>
+    </div>
+  </div>
+
+  <!-- Milestone table -->
+  <div style="margin-top:24px">
+    <div class="section-title" style="margin-bottom:12px">里程碑</div>
+    <table class="rtable">
+      <thead>
+        <tr>
+          <th>里程碑</th>
+          <th>目标周期</th>
+          <th>关键交付</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">M0 — MVP</td>
+          <td class="note">已完成</td>
+          <td class="note">LiteLLM + agentgateway + Kilo Code 全栈接通</td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">M1 — PoC</td>
+          <td class="note">4 周</td>
+          <td class="note">4 节点 DGX Spark + vLLM 70B + 基础监控</td>
+          <td><span class="badge badge-amber">⏳ 待硬件</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">M2 — Alpha</td>
+          <td class="note">8 周</td>
+          <td class="note">管理后台 + SSO + Prometheus + VS Code 插件 PoC</td>
+          <td><span class="badge badge-gray">⏳ 规划</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">M3 — Beta</td>
+          <td class="note">12 周</td>
+          <td class="note">300B 集群 + 审计合规 + 首个标杆客户</td>
+          <td><span class="badge badge-gray">⏳ 规划</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- panel 4 -->
+
+
+<!-- ════════════════════════════════════════
+     PANEL 5 — 进展日志
+════════════════════════════════════════ -->
+<div class="panel" id="panel-log">
+  <div class="section-title">📋 开发进展日志</div>
+  <div class="section-sub">每次任务完成后更新 · 自动同步到 GitHub Pages</div>
+
+  <div style="max-width:760px">
+
+    <!-- ── 2026-04-24 ── -->
+    <div style="display:flex;gap:0;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-24</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <!-- Entry 1 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L5 Admin Console 系统监控修复 & 升级</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 提取 <code style="color:var(--cyan)">deps.py</code> 解决循环 import（routers → main → routers）<br>
+            · 新增 <code style="color:var(--cyan)">routers/system.py</code>：CPU/内存/GPU 检测（macOS + Linux + ROCm + NVIDIA）<br>
+            · 仪表盘 stat cards 接入真实系统数据（内存占用、GPU 型号、进程在线数）<br>
+            · 新增「系统资源监控」页：主机资源 + GPU 卡片 + 进程状态表
+          </div>
+        </div>
+
+        <!-- Entry 2 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L2 + L1：Ollama & AMD Ryzen AI Max 395 加入架构</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · L2 推理层新增 Ollama（:11434 OpenAI-compatible，支持 Llama 3.3 70B / Qwen2.5 72B）<br>
+            · L1 硬件层新增 AMD Ryzen AI Max 395（Strix Halo · 40-core RDNA3.5 · 128GB 统一内存）<br>
+            · <code style="color:var(--cyan)">litellm/config.yaml</code> 新增 Ollama 注释配置段（取消注释即接入）
+          </div>
+        </div>
+
+        <!-- Entry 3 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">GitHub Pages 部署</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 创建公开仓库 <a href="https://github.com/fxp/edgecluster-arch" style="color:var(--blue)">fxp/edgecluster-arch</a><br>
+            · 启用 GitHub Pages → <a href="https://fxp.github.io/edgecluster-arch/" style="color:var(--blue)">fxp.github.io/edgecluster-arch</a><br>
+            · 每次任务完成后自动同步（<code style="color:var(--cyan)">update-pages.sh</code>）
+          </div>
+        </div>
+
+        <!-- Entry 4 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L5 Admin Console MVP 开发</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · FastAPI 后端（port 9090）：health / models / keys / spend / logs / system 6 个路由<br>
+            · 深色主题 SPA 前端：仪表盘、服务健康、模型列表、API Key 管理、用量统计、审计日志<br>
+            · 整合 LiteLLM API + Ollama API + agentgateway 健康探针
+          </div>
+        </div>
+
+        <!-- Entry 5 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">架构图发布 + 完成状态标注</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 5 标签页架构图：系统总览、网关层详图、数据流、模型路由、演进路径<br>
+            · 总览图每个组件标注完成状态（绿色实线 = 运行中，虚线 = 规划）<br>
+            · 图例、计数、"当前已实现范围" 分割线
+          </div>
+        </div>
+
+        <!-- Entry 6 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">MVP 全栈验证（LiteLLM + agentgateway + Kilo Code）</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · LiteLLM :8080 — 5 模型别名，BigModel GLM-4.6，OpenAI 兼容 ✅<br>
+            · agentgateway :8081 — MCP SSE，filesystem × 14 工具 ✅<br>
+            · Kilo Code MCP 配置写入（mcp_settings.json），VS Code 接入 ✅<br>
+            · start-all.sh 一键启动全栈（LiteLLM + agentgateway + Admin）
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-26 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-26</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <!-- Entry: Spend 统计 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L5 Admin — 用量统计仪表盘</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 新增 <code style="color:var(--cyan)">/spend/summary</code> 今日/本月汇总接口<br>
+            · 新增 <code style="color:var(--cyan)">/spend/daily</code> 7天趋势接口<br>
+            · 前端三标签视图：按模型 / 按 Key / 7天趋势（CSS 横向条形图）<br>
+            · 顶部 stat cards：今日请求、Token 数、费用
+          </div>
+        </div>
+
+        <!-- Entry: Key 管理 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L5 Admin — API Key 完整配额管理</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 新增 <code style="color:var(--cyan)">PUT /keys/{key}</code> 更新预算/模型/限速<br>
+            · 新增 <code style="color:var(--cyan)">POST /keys/{key}/block|unblock</code> 禁用/恢复<br>
+            · 前端：预算进度条、RPM 显示、复制密钥、编辑弹窗、禁用/恢复按钮<br>
+            · 创建 Key 时支持 RPM + TPM 限速字段
+          </div>
+        </div>
+
+        <!-- Entry: MCP Gateway -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">L3 agentgateway — MCP 网关管理页</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 新增 <code style="color:var(--cyan)">routers/mcp.py</code>：解析 config.yaml + 检测 agentgateway 在线状态<br>
+            · 前端：MCP 网关状态卡、已注册 Server 列表（类型/命令/URL）<br>
+            · 审计日志页完善（MCP JSONL + LLM 日志双视图）
+          </div>
+        </div>
+
+        <!-- Entry: Prometheus -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">Prometheus + Grafana 监控接入</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 新增 <code style="color:var(--cyan)">GET /api/metrics</code>（Prometheus text format）<br>
+            · 导出：内存、服务在线状态、平台信息等指标<br>
+            · 新建 <code style="color:var(--cyan)">monitoring/docker-compose.yml</code>（Prometheus :9091 + Grafana :3000）<br>
+            · Admin UI 新增「Prometheus 指标」页（实时预览 + 配置示例）
+          </div>
+        </div>
+
+        <!-- Entry: SSO + 多节点 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">SSO 登录页 + 多节点管理</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · 登录覆盖层：输入 Admin Key → localStorage 持久化，支持登出<br>
+            · 新增 <code style="color:var(--cyan)">routers/nodes.py</code>：节点注册表 CRUD（JSON 文件存储）<br>
+            · 节点注册/移除/Ping，实时健康检测（异步并发）<br>
+            · 前端「节点管理」页：本机状态 + 远程节点卡片（延迟、标签、状态）
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-26 集成测试 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-26</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 验证</span>
+            <span style="font-weight:600;font-size:13px">全链路集成测试通过（BigModel 作为推理提供方）</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>L2</strong> LiteLLM → BigModel GLM：5模型别名，chat/stream/function-calling 全通 ✅<br>
+            · <strong>L3</strong> agentgateway MCP：14个filesystem工具，Session-ID机制正常 ✅<br>
+            · <strong>L2+L3 闭环</strong>：LLM 决策工具 → MCP 执行 → 结果回填 → 最终回答（用户提问→读目录→生成答案） ✅<br>
+            · <strong>L4</strong> OpenAI Python SDK 直连 EdgeCluster，流式输出，claude 别名路由均正常 ✅<br>
+            · <strong>L5</strong> Admin Console v0.2 所有 API 真实数据呈现，修复 agentgateway 健康检查误报 ✅<br>
+            · <em>发现</em>：glm-4.6 为推理模型，需 max_tokens≥300（推理占约220tok）；glm-4-flash 无推理延迟
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-28 Windows PC Ollama 节点 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-28</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">AMD Ryzen AI Max 395 (Windows/Ollama) — 远程节点接入</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>硬件</strong>：AMD Ryzen AI Max 395（Strix Halo · 40-core RDNA3.5 · 128GB · 10.253.212.178）运行 Windows + Ollama v0.21.1，模型 gemma4:latest (8B Q4_K_M)<br>
+            · <strong>LiteLLM 路由</strong>：新增 <code style="color:var(--cyan)">edgecluster-gemma4</code>（think=false）和 <code style="color:var(--cyan)">edgecluster-gemma4-think</code>（think=true）两个模型别名<br>
+            · <em>发现</em>：Gemma4 在中文输入时触发思考模式，reasoning 消耗全部 tokens，content 为空 → 通过 <code style="color:var(--cyan)">extra_body: think: false</code> 修复<br>
+            · <strong>节点注册</strong>：改写 <code style="color:var(--cyan)">routers/nodes.py</code>，支持自动探测节点类型（EdgeCluster Admin / Ollama-only）<br>
+            · 探测顺序：<code>GET /api/health</code>（EdgeCluster）→ <code>GET /api/version</code>（Ollama）→ 返回 node_type / ollama_version / models<br>
+            · <strong>Admin UI 节点卡</strong>：展示 node_type 徽章（Ollama/EdgeCluster）、Ollama 版本、模型列表、延迟<br>
+            · 修复去重 Bug：同一 ID 或同一 URL 注册时均触发更新（不再插入重复条目）<br>
+            · 验证：注册后 ping 返回 <code>online:true, latency_ms:~70, models:["gemma4:latest"]</code> ✅
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-28 运维管理层 v0.3 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-28</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">Admin Console v0.3 — 运维管理层完整实现</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>节点模型管理</strong>：<code style="color:var(--cyan)">GET/POST/DELETE /api/nodes/{id}/models</code> — 列表、Pull（SSE 流式进度）、删除远程 Ollama 节点模型<br>
+            · <strong>服务生命周期控制</strong>：<code style="color:var(--cyan)">POST /api/system/services/{name}/restart|stop|start</code> — UI 重启 LiteLLM / agentgateway<br>
+            · <strong>后台健康监控</strong>：FastAPI lifespan 启动 asyncio 任务，60s 探测所有服务，内存环形队列存 2h 历史，<code style="color:var(--cyan)">GET /api/health/history</code> 返回在线率 + Sparkline 数据点<br>
+            · <strong>实时日志流</strong>：<code style="color:var(--cyan)">GET /api/logs/stream/{service}</code> — SSE tail 日志，支持 ?api_key= query param 鉴权（EventSource 不支持 Header）<br>
+            · <strong>配置编辑器</strong>：<code style="color:var(--cyan)">GET/PUT /api/config/litellm</code> — 在线编辑 LiteLLM config.yaml，写入前 YAML 校验，保存后自动重启 LiteLLM<br>
+            · <strong>前端新增 3 页面</strong>：服务控制（含在线率 Sparkline）/ 实时日志流（终端仿真）/ 配置编辑器（保存即重启）<br>
+            · 节点卡片新增「管理模型」按钮 → Modal 内 Pull/删除模型，带进度条<br>
+            · Dashboard 加入健康历史 Sparkline（后台监控异步注入）<br>
+            · 双鉴权模式：Bearer Header + ?api_key= Query Param（deps.py 统一支持）
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-29 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-29</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <!-- Entry: BigModel 迁移 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">推理层迁移至 BigModel（AMD 395 暂不在同一网络）</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>全模型别名切换至 BigModel API</strong>：<code style="color:var(--cyan)">edgecluster-gemma4 / gemma4-think / claude-*</code> 均路由至 GLM-4.6 / GLM-4-Flash<br>
+            · Ollama 条目保留注释（<code>api_base: http://10.253.212.178:11434</code>），回归同局域网时一行取消注释恢复<br>
+            · <strong>修复 gemma4 离线别名 token 耗尽问题</strong>：原别名指向 GLM-4.6（推理模型），在 <code>max_tokens≤200</code> 时 reasoning_content 耗尽 budget，content 为空；改为 GLM-4-Flash（非推理），<code>max_tokens:60</code> 下测试全部正常 ✅<br>
+            · <em>发现</em>：GLM-4.6 定位为需要较大 token 预算的推理任务（建议 <code>max_tokens≥500</code>）；日常对话/工具调用推荐 GLM-4-Flash
+          </div>
+        </div>
+
+        <!-- Entry: gemma4-think 工具调用 Bug 根因 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-blue">🔍 根因</span>
+            <span style="font-weight:600;font-size:13px">gemma4-think 返回 tool_call 而非文字回复 — 根因分析</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>根因</strong>：Kilo Code 自动向所有请求注入工具定义（含 <code style="color:var(--cyan)">answer</code> 工具）；Gemma4 开启思考模式后极度倾向于调用工具而非直接回复，导致返回 <code>{"tool_calls":[{"function":"answer","args":{...}}]}</code><br>
+            · <strong>核心矛盾</strong>：think 模式 + 外部工具注入 → 模型将"如何回答"也包装成工具调用<br>
+            · <strong>解决方案</strong>：在 Kilo Code 中改用 <code style="color:var(--cyan)">edgecluster-glm-flash</code>；保留 <code>edgecluster-gemma4-think</code> 用于无工具注入的直接 API 调用场景<br>
+            · <strong>路由确认方法</strong>：① 问模型身份（Gemma4 → "Google DeepMind"，GLM → "ChatGLM"）；② 查响应 <code>model</code> 字段；③ 实时日志流页面查 LiteLLM 路由记录
+          </div>
+        </div>
+
+        <!-- Entry: 环境变量 & 进程管理修复 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 修复</span>
+            <span style="font-weight:600;font-size:13px">LiteLLM 进程启动 — 环境变量传递修复</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <em>问题</em>：<code>nohup</code> 配合 <code>source .env</code> 在某些 shell 上不能可靠继承环境变量，导致 <code>BIGMODEL_API_KEY</code> 未传入 LiteLLM 进程，返回 <code>AuthenticationError</code><br>
+            · <strong>修复</strong>：改为 <code>env $(cat .env | grep -v '^#' | xargs) nohup litellm ...</code>，显式将 .env 键值注入子进程<br>
+            · 启动脚本已知悉，待统一更新 <code>start-all.sh</code>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2026-04-30 ── -->
+    <div style="display:flex;gap:0;margin-top:24px;margin-bottom:0">
+      <div style="width:110px;padding-top:14px;flex-shrink:0">
+        <div style="font-size:11px;color:var(--muted);text-align:right;padding-right:20px;font-family:monospace">2026-04-30</div>
+      </div>
+      <div style="border-left:2px solid var(--border);padding-left:20px;flex:1;padding-bottom:8px">
+
+        <!-- Entry: PostgreSQL 自动安装 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:10px">
+          <div style="position:absolute;left:-27px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 完成</span>
+            <span style="font-weight:600;font-size:13px">PostgreSQL@16 自动安装 &amp; LiteLLM 数据库初始化（<code>setup-db.sh</code>）</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>幂等安装脚本</strong> <code style="color:var(--cyan)">bash setup-db.sh</code>：Homebrew 安装 PG@16 → <code>initdb</code> 集群初始化 → 启动 → 创建用户 <code>edgecluster</code> + 数据库 → 写 <code>DATABASE_URL</code> 到 <code>.env</code> → Prisma DB Push — 全程无需手动配置<br>
+            · <strong>Prisma 迁移</strong>：<code>prisma db push --schema schema.prisma --skip-generate</code>，首次创建 60 张表（<code>LiteLLM_SpendLogs</code>、<code>LiteLLM_VerificationToken</code> 等），幂等可重复运行<br>
+            · <strong><code>start-all.sh</code> 集成</strong>：新增 <code>_ensure_postgres()</code>，每次启动自动检查并拉起 PG（未安装则打印提示运行 <code>setup-db.sh</code>）<br>
+            · <em>关键细节</em>：macOS 需要 <code>LC_ALL="en_US.UTF-8"</code> 才能正常启动 PG（否则 <code>FATAL: postmaster became multithreaded</code>）；脚本中变量全部采用 <code>${VAR}</code> 形式避免 Unicode 字符解析 Bug
+          </div>
+        </div>
+
+        <!-- Entry: 管理控制台三项 Bug 修复 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">✓ 修复</span>
+            <span style="font-weight:600;font-size:13px">Admin Console 三项 Bug 修复</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>agentgateway 健康探针</strong>：原逻辑向 <code>:8081/</code> POST MCP initialize → SSE 流式响应导致 httpx 超时 → 状态 ❌；改为 <code>GET :15021/healthz/ready</code>（agentgateway 原生就绪探针，约 21ms 返回 200）✅<br>
+            · <strong>创建 Key 无响应</strong>：<code>httpx.HTTPStatusError</code> 的 <code>str(e)</code> 不含响应 body，LiteLLM 的 <code>"DB not connected"</code> 在 body 中被丢弃；修复 <code>_check_db_error()</code> 读取 <code>e.response.text</code>，在无 DB 时抛出 422 + 中文提示；DB 接入后 Key 创建恢复正常并返回完整 <code>sk-...</code> token<br>
+            · <strong>错误 Toast 样式</strong>：<code>showToast(msg, 'error')</code> 新增红色边框 + 自动 6s 关闭（成功 Toast 为 3s），前端 <code>doCreateKey()</code> 增加 try/catch 与 <code>r.ok</code> 判断
+          </div>
+        </div>
+
+        <!-- Entry: LiteLLM 启动链路加固 -->
+        <div style="position:relative;margin-bottom:20px;padding-top:2px">
+          <div style="position:absolute;left:-27px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid var(--bg)"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-blue">🔧 加固</span>
+            <span style="font-weight:600;font-size:13px">LiteLLM 启动链路加固（遥测挂起 / 环境变量 / 路径空格）</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            · <strong>启动挂起根因</strong>：LiteLLM 启动时向外发出 3× <code>SYN_SENT</code> 遥测请求（目标 <code>127.0.0.2:80</code>），被本地代理拦截 → 挂 2-3 分钟；修复：<code>.env</code> 加 <code>LITELLM_TELEMETRY=False</code>、<code>LITELLM_LOCAL_MODEL_COST_MAP=True</code>，<code>config.yaml</code> 加 <code>telemetry: false</code>，所有启动命令追加 <code>--telemetry False</code><br>
+            · <strong>环境变量注入</strong>：<code>env $(grep -v '^#' .env | grep '=' | xargs) nohup litellm</code> 确保变量显式注入子进程（规避 <code>nohup</code> 丢变量问题）；注意 <code>.env</code> 注释必须单独一行，不能行内注释<br>
+            · <strong>iCloud 路径空格</strong>：<code>system.py</code>/<code>config.py</code> 中用 <code>shlex.quote()</code> 包裹含空格的 iCloud 路径，避免 LiteLLM CLI 把路径中的空格拆成多余参数
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 下一步 -->
+    <div style="margin-top:8px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⏳ 下一步计划</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--amber)">▸</span><span>AMD 395 恢复同网络 → Ollama 路由切回 + ROCm 验证</span></div>
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--amber)">▸</span><span>AMD 395 拉取 Llama 3.3 70B / Qwen2.5 72B</span></div>
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--muted)">▸</span><span>Admin 用量统计页查看真实花费数据（DB 已接入）</span></div>
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--muted)">▸</span><span>Grafana 仪表盘 JSON 预配置（自动导入）</span></div>
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--muted)">▸</span><span>vLLM 节点接入（DGX Spark 到位后）</span></div>
+        <div style="display:flex;gap:8px;font-size:12px"><span style="color:var(--muted)">▸</span><span>多节点 LiteLLM 路由聚合（跨节点负载均衡）</span></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- panel 5 -->
+
+</div><!-- .content -->
+
+<script>
+function show(idx) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+}
+</script>
+</body>
+</html>
