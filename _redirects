@@ -1,3 +1,7 @@
+# 朔知测评 → Cloudflare Worker
+/apps/shuozhi     https://shuozhi-web.fxp007.workers.dev  302
+/apps/shuozhi/*   https://shuozhi-web.fxp007.workers.dev/:splat  302
+
 # 旧 landing 页面的应用路径迁移
 /app/the-stall/*  /apps/distance/:splat  301
 /app/*            /apps/:splat           301
