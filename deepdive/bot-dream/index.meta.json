@@ -1,0 +1,36 @@
+{
+  "$schema": "../../config/meta.schema.json",
+  "slug": "bot-dream",
+  "topic_dir": "bot-dream",
+  "title": {
+    "zh": "问野的十六个深夜 · BotDreamer Night Lab",
+    "en": null
+  },
+  "current_version": 1,
+  "first_published": "2026-05-13",
+  "last_updated": "2026-05-13",
+  "freshness_priority": "warm",
+  "next_check": "2026-06-12",
+  "languages": ["zh"],
+  "primary_language": "zh",
+  "translations": {},
+  "is_index": true,
+  "manual_only": true,
+  "version_log": [
+    {
+      "v": 1,
+      "date": "2026-05-13",
+      "git": "",
+      "summary": "首次发布：问野的十六个深夜，BotDreamer Night Lab，16 个互动数学物理可视化作品"
+    }
+  ],
+  "tags": [
+    "Agent",
+    "BotDreamer",
+    "Night Lab",
+    "Interactive",
+    "Math",
+    "Physics"
+  ],
+  "category": "AGENT / Bot Dream"
+}
