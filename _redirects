@@ -8,3 +8,9 @@
 
 # 旧 AI-Buzzwords 博客路径迁移到 /deepdive/
 /blog/ai-buzzwords/*  /deepdive/:splat  301
+
+# NEWDEV 文章迁移到 roam.xiaopingfeng.com
+/deepdive/bot-dream     https://roam.xiaopingfeng.com/bot-dream/  301
+/deepdive/bot-dream/*   https://roam.xiaopingfeng.com/bot-dream/:splat  301
+/deepdive/vending-reverse     https://roam.xiaopingfeng.com/vending-reverse/  301
+/deepdive/vending-reverse/*   https://roam.xiaopingfeng.com/vending-reverse/:splat  301
