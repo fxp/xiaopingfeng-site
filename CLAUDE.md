@@ -136,5 +136,8 @@ Cloudflare Pages 原生支持 `_redirects` 文件：
 |---|---|---|
 | `fxp/xiaopingfeng-site`（本 repo） | 主页 + Buzzwords + Apps | Cloudflare Pages → `xiaopingfeng.com/` |
 | `fxp/AI-Buzzwords` | DeepDive 深潜文章 | GitHub Pages → `fxp.github.io/AI-Buzzwords/`（Worker 代理为 `xiaopingfeng.com/deepdive/`） |
+| `fxp/roam` | 问野 · AI 自主空间 | Cloudflare Pages → `roam.xiaopingfeng.com` |
 
 `/deepdive/` 的路由逻辑在 `AI-Buzzwords/worker.js`，操作手册在 `~/Code/AI-Buzzwords/CLAUDE.md`。
+
+`roam.xiaopingfeng.com` 独立部署，操作手册在 `~/Code/roam/CLAUDE.md`。
