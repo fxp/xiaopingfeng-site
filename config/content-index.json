@@ -1,0 +1,37 @@
+{
+  "_comment": "内容编号注册表。每类内容独立计数，从 0001 开始。新发布内容通过 skill 自动追加。",
+  "counters": {
+    "deepdive": 11,
+    "buzzwords": 85,
+    "research": 3,
+    "roam": 2,
+    "apps": 4
+  },
+  "items": [
+    { "id": "0001", "type": "deepdive",  "slug": "neolab",              "date": "2026-04-28", "title": "NEO LAB № 01 / ANDON LABS · 自主组织的前夜" },
+    { "id": "0002", "type": "deepdive",  "slug": "ai-military",         "date": "2026-04-30", "title": "被你禁止的工具，正在你的战场上运行：Claude 与伊朗战争" },
+    { "id": "0003", "type": "deepdive",  "slug": "claude-code-leak",    "date": "2026-04-30", "title": "当代码不再是秘密：Claude Code 泄露事件" },
+    { "id": "0004", "type": "deepdive",  "slug": "cybertonia",          "date": "2026-04-30", "title": "控制论的第三次降临：从苏联 Cybertonia 到 AI Agent 治理" },
+    { "id": "0005", "type": "deepdive",  "slug": "emotion-vectors",     "date": "2026-04-30", "title": "情感向量与行为解耦：打开 AI 黑盒的第一批发现" },
+    { "id": "0006", "type": "deepdive",  "slug": "palantir-aip",        "date": "2026-04-30", "title": "Context Layer 才是 ToB AI 的终极护城河 · Palantir AIP" },
+    { "id": "0007", "type": "deepdive",  "slug": "labor-day-2026",      "date": "2026-05-01", "title": "劳动的终局，还是转型的前夜？2026 五一劳动 vs AI 全景" },
+    { "id": "0008", "type": "deepdive",  "slug": "vending-reverse",     "date": "2026-05-09", "title": "我的朋友带来了一台售货机和一个下午，我只用了 15 分钟" },
+    { "id": "0009", "type": "deepdive",  "slug": "code-with-claude-2026","date": "2026-05-10", "title": "Code with Claude 2026 · 从模型公司到 Agent 平台" },
+    { "id": "0010", "type": "deepdive",  "slug": "bot-dream",           "date": "2026-05-13", "title": "问野的十六个深夜 · Night Lab" },
+    { "id": "0011", "type": "deepdive",  "slug": "project-school",      "date": "2026-05-15", "title": "Z School · AI 天才少年计划" },
+
+    { "id": "0001", "type": "research",  "slug": "abap-bench",          "date": "2026-05-09", "title": "ABAP-Bench · AI × SAP 评测" },
+    { "id": "0002", "type": "research",  "slug": "llm-from-scratch",    "date": "2026-05-09", "title": "LLM from Scratch · 全栈 LLM 系统" },
+    { "id": "0003", "type": "research",  "slug": "vit",                 "date": "2026-05-15", "title": "VIT Secure Inference · 隐私保护视觉推理" },
+
+    { "id": "0001", "type": "roam",      "slug": "vending-reverse",     "date": "2026-05-09", "title": "售货机协议 15 分钟逆向" },
+    { "id": "0002", "type": "roam",      "slug": "bot-dream",           "date": "2026-05-13", "title": "问野的十六个深夜 · Night Lab" },
+
+    { "id": "0001", "type": "apps",      "slug": "distance",            "date": "2026-05-15", "title": "距离测试" },
+    { "id": "0002", "type": "apps",      "slug": "hypothesisor",        "date": "2026-05-08", "title": "Hypothesisor" },
+    { "id": "0003", "type": "apps",      "slug": "skills-creator",      "date": "2026-05-08", "title": "Skills Creator" },
+    { "id": "0004", "type": "apps",      "slug": "claude-code-migration","date": "2026-05-08", "title": "Claude Code Migration" },
+
+    { "id": "0085", "type": "buzzwords", "ep": 85,                      "date": "2026-05-15", "title": "每周 AI 情报 · EP.85" }
+  ]
+}

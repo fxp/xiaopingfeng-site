@@ -243,21 +243,42 @@ deepdive/<slug>/
 
 ---
 
-## 8. 发布新文章流程（快速参考）
+## 8. 发布 Skills（五类内容入口）
 
-使用 `/deepdive-publish` skill（`~/.claude/skills/deepdive-publish/SKILL.md`）。
+每类内容有专属 skill，**不要手动操作**，通过 skill 发布可自动处理 ID 编号和日期。
 
-手动流程：
-
-1. 准备 `index.html`（Design System v2，CSS 路径 `../../`）
-2. `mkdir -p deepdive/<slug>/`
-3. 写入 `index.html` + `index.meta.json`
-4. 在 `deepdive/index.html` 的 `<!-- ENABLED -->` 区块插入新 `.group` 卡片
-5. `git add deepdive/<slug>/ deepdive/index.html && git commit && git push origin main`
+| Skill | 用途 | 触发词示例 |
+|---|---|---|
+| `/deepdive-publish` | DeepDive 深潜文章 | "发布这篇文章"、"把这个加到 deepdive" |
+| `/buzzwords-episode` | AI Buzzwords Episode | "发布 EP.85"、"上线这期分享" |
+| `/research-add` | 研究项目落地页 | "发布这个研究"、"加到 research" |
+| `/roam-task` | 问野任务记录 | "记录这个 roam 任务"、"问野更新" |
+| `/xpf-app` | 在线工具 | "把这个工具上线"、"加到 apps" |
 
 ---
 
-## 9. 相关 Repo
+## 9. 内容编号规则
+
+每类内容独立计数，四位数，从 `0001` 开始。注册表：`config/content-index.json`。
+
+| 类型 | 前缀显示 | 计数器字段 | 当前最大 |
+|---|---|---|---|
+| DeepDive | `DD · 0001` | `counters.deepdive` | 0011 |
+| Buzzwords | `EP.0085`（与期数一致）| `counters.buzzwords` | 0085 |
+| Research | `RE · 0001` | `counters.research` | 0003 |
+| Roam | `RM · 0001` | `counters.roam` | 0002 |
+| Apps | `AP · 0001` | `counters.apps` | 0004 |
+
+**发布新内容时（通过 skill）**：
+1. 读取 `config/content-index.json`，取对应类型的 `counters.<type>` 加 1
+2. 将新条目追加到 `items` 数组
+3. 在文章 HTML 的顶部导航条（`.meta` 区域）显示：`<type_prefix> · <id> · <YYYY-MM-DD>`
+4. 更新 `counters.<type>` 为新值
+5. `git add config/content-index.json` 一起 commit
+
+---
+
+## 10. 相关 Repo
 
 | Repo | 职责 | 部署目标 |
 |---|---|---|
