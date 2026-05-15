@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天才挑战 · Z School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #09090F;
+      --bg2:     #0C0C14;
+      --surface: #111119;
+      --surface2:#161622;
+      --border:  rgba(255,255,255,0.06);
+      --border2: rgba(255,255,255,0.12);
+
+      /* tier colors */
+      --t1: #3B82F6;   /* 蓝 · 探索者 */
+      --t2: #A855F7;   /* 紫 · 构建者 */
+      --t3: #EF4444;   /* 红 · 突破者 */
+      --t4: #F59E0B;   /* 金 · 传说   */
+
+      --green:  #00FF88;
+      --text:   #EBEBEB;
+      --muted:  #777788;
+      --dim:    #3A3A4A;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Noto Sans SC', sans-serif;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      background: rgba(9,9,15,0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 54px; padding: 0 2rem;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .nav-brand {
+      font-family: var(--mono); font-size:13px; color:var(--green);
+      text-decoration:none;
+    }
+    .nav-links { display:flex; gap:1.5rem; }
+    .nav-links a {
+      font-family: var(--mono); font-size:11px; color:var(--muted);
+      text-decoration:none; transition:color .2s;
+    }
+    .nav-links a:hover { color:var(--text); }
+    .nav-apply {
+      font-family: var(--mono); font-size:11px; font-weight:700;
+      background:var(--green); color:#09090F;
+      padding:0.4rem 1rem; border-radius:5px;
+      text-decoration:none; transition:opacity .2s;
+    }
+    .nav-apply:hover { opacity:.85; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 100px 2rem 64px;
+      max-width: 960px; margin: 0 auto; text-align:center;
+    }
+    .hero-tag {
+      font-family: var(--mono); font-size:11px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.12em;
+      color:var(--green); margin-bottom:1.5rem;
+    }
+    .hero-title {
+      font-size: clamp(2rem,5.5vw,3.8rem);
+      font-weight:700; line-height:1.15; letter-spacing:-.02em;
+      margin-bottom:1.25rem;
+    }
+    .hero-title .acc { color:var(--green); }
+    .hero-sub {
+      font-size:1.05rem; color:var(--muted);
+      max-width:600px; margin:0 auto 3rem;
+    }
+
+    /* tier legend */
+    .tier-legend {
+      display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+      margin-bottom:3rem;
+    }
+    .tier-pill {
+      display:flex; align-items:center; gap:0.5rem;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:100px; padding:0.4rem 1rem;
+      font-family:var(--mono); font-size:12px; font-weight:700;
+    }
+    .tier-dot { width:8px; height:8px; border-radius:50%; }
+
+    /* stats bar */
+    .stats {
+      display:flex; gap:2.5rem; justify-content:center;
+      flex-wrap:wrap; margin-bottom:0;
+    }
+    .stat { text-align:center; }
+    .stat .n {
+      font-family:var(--mono); font-size:2rem; font-weight:700;
+      color:var(--green); display:block;
+    }
+    .stat .l { font-size:.78rem; color:var(--muted); }
+
+    /* ── SECTION ── */
+    section { padding:72px 2rem; max-width:1120px; margin:0 auto; }
+    .sec-tag {
+      font-family:var(--mono); font-size:10px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.12em;
+      color:var(--muted); margin-bottom:.6rem;
+    }
+    .sec-title {
+      font-size:clamp(1.5rem,3vw,2rem); font-weight:700;
+      letter-spacing:-.02em; margin-bottom:.6rem;
+    }
+    .sec-sub { font-size:.95rem; color:var(--muted); max-width:560px; margin-bottom:2.5rem; }
+    .divider { border:none; border-top:1px solid var(--border); max-width:1120px; margin:0 auto; }
+
+    /* ── CHALLENGE CARD ── */
+    .challenges-grid {
+      display:grid; gap:1.25rem;
+    }
+    .challenge-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:16px; overflow:hidden;
+      transition:border-color .25s, transform .2s;
+      position:relative;
+    }
+    .challenge-card:hover {
+      border-color:var(--border2);
+      transform:translateY(-2px);
+    }
+    .challenge-card .tier-stripe {
+      position:absolute; top:0; left:0; right:0; height:2px;
+    }
+
+    .card-body { padding:1.5rem; }
+    .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .card-meta { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+    .tier-badge {
+      font-family:var(--mono); font-size:10px; font-weight:700;
+      padding:2px 8px; border-radius:3px; border:1px solid;
+      white-space:nowrap;
+    }
+    .track-badge {
+      font-family:var(--mono); font-size:10px; color:var(--muted);
+      padding:2px 8px; border-radius:3px;
+      border:1px solid var(--border2);
+    }
+    .card-num {
+      font-family:var(--mono); font-size:11px; color:var(--dim);
+      white-space:nowrap;
+    }
+    .card-title {
+      font-size:1.05rem; font-weight:700; margin-bottom:.5rem; line-height:1.35;
+    }
+    .card-eng {
+      font-family:var(--mono); font-size:.75rem; color:var(--muted);
+      margin-bottom:.75rem;
+    }
+    .card-desc { font-size:.88rem; color:var(--muted); line-height:1.65; margin-bottom:1rem; }
+
+    .card-details { display:flex; flex-direction:column; gap:.75rem; }
+
+    .detail-block {}
+    .detail-label {
+      font-family:var(--mono); font-size:10px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.08em;
+      color:var(--dim); margin-bottom:.35rem;
+    }
+    .detail-content { font-size:.82rem; color:var(--text); line-height:1.6; }
+    .detail-content ul { list-style:none; }
+    .detail-content ul li {
+      padding:.25rem 0; border-bottom:1px solid rgba(255,255,255,.03);
+      display:flex; gap:.6rem; align-items:flex-start;
+    }
+    .detail-content ul li:last-child { border-bottom:none; }
+    .li-bullet { color:var(--green); font-family:var(--mono); font-size:.7rem; min-width:1rem; padding-top:2px; }
+
+    .card-footer {
+      margin-top:1rem; padding-top:1rem;
+      border-top:1px solid rgba(255,255,255,.05);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      flex-wrap:wrap;
+    }
+    .time-tag {
+      font-family:var(--mono); font-size:.72rem; color:var(--muted);
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .difficulty-bar {
+      display:flex; gap:3px;
+    }
+    .diff-dot {
+      width:6px; height:6px; border-radius:50%;
+      background:var(--dim);
+    }
+    .diff-dot.on { background:var(--green); }
+    .output-tag {
+      font-family:var(--mono); font-size:.7rem; font-weight:700;
+      padding:2px 8px; border-radius:3px;
+      background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.18);
+      color:var(--green);
+    }
+
+    /* tier color helpers */
+    .t1 { color:var(--t1); border-color:rgba(59,130,246,.3); background:rgba(59,130,246,.08); }
+    .t1s { background:var(--t1); }
+    .t2 { color:var(--t2); border-color:rgba(168,85,247,.3); background:rgba(168,85,247,.08); }
+    .t2s { background:var(--t2); }
+    .t3 { color:var(--t3); border-color:rgba(239,68,68,.3);  background:rgba(239,68,68,.08); }
+    .t3s { background:var(--t3); }
+    .t4 { color:var(--t4); border-color:rgba(245,158,11,.3); background:rgba(245,158,11,.08); }
+    .t4s { background:var(--t4); }
+
+    /* track headers */
+    .track-header {
+      display:flex; align-items:center; gap:1rem;
+      margin-bottom:1.5rem; margin-top:2.5rem;
+    }
+    .track-header:first-of-type { margin-top:0; }
+    .track-label {
+      font-family:var(--mono); font-size:11px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.1em; color:var(--muted);
+    }
+    .track-line { flex:1; border-top:1px solid var(--border); }
+
+    /* two-col grid for lower tiers */
+    .grid-2 { grid-template-columns:repeat(2,1fr); }
+    .grid-1 { grid-template-columns:1fr; }
+
+    /* ── RESEARCH READING ── */
+    .papers-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;
+    }
+    .paper-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:1.25rem;
+      transition:border-color .2s;
+    }
+    .paper-card:hover { border-color:var(--border2); }
+    .paper-tag {
+      font-family:var(--mono); font-size:.7rem; font-weight:700;
+      color:var(--muted); margin-bottom:.5rem; text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .paper-title { font-size:.88rem; font-weight:700; margin-bottom:.35rem; line-height:1.4; }
+    .paper-why { font-size:.78rem; color:var(--muted); line-height:1.55; }
+    .paper-link {
+      font-family:var(--mono); font-size:.72rem; color:var(--green);
+      margin-top:.6rem; display:block; text-decoration:none;
+    }
+    .paper-link:hover { text-decoration:underline; }
+
+    /* ── CTA ── */
+    .cta-box {
+      background:var(--surface); border:1px solid rgba(0,255,136,.15);
+      border-radius:18px; padding:3.5rem 2.5rem; text-align:center;
+    }
+    .cta-box h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; margin-bottom:.75rem; letter-spacing:-.02em; }
+    .cta-box p { font-size:.95rem; color:var(--muted); max-width:460px; margin:0 auto 2rem; }
+    .cta-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .btn-g {
+      font-family:var(--mono); font-size:13px; font-weight:700;
+      background:var(--green); color:#09090F;
+      padding:.8rem 1.8rem; border-radius:7px;
+      text-decoration:none; transition:opacity .2s;
+    }
+    .btn-g:hover { opacity:.85; }
+    .btn-o {
+      font-family:var(--mono); font-size:13px;
+      background:transparent; color:var(--text);
+      padding:.8rem 1.8rem; border-radius:7px;
+      border:1px solid var(--border2); text-decoration:none;
+      transition:border-color .2s;
+    }
+    .btn-o:hover { border-color:var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:860px) {
+      .grid-2 { grid-template-columns:1fr; }
+      .nav-links { display:none; }
+      .stats { gap:1.5rem; }
+    }
+    @media (max-width:540px) {
+      section { padding:56px 1.25rem; }
+      .tier-legend { gap:.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://zschool-ai-camp.vercel.app" class="nav-brand">[Z School]</a>
+  <div class="nav-links">
+    <a href="#transformer">Transformer</a>
+    <a href="#inference">推理优化</a>
+    <a href="#memory">Agent Memory</a>
+    <a href="#legendary">传说挑战</a>
+    <a href="#papers">必读论文</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// genius_challenges.md · AI frontier tasks</div>
+  <h1 class="hero-title">
+    真正难的问题，<br>
+    <span class="acc">留给真正想做的人</span>
+  </h1>
+  <p class="hero-sub">
+    这不是课程作业。这些是 AI 领域工程师和研究员真正在解决的问题。
+    你不需要全部做完——找到一个让你停不下来的，然后冲进去。
+  </p>
+
+  <div class="tier-legend">
+    <div class="tier-pill"><div class="tier-dot" style="background:var(--t1)"></div> Lv.1 探索者</div>
+    <div class="tier-pill"><div class="tier-dot" style="background:var(--t2)"></div> Lv.2 构建者</div>
+    <div class="tier-pill"><div class="tier-dot" style="background:var(--t3)"></div> Lv.3 突破者</div>
+    <div class="tier-pill"><div class="tier-dot" style="background:var(--t4)"></div> Lv.4 传说</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n">15</span><span class="l">个挑战任务</span></div>
+    <div class="stat"><span class="n">4</span><span class="l">个难度等级</span></div>
+    <div class="stat"><span class="n">5</span><span class="l">个技术方向</span></div>
+    <div class="stat"><span class="n">∞</span><span class="l">Token 无限量供给</span></div>
+  </div>
+</div>
+
+<!-- ════════════════ TRACK 1: TRANSFORMER ════════════════ -->
+<section id="transformer">
+  <div class="sec-tag">// track_01</div>
+  <h2 class="sec-title">Transformer 架构</h2>
+  <p class="sec-sub">从 Attention 到 KV Cache，理解现代大模型的核心机制。读懂这里，你就读懂了 GPT、Claude、LLaMA 的心脏。</p>
+
+  <div class="challenges-grid grid-2">
+
+    <!-- C01 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t1s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t1">Lv.1 · 探索者</div>
+            <div class="track-badge">Transformer</div>
+          </div>
+          <div class="card-num">#C01</div>
+        </div>
+        <div class="card-title">Mini-Transformer 从零实现</div>
+        <div class="card-eng">Build a Character-Level Transformer from Scratch</div>
+        <div class="card-desc">
+          不用 HuggingFace，不用封装好的 API。用纯 Python + NumPy（或 PyTorch 基础算子）实现一个完整的 Transformer，训练它学会生成中文古诗或代码片段。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">必须实现的模块</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>Token Embedding + Positional Encoding（理解为什么需要位置信息）</li>
+              <li><span class="li-bullet">▸</span>Multi-Head Self-Attention（矩阵乘法手推一遍）</li>
+              <li><span class="li-bullet">▸</span>Feed-Forward Network + LayerNorm</li>
+              <li><span class="li-bullet">▸</span>训练循环、损失曲线可视化、采样生成</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">挑战加成</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">+</span>解释：为什么是 Q·Kᵀ / √d_k？把 √d_k 去掉会发生什么？</li>
+              <li><span class="li-bullet">+</span>可视化不同注意力头在关注什么</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 1–2 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：GitHub + 生成样本</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C02 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t1s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t1">Lv.1 · 探索者</div>
+            <div class="track-badge">Transformer</div>
+          </div>
+          <div class="card-num">#C02</div>
+        </div>
+        <div class="card-title">注意力地图解析器</div>
+        <div class="card-eng">Attention Head Specialization Visualizer</div>
+        <div class="card-desc">
+          不同的注意力头学到了不同的东西：有的关注语法依存，有的关注实体指代，有的关注标点。用 BertViz 或者自己写提取逻辑，找到这些规律并写报告。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">研究问题</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>用 GPT-2 或 LLaMA 提取所有层所有头的注意力权重</li>
+              <li><span class="li-bullet">▸</span>哪个头专注于"主语→动词"关系？哪个关注代词消解？</li>
+              <li><span class="li-bullet">▸</span>更深的层 vs 浅层，注意力模式有何不同？</li>
+              <li><span class="li-bullet">▸</span>剪掉某个头，模型性能下降多少？（注意力头剪枝实验）</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 1 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：可视化报告</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C03 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">KV Cache</div>
+          </div>
+          <div class="card-num">#C03</div>
+        </div>
+        <div class="card-title">KV Cache 可视化与内存分析</div>
+        <div class="card-eng">KV Cache Memory Profiler</div>
+        <div class="card-desc">
+          KV Cache 是让 LLM 推理不慢死的关键——每个 token 生成都需要重用之前所有 token 的 K、V。但它会吃掉大量显存。理解它，然后量化它。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实现任务</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>Hook 进 transformers 库，实时记录 KV Cache 的形状和显存占用</li>
+              <li><span class="li-bullet">▸</span>画出：随序列长度增长，KV Cache 显存占用曲线</li>
+              <li><span class="li-bullet">▸</span>对比：有 KV Cache vs 无 KV Cache 的推理速度（latency per token）</li>
+              <li><span class="li-bullet">▸</span>计算：一个 7B 模型，4096 上下文，KV Cache 需要多少 GB？推导公式</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">核心公式推导</div>
+            <div class="detail-content" style="font-family:var(--mono);font-size:.78rem;color:var(--text);line-height:1.8;">
+              KV_memory = 2 × n_layers × n_heads × d_head × seq_len × dtype_bytes<br>
+              <span style="color:var(--muted)">// 推导这个公式，然后用真实模型验证它</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 1–2 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：分析报告 + 可视化</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C04 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">Attention</div>
+          </div>
+          <div class="card-num">#C04</div>
+        </div>
+        <div class="card-title">GQA vs MHA：缩减 KV Cache 的代价</div>
+        <div class="card-eng">Grouped Query Attention vs Multi-Head Attention</div>
+        <div class="card-desc">
+          LLaMA-2 用了 GQA，把 KV head 数量从 32 降到 8，KV Cache 缩小 4×。但质量下降了多少？实现两种注意力机制，做严格的对比实验。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实验设计</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>实现 MHA（32 heads）和 GQA（groups=1,2,4,8,32），代码可互换</li>
+              <li><span class="li-bullet">▸</span>在小规模语言模型上训练，对比 perplexity、推理速度、显存</li>
+              <li><span class="li-bullet">▸</span>画出：KV groups 数量 vs 质量 vs 速度 的三维权衡图</li>
+              <li><span class="li-bullet">▸</span>复现 GQA 论文中的 scaling law 曲线（部分）</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2–3 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：实验报告 + 代码</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ════════════════ TRACK 2: 推理优化 ════════════════ -->
+<section id="inference">
+  <div class="sec-tag">// track_02</div>
+  <h2 class="sec-title">推理优化</h2>
+  <p class="sec-sub">让模型跑得更快、更省显存，同时不（太）损失质量。Speculative Decoding、量化、Paged Attention——这些技术让 ChatGPT 能服务百万用户。</p>
+
+  <div class="challenges-grid grid-2">
+
+    <!-- C05 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">推理优化</div>
+          </div>
+          <div class="card-num">#C05</div>
+        </div>
+        <div class="card-title">Speculative Decoding 实现与分析</div>
+        <div class="card-eng">Speculative Decoding: Draft + Verify</div>
+        <div class="card-desc">
+          大模型生成很慢，因为每次只能生成一个 token。Speculative Decoding 用小模型（draft）先猜 k 个 token，再用大模型（verifier）一次性验证。对的就用，错的就丢——平均加速 2-3×。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实现任务</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>实现 speculative decoding 的验证接受/拒绝逻辑（论文 Algorithm 1）</li>
+              <li><span class="li-bullet">▸</span>测量：token 接受率（acceptance rate）随 draft 模型大小的变化</li>
+              <li><span class="li-bullet">▸</span>测量：端到端 latency，与 greedy decoding 对比</li>
+              <li><span class="li-bullet">▸</span>探索：如果 draft 和 target 模型的词表不一样怎么办？</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">关键问题</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>什么类型的任务接受率最高？（重复性文本 vs 创意写作）</li>
+              <li><span class="li-bullet">?</span>k 设成多少最优？存在 optimal k 吗？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2–3 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：代码 + benchmark 数据</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C06 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">量化</div>
+          </div>
+          <div class="card-num">#C06</div>
+        </div>
+        <div class="card-title">INT8 量化从零实现</div>
+        <div class="card-eng">Post-Training Quantization: FP32 → INT8</div>
+        <div class="card-desc">
+          把模型权重从 32位浮点压缩到 8位整数，显存减半，推理加速。但精度会损失。自己实现量化，找到损失的边界。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实现路径</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>实现 per-tensor、per-channel、per-group 三种量化粒度</li>
+              <li><span class="li-bullet">▸</span>对比：对称量化 vs 非对称量化，精度差异</li>
+              <li><span class="li-bullet">▸</span>找到"精度悬崖"：量化到什么程度模型开始胡说？</li>
+              <li><span class="li-bullet">▸</span>尝试混合精度：只量化权重，激活保持 FP16</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">挑战加成（Lv.3 方向）</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">+</span>实现 GPTQ（基于 Hessian 的逐层量化），对比 naive 量化</li>
+              <li><span class="li-bullet">+</span>为什么 outlier 激活值会破坏量化？LLM.int8() 怎么解决这个问题？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：量化库 + 精度报告</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C07 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t3s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t3">Lv.3 · 突破者</div>
+            <div class="track-badge">KV Cache</div>
+          </div>
+          <div class="card-num">#C07</div>
+        </div>
+        <div class="card-title">KV Cache 驱逐策略设计</div>
+        <div class="card-eng">KV Cache Eviction Policy: Beyond H2O</div>
+        <div class="card-desc">
+          当上下文超过显存限制，必须丢弃一些 KV。H2O 丢低注意力分数的，StreamingLLM 只保留最近的。但这两种都是事后策略。
+          你能设计一个预测性的驱逐策略吗？
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">研究问题（没有标准答案）</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>哪些 token 的 KV 是"必须保留"的？能在需要它之前就预测到吗？</li>
+              <li><span class="li-bullet">?</span>不同任务（推理题 vs 对话 vs 代码）的最优保留策略一样吗？</li>
+              <li><span class="li-bullet">?</span>能训练一个小模型来预测"这个 KV 还会被 attend 到"吗？</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">交付要求</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>实现至少一种新驱逐策略</li>
+              <li><span class="li-bullet">▸</span>在 RULER 或 LongBench 上对比 H2O 和 StreamingLLM</li>
+              <li><span class="li-bullet">▸</span>写清楚：你的策略在什么情况下比现有方法好，在什么情况下更差</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 3–5 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+          </div>
+          <div class="output-tag">交付：论文草稿水平</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C08 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t3s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t3">Lv.3 · 突破者</div>
+            <div class="track-badge">Attention</div>
+          </div>
+          <div class="card-num">#C08</div>
+        </div>
+        <div class="card-title">稀疏注意力：为任务设计 Attention 模式</div>
+        <div class="card-eng">Task-Specific Sparse Attention Patterns</div>
+        <div class="card-desc">
+          全注意力是 O(n²)——序列长度翻倍，计算量翻四倍。Longformer 用了滑动窗口，BigBird 用了随机稀疏。但这些是通用的。
+          如果你针对一个特定任务设计稀疏模式，能做得更好吗？
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">选择一个领域，设计专属稀疏模式</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>代码生成：函数调用关系需要 attention，注释可以稀疏</li>
+              <li><span class="li-bullet">▸</span>数学推理：每一步需要 attend 到前面的推导链</li>
+              <li><span class="li-bullet">▸</span>结构化文档：章节标题需要全局 attention，正文可以局部</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">评估</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>质量：在该任务上 vs 全注意力，perplexity / task accuracy</li>
+              <li><span class="li-bullet">▸</span>速度：实际 FLOPs 减少量，实测 wall-clock time</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 3–4 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+          </div>
+          <div class="output-tag">交付：实验报告 + 代码</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ════════════════ TRACK 3: AGENT MEMORY ════════════════ -->
+<section id="memory">
+  <div class="sec-tag">// track_03</div>
+  <h2 class="sec-title">Agent Memory</h2>
+  <p class="sec-sub">Agent 如何记忆？如何从海量过去经验中检索有用信息？如何在多 Agent 之间共享和同步记忆？这是 AI 从工具变成"伙伴"的核心问题。</p>
+
+  <div class="challenges-grid grid-2">
+
+    <!-- C09 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t1s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t1">Lv.1 · 探索者</div>
+            <div class="track-badge">RAG</div>
+          </div>
+          <div class="card-num">#C09</div>
+        </div>
+        <div class="card-title">RAG 记忆系统：从零到能用</div>
+        <div class="card-eng">Build a Long-Term Memory System for an AI Agent</div>
+        <div class="card-desc">
+          不用 LangChain，不用 LlamaIndex。用 Python + 向量数据库（FAISS 或 Chroma），给一个 AI Agent 装上长期记忆，让它能记住几十次对话前你说过的事。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实现任务</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>文本 → Embedding → 向量存储（FAISS）</li>
+              <li><span class="li-bullet">▸</span>用户提问 → 向量检索 → 注入上下文 → 回答</li>
+              <li><span class="li-bullet">▸</span>解决记忆冲突：Agent 记住了"我喜欢猫"，又记住了"我不喜欢猫"，怎么办？</li>
+              <li><span class="li-bullet">▸</span>记忆老化：旧的记忆应该比新的权重低吗？怎么实现？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 1–2 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：可运行系统</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C10 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">Memory</div>
+          </div>
+          <div class="card-num">#C10</div>
+        </div>
+        <div class="card-title">Agent 记忆压缩</div>
+        <div class="card-eng">Hierarchical Memory Compression for Long Agents</div>
+        <div class="card-desc">
+          长对话的 Agent 会撑爆 context window。简单截断会丢失重要信息。设计一个分层记忆压缩系统：工作记忆（当前）→ 短期记忆（自动摘要）→ 长期记忆（向量检索）。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">核心设计问题</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>什么信息值得压缩保留，什么可以丢弃？（重要性评分怎么做）</li>
+              <li><span class="li-bullet">?</span>压缩后的记忆 vs 原始记忆，信息损失有多少？怎么量化？</li>
+              <li><span class="li-bullet">?</span>何时触发从短期到长期的记忆转移？</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">评估指标</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>在 100 轮对话后，Agent 能回答多少早期对话的问题？</li>
+              <li><span class="li-bullet">▸</span>对比 naive 截断：信息保留率 vs context 使用效率</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2–3 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：系统 + 评估报告</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C11 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t3s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t3">Lv.3 · 突破者</div>
+            <div class="track-badge">Multi-Agent</div>
+          </div>
+          <div class="card-num">#C11</div>
+        </div>
+        <div class="card-title">多 Agent 记忆共享协议</div>
+        <div class="card-eng">Distributed Memory Consistency for Multi-Agent Systems</div>
+        <div class="card-desc">
+          多个 Agent 同时工作、共享记忆——但如果两个 Agent 同时写入冲突的信息怎么办？这是分布式系统中的经典问题（CAP 理论），在 AI Agent 里有了新的变体。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">设计挑战</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>设计一套 Agent 记忆写入/读取协议（参考 CRDT 或 Operational Transformation）</li>
+              <li><span class="li-bullet">▸</span>当 Agent A 认为"客户偏好X"，Agent B 认为"客户偏好Y"，如何合并？</li>
+              <li><span class="li-bullet">▸</span>实现冲突检测 + 仲裁机制（谁的记忆更可信？依据是什么？）</li>
+              <li><span class="li-bullet">▸</span>压力测试：10 个 Agent 并发写入，记忆一致性能保证吗？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 4–6 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+          </div>
+          <div class="output-tag">交付：协议设计文档 + 实现</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C12 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">Fine-tuning</div>
+          </div>
+          <div class="card-num">#C12</div>
+        </div>
+        <div class="card-title">LoRA 从零实现 + 变体探索</div>
+        <div class="card-eng">Low-Rank Adaptation: Implementation & Variants</div>
+        <div class="card-desc">
+          LoRA 是当前最主流的大模型微调方法：冻结原始权重，只训练低秩矩阵，参数量减少 99%。自己实现它，然后问：rank 应该怎么选？能不能自适应？
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实现路径</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>实现 LoRA 层（W → W₀ + BA，B初始化为0，A随机初始化）</li>
+              <li><span class="li-bullet">▸</span>在 GPT-2 上微调一个特定风格的文本生成任务</li>
+              <li><span class="li-bullet">▸</span>实验：rank=1,2,4,8,16,64，质量 vs 参数量曲线</li>
+              <li><span class="li-bullet">▸</span>尝试 AdaLoRA：rank 在训练中自动调整（根据奇异值重要性）</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">思考题</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>为什么只加在 Q、V 矩阵上，而不是全部权重？</li>
+              <li><span class="li-bullet">?</span>LoRA 合并回原始权重后，推理速度和原始模型一样吗？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：代码 + 实验报告</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ════════════════ TRACK 4: 推理时计算 ════════════════ -->
+<section>
+  <div class="sec-tag">// track_04</div>
+  <h2 class="sec-title">推理时计算缩放</h2>
+  <p class="sec-sub">o1、DeepSeek-R1 告诉我们：让模型"多想一会儿"，它会更聪明。但多思考多少才够？什么问题值得多思考？这些是现在最热的研究方向。</p>
+
+  <div class="challenges-grid grid-2">
+
+    <!-- C13 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t2s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t2">Lv.2 · 构建者</div>
+            <div class="track-badge">推理缩放</div>
+          </div>
+          <div class="card-num">#C13</div>
+        </div>
+        <div class="card-title">思考 Token 的边际收益实验</div>
+        <div class="card-eng">Test-Time Compute Scaling: Where Does Thinking Stop Helping?</div>
+        <div class="card-desc">
+          给模型更多 token 思考，它会更准确——但到什么时候停止有帮助？设计一组实验，找到"思考 token 数量 vs 准确率"的缩放曲线。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">实验设计</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>任务：数学题（AMC/AIME）、代码调试、逻辑推理</li>
+              <li><span class="li-bullet">▸</span>控制变量：强制模型在 N tokens 内给出答案（N = 100,500,1000,5000）</li>
+              <li><span class="li-bullet">▸</span>画出：每类任务的 accuracy vs thinking tokens 曲线</li>
+              <li><span class="li-bullet">▸</span>找到"拐点"：超过多少 token 之后准确率不再提升？甚至下降？</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">更深的问题</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>模型是"真的在想"还是在"填充文字"？怎么区分？</li>
+              <li><span class="li-bullet">?</span>给定固定的 compute budget，是跑 1 次长思考 vs 跑 N 次短思考再投票，哪个更好？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 2–3 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+          </div>
+          <div class="output-tag">交付：实验数据 + 分析</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C14 -->
+    <div class="challenge-card">
+      <div class="tier-stripe t3s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t3">Lv.3 · 突破者</div>
+            <div class="track-badge">推理缩放</div>
+          </div>
+          <div class="card-num">#C14</div>
+        </div>
+        <div class="card-title">难度自适应计算分配</div>
+        <div class="card-eng">Difficulty-Adaptive Compute Allocation for Reasoning</div>
+        <div class="card-desc">
+          简单的问题不需要想很久。复杂的问题需要更多 token。能不能在回答之前，先预测这道题的难度，然后动态分配计算资源？
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">核心设计</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>训练一个难度预测器（或用启发式方法）：看问题 → 预测需要多少 thinking tokens</li>
+              <li><span class="li-bullet">▸</span>实现 early stopping：如果模型"已经确定了"（低熵），提前结束思考</li>
+              <li><span class="li-bullet">▸</span>对比 fixed budget vs adaptive budget，相同平均计算量下的准确率</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">挑战</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">?</span>模型对自己的难度判断可靠吗？什么类型的题容易判断错？</li>
+              <li><span class="li-bullet">?</span>过度自信的模型会在简单题上思考不够，从而出错——怎么检测和防止？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 4 周</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+          </div>
+          <div class="output-tag">交付：系统 + 论文草稿</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ════════════════ LEGENDARY ════════════════ -->
+<section id="legendary">
+  <div class="sec-tag">// track_05 · legendary_only</div>
+  <h2 class="sec-title" style="color:var(--t4)">⚡ 传说挑战</h2>
+  <p class="sec-sub">这些挑战没有参考答案，也没有已知的最优解。完成任何一个，就已经接近研究员水平。</p>
+
+  <div class="challenges-grid grid-1">
+
+    <!-- C15 -->
+    <div class="challenge-card" style="border-color:rgba(245,158,11,.2); background:linear-gradient(135deg,rgba(245,158,11,.04),var(--surface))">
+      <div class="tier-stripe t4s"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-meta">
+            <div class="tier-badge t4">Lv.4 · 传说</div>
+            <div class="track-badge">Systems</div>
+          </div>
+          <div class="card-num">#C15</div>
+        </div>
+        <div class="card-title">Flash Attention Triton 实现</div>
+        <div class="card-eng">Implement Flash Attention from Scratch in Triton/CUDA</div>
+        <div class="card-desc">
+          Flash Attention 是近五年对 Transformer 效率影响最大的工作之一。它把注意力计算改写成 IO-aware 的形式：通过分块计算，避免把整个注意力矩阵写入 HBM，让显存带宽不再是瓶颈。
+          用 Triton（OpenAI 开源的 GPU kernel 语言）实现它。
+        </div>
+        <div class="card-details">
+          <div class="detail-block">
+            <div class="detail-label">学习路径（必须按顺序）</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">1</span>GPU 内存层次：HBM vs SRAM，带宽差距有多大？为什么 IO 是瓶颈？</li>
+              <li><span class="li-bullet">2</span>Naive 注意力的 IO 分析：读写了多少次 HBM？</li>
+              <li><span class="li-bullet">3</span>Flash Attention 算法（Dao et al.）：分块 + online softmax 的数学推导</li>
+              <li><span class="li-bullet">4</span>用 Triton 实现 forward pass，对比 PyTorch naive 实现的速度和显存</li>
+              <li><span class="li-bullet">5</span>（挑战加成）实现 backward pass（反向传播）</li>
+            </ul></div>
+          </div>
+          <div class="detail-block">
+            <div class="detail-label">成功标准</div>
+            <div class="detail-content"><ul>
+              <li><span class="li-bullet">▸</span>在长序列（4096+）上，显存占用接近 O(n) 而不是 O(n²)</li>
+              <li><span class="li-bullet">▸</span>数值结果与 PyTorch naive 实现一致（误差 &lt; 1e-3）</li>
+              <li><span class="li-bullet">▸</span>能解释：为什么 online softmax 在数值上是稳定的？</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="time-tag">⏱ 预计 6–10 周（真的很难）</div>
+          <div class="difficulty-bar">
+            <div class="diff-dot on" style="background:var(--t4)"></div>
+            <div class="diff-dot on" style="background:var(--t4)"></div>
+            <div class="diff-dot on" style="background:var(--t4)"></div>
+            <div class="diff-dot on" style="background:var(--t4)"></div>
+          </div>
+          <div class="output-tag" style="color:var(--t4); border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.08)">
+            交付：可运行 Triton kernel + 性能报告
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ════════════════ PAPERS ════════════════ -->
+<section id="papers">
+  <div class="sec-tag">// required_reading.papers</div>
+  <h2 class="sec-title">必读论文</h2>
+  <p class="sec-sub">不用都读懂。但每做一个挑战，先把对应的论文读一遍——哪怕只读 Abstract 和 Introduction。</p>
+
+  <div class="papers-grid">
+    <div class="paper-card">
+      <div class="paper-tag">Attention · 2017</div>
+      <div class="paper-title">Attention Is All You Need</div>
+      <div class="paper-why">所有 Transformer 的起点。读完你就知道 Q/K/V 是怎么来的。</div>
+      <a href="https://arxiv.org/abs/1706.03762" class="paper-link" target="_blank">arxiv.org/abs/1706.03762 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">Flash Attention · 2022</div>
+      <div class="paper-title">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</div>
+      <div class="paper-why">做挑战 #C15 的核心论文。理解 IO-aware 算法设计思维。</div>
+      <a href="https://arxiv.org/abs/2205.14135" class="paper-link" target="_blank">arxiv.org/abs/2205.14135 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">GQA · 2023</div>
+      <div class="paper-title">GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints</div>
+      <div class="paper-why">做挑战 #C04 的论文。LLaMA-2/3 用的技术。</div>
+      <a href="https://arxiv.org/abs/2305.13245" class="paper-link" target="_blank">arxiv.org/abs/2305.13245 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">Speculative Decoding · 2022</div>
+      <div class="paper-title">Fast Inference from Transformers via Speculative Decoding</div>
+      <div class="paper-why">做挑战 #C05 的论文。Google 的推理加速方法，现在是标配。</div>
+      <a href="https://arxiv.org/abs/2211.17192" class="paper-link" target="_blank">arxiv.org/abs/2211.17192 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">KV Cache Eviction · 2023</div>
+      <div class="paper-title">H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models</div>
+      <div class="paper-why">做挑战 #C07 的起点。理解 KV 驱逐的现有方法。</div>
+      <a href="https://arxiv.org/abs/2306.14048" class="paper-link" target="_blank">arxiv.org/abs/2306.14048 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">LoRA · 2021</div>
+      <div class="paper-title">LoRA: Low-Rank Adaptation of Large Language Models</div>
+      <div class="paper-why">做挑战 #C12 的论文。最广泛使用的微调方法，原理极简但效果出众。</div>
+      <a href="https://arxiv.org/abs/2106.09685" class="paper-link" target="_blank">arxiv.org/abs/2106.09685 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">MemGPT · 2023</div>
+      <div class="paper-title">MemGPT: Towards LLMs as Operating Systems</div>
+      <div class="paper-why">做挑战 #C10 的参考。把 Agent 的记忆管理类比成操作系统内存层次。</div>
+      <a href="https://arxiv.org/abs/2310.08560" class="paper-link" target="_blank">arxiv.org/abs/2310.08560 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">Test-Time Compute · 2024</div>
+      <div class="paper-title">Scaling LLM Test-Time Compute Optimally</div>
+      <div class="paper-why">做挑战 #C13/#C14 的核心论文。Deepmind 的工作，证明了推理时计算缩放定律。</div>
+      <a href="https://arxiv.org/abs/2408.03314" class="paper-link" target="_blank">arxiv.org/abs/2408.03314 →</a>
+    </div>
+    <div class="paper-card">
+      <div class="paper-tag">Quantization · 2022</div>
+      <div class="paper-title">LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale</div>
+      <div class="paper-why">做挑战 #C06 后的进阶读物。解决了量化中的 outlier 问题。</div>
+      <a href="https://arxiv.org/abs/2208.07339" class="paper-link" target="_blank">arxiv.org/abs/2208.07339 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding-top:0; padding-bottom:80px;">
+  <div class="cta-box">
+    <h2>找到你停不下来的那个问题</h2>
+    <p>不需要全部做完。找到一个让你着迷的挑战，进去，冲到你能冲到的最深处。</p>
+    <div class="cta-btns">
+      <a href="../" class="btn-g">了解 Project School →</a>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

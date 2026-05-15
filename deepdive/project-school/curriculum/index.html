@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课程结构 · Project School · Z School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #09090F;
+      --bg2:     #0E0E16;
+      --surface: #12121C;
+      --surface2:#181826;
+      --border:  rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --green:   #00FF88;
+      --cyan:    #00E5FF;
+      --amber:   #FFB800;
+      --rose:    #FF4D6D;
+      --indigo:  #6366F1;
+      --text:    #F0F0F0;
+      --muted:   #888899;
+      --dim:     #444455;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Noto Sans SC', sans-serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(9,9,15,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand {
+      font-family: var(--mono); font-size: 13px; font-weight: 500;
+      color: var(--green); text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+      text-decoration: none; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      background: var(--green); color: #09090F;
+      text-decoration: none; padding: 0.45rem 1.1rem;
+      border-radius: 6px; transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 110px 2rem 72px;
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; color: var(--green);
+      margin-bottom: 2rem; text-transform: uppercase;
+    }
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 700; line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title .accent { color: var(--green); }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 600px; margin: 0 auto 2.5rem;
+    }
+    .hero-manifesto {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      font-family: var(--mono); font-size: 0.85rem;
+      color: var(--text); text-align: left;
+      line-height: 1.9;
+    }
+    .hero-manifesto .comment { color: var(--dim); }
+    .hero-manifesto .kw { color: var(--green); }
+    .hero-manifesto .str { color: var(--amber); }
+
+    /* ── LAYOUT ── */
+    section {
+      padding: 80px 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-tag {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--muted);
+      max-width: 580px; margin-bottom: 3rem;
+    }
+
+    .divider {
+      border: none; border-top: 1px solid var(--border);
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    /* ── PRINCIPLES GRID ── */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .p-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: border-color .25s;
+    }
+    .p-card:hover { border-color: var(--border2); }
+    .p-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+    }
+    .p-card.g::before { background: var(--green); }
+    .p-card.c::before { background: var(--cyan); }
+    .p-card.a::before { background: var(--amber); }
+    .p-card-num {
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 1rem;
+    }
+    .p-card-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+    .p-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .p-card .tagline { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem; font-style: italic; }
+    .p-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+    .p-card .note {
+      margin-top: 1.25rem; padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.75rem;
+      color: var(--dim);
+    }
+    .p-card .note strong { color: var(--muted); }
+
+    /* ── PHASE TIMELINE ── */
+    .phase-header-row {
+      display: flex; align-items: flex-start; gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .phase-header-text { flex: 1; }
+    .phase-meta {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-width: 180px; text-align: center;
+      font-family: var(--mono);
+    }
+    .phase-meta .big {
+      font-size: 2.5rem; font-weight: 700; color: var(--green);
+      display: block;
+    }
+    .phase-meta .label { font-size: 0.75rem; color: var(--muted); }
+
+    .phase-block { margin-bottom: 3.5rem; }
+    .phase-bar {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-badge {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      padding: 0.3rem 0.75rem; border-radius: 4px;
+      border: 1px solid; white-space: nowrap;
+    }
+    .phase-badge.g { color: var(--green); border-color: rgba(0,255,136,.25); background: rgba(0,255,136,.08); }
+    .phase-badge.c { color: var(--cyan);  border-color: rgba(0,229,255,.25); background: rgba(0,229,255,.08); }
+    .phase-badge.a { color: var(--amber); border-color: rgba(255,184,0,.25);  background: rgba(255,184,0,.08); }
+    .phase-name { font-size: 1.2rem; font-weight: 700; }
+    .phase-motto { font-size: 0.85rem; color: var(--muted); margin-left: auto; max-width: 280px; text-align: right; }
+
+    .weeks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .week-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color .25s;
+    }
+    .week-card:hover { border-color: var(--border2); }
+    .week-head {
+      padding: 1.2rem 1.5rem 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .week-days {
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.35rem;
+    }
+    .week-title {
+      font-size: 0.95rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .week-body { padding: 1rem 1.5rem 1.25rem; }
+    .week-focus { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .day-list { list-style: none; }
+    .day-list li {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.84rem;
+    }
+    .day-list li:last-child { border-bottom: none; }
+    .day-num {
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+      color: var(--dim); min-width: 2.2rem; padding-top: 2px;
+    }
+    .day-title { color: var(--text); font-weight: 500; line-height: 1.4; }
+    .day-sub { color: var(--dim); font-size: 0.77rem; margin-top: 2px; }
+    .day-tag {
+      display: inline-block; margin-top: 4px;
+      font-family: var(--mono); font-size: 0.7rem;
+      background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2);
+      color: var(--green); border-radius: 3px; padding: 1px 6px;
+    }
+    .week-outcome {
+      margin-top: 1rem; padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem;
+    }
+    .outcome-badge {
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.2);
+      color: var(--green); border-radius: 3px; padding: 1px 6px;
+      white-space: nowrap;
+    }
+    .outcome-text { color: var(--muted); }
+
+    /* ── DAILY RHYTHM ── */
+    .rhythm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .rhythm-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .rhythm-time {
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      color: var(--green); margin-bottom: 0.5rem;
+    }
+    .rhythm-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .rhythm-desc { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── MOGWL ── */
+    .mogwl-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .mogwl-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: border-color .25s;
+    }
+    .mogwl-card:hover { border-color: var(--border2); }
+    .mogwl-letter {
+      font-family: var(--mono); font-size: 2rem; font-weight: 700;
+      color: var(--green); display: block; margin-bottom: 0.5rem;
+    }
+    .mogwl-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .mogwl-en { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .mogwl-q { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+    .mogwl-note {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    }
+    .mogwl-col h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem; }
+    .mogwl-col ul { list-style: none; }
+    .mogwl-col li {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.83rem;
+    }
+    .mogwl-col li:last-child { border-bottom: none; }
+    .mogwl-col li span { font-size: 1rem; min-width: 1.5rem; }
+    .mogwl-col .assess-title { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .mogwl-col .assess-desc { font-size: 0.78rem; color: var(--muted); }
+    .check { color: var(--green); }
+    .cross { color: var(--rose); }
+
+    /* ── ARSENAL ── */
+    .arsenal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+    .arsenal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: border-color .25s;
+    }
+    .arsenal-card:hover { border-color: var(--border2); }
+    .arsenal-card.unlimited {
+      border-color: rgba(0,255,136,.2);
+      background: linear-gradient(135deg, rgba(0,255,136,.05), var(--surface));
+    }
+    .arsenal-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .arsenal-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .arsenal-detail { font-size: 0.75rem; color: var(--muted); }
+    .arsenal-badge {
+      display: inline-block; margin-top: 0.5rem;
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.25);
+      color: var(--green); border-radius: 3px; padding: 1px 6px;
+    }
+
+    /* ── SHOWCASE ── */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .showcase-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem;
+      transition: border-color .25s;
+    }
+    .showcase-card:hover { border-color: var(--border2); }
+    .showcase-emoji { font-size: 1.75rem; margin-bottom: 0.75rem; }
+    .showcase-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .showcase-age { font-family: var(--mono); font-size: 0.7rem; color: var(--green); margin-bottom: 0.6rem; }
+    .showcase-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+    .showcase-result {
+      margin-top: 0.75rem; font-family: var(--mono);
+      font-size: 0.72rem; color: var(--cyan);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* ── CTA ── */
+    .cta-wrap {
+      margin: 0 2rem 80px; max-width: 1100px; margin-left: auto; margin-right: auto;
+    }
+    .cta-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,255,136,.2);
+      border-radius: 20px;
+      padding: 4rem 3rem;
+      text-align: center;
+    }
+    .cta-box h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .cta-box p { font-size: 1rem; color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      background: var(--green); color: #09090F;
+      text-decoration: none; padding: 0.85rem 2rem;
+      border-radius: 8px; transition: opacity .2s, transform .15s;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-secondary {
+      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      background: transparent; color: var(--text);
+      text-decoration: none; padding: 0.85rem 2rem;
+      border-radius: 8px; border: 1px solid var(--border2);
+      transition: border-color .2s, transform .15s;
+    }
+    .btn-secondary:hover { border-color: var(--muted); transform: translateY(-1px); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .principles-grid { grid-template-columns: 1fr; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .mogwl-grid { grid-template-columns: repeat(3, 1fr); }
+      .mogwl-note { grid-template-columns: 1fr; }
+      .phase-header-row { flex-direction: column; gap: 1.5rem; }
+      .phase-meta { min-width: unset; }
+      .phase-motto { display: none; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 60px 1.25rem; }
+      .mogwl-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-box { padding: 2.5rem 1.5rem; }
+      .weeks-grid { grid-template-columns: 1fr; }
+      .rhythm-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../" class="nav-brand">[Z School · Project School]</a>
+  <div class="nav-links">
+    <a href="#principles">设计原则</a>
+    <a href="#curriculum">三阶段</a>
+    <a href="#mogwl">MOGWL评估</a>
+    <a href="#arsenal">弹药库</a>
+    <a href="#showcase">项目案例</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// curriculum.md · 28-day build program</div>
+  <h1 class="hero-title">
+    从一个问题，<br>
+    到一个<span class="accent">真实运行的作品</span>
+  </h1>
+  <p class="hero-sub">
+    不是学课，是做东西。28天里你不会在课堂上坐着——<br>
+    你会找问题、构建、失败、迭代、最后在 Demo Day 把它发布出去。
+  </p>
+  <div class="hero-manifesto">
+<span class="comment">// 这28天唯一的考核标准</span><br>
+<span class="kw">const</span> graduation = {<br>
+&nbsp;&nbsp;shipped: <span class="str">"公网可访问的真实作品"</span>,<br>
+&nbsp;&nbsp;users: <span class="str">"至少有真实用户用过"</span>,<br>
+&nbsp;&nbsp;learning: <span class="str">"你知道自己学到了什么"</span>,<br>
+&nbsp;&nbsp;score: <span class="str">undefined</span>, <span class="comment">// 没有分数</span><br>
+&nbsp;&nbsp;ranking: <span class="str">undefined</span>, <span class="comment">// 没有排名</span><br>
+};
+  </div>
+</div>
+
+<!-- PRINCIPLES -->
+<section id="principles">
+  <div class="section-tag">// design_principles.md</div>
+  <h2 class="section-title">三件AI做不到的事</h2>
+  <p class="section-sub">不是因为技术限制，而是因为它们本质上需要人的参与。这三件事，是我们28天的全部内容。</p>
+
+  <div class="principles-grid">
+    <div class="p-card g">
+      <div class="p-card-num">// principle_01</div>
+      <div class="p-card-icon">❓</div>
+      <h3>提问是最高技能</h3>
+      <p class="tagline">AI回答任何被清晰描述的问题。它不知道该问什么。</p>
+      <p>会用AI的人，和不会用AI的人，区别不在于操作技巧——在于能不能提出值得回答的问题。提出好问题需要真实地接触世界、有判断什么重要的品味、愿意在没有答案的地方停留。</p>
+      <div class="note">
+        <strong>在课程里的样子：</strong>每个阶段从一个没有标准答案的问题开始。Coach不给答案，只追问。
+      </div>
+    </div>
+
+    <div class="p-card c">
+      <div class="p-card-num">// principle_02</div>
+      <div class="p-card-icon">🚀</div>
+      <h3>作品说话</h3>
+      <p class="tagline">学会了，就是你能用它做出一件以前做不到的事。</p>
+      <p>AI让一个14岁的孩子可以做出真实运行的应用、真实的数据产品，发布给真实的人用。当作品要被真实的人看到、评判，质量会自然到达任何分数评估都无法驱动的水平。</p>
+      <div class="note">
+        <strong>在课程里的样子：</strong>毕业标准是：作品发布到公网，有真实用户，有真实反馈。没有期末考试。
+      </div>
+    </div>
+
+    <div class="p-card a">
+      <div class="p-card-num">// principle_03</div>
+      <div class="p-card-icon">⚖️</div>
+      <h3>在不确定中判断</h3>
+      <p class="tagline">AI总能给出一个听起来合理的答案。知道它何时是错的，需要人来判断。</p>
+      <p>从来没有在模糊中独立思考过的孩子，是最容易被AI的置信口吻说服的。训练判断力的方法只有一种：反复面对真实的两难问题，给出立场，接受质疑，修改，再给出立场。</p>
+      <div class="note">
+        <strong>在课程里的样子：</strong>我们故意给没有标准答案的问题。评价的不是结论，而是推理的质量。
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CURRICULUM -->
+<section id="curriculum">
+  <div class="phase-header-row">
+    <div class="phase-header-text">
+      <div class="section-tag">// curriculum.phases</div>
+      <h2 class="section-title">三个阶段，28天</h2>
+      <p class="section-sub">
+        不是按学科组织的。按项目节奏组织的：找问题、构建迭代、发布亮相。
+        每一天都有真实任务，每一周都有可展示的成果。
+      </p>
+    </div>
+    <div class="phase-meta">
+      <span class="big">28</span>
+      <div class="label">天完整项目制</div>
+      <div style="margin-top:1rem; font-size:0.75rem; color:var(--muted); font-family:var(--mono)">
+        3 phases<br>12 milestones<br>1 Demo Day
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY RHYTHM -->
+  <div style="margin-bottom:3rem;">
+    <div style="font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:1rem;">// daily_rhythm</div>
+    <div class="rhythm-grid">
+      <div class="rhythm-card">
+        <div class="rhythm-time">09:00</div>
+        <div class="rhythm-name">站会 / Standup</div>
+        <div class="rhythm-desc">15分钟。昨天做了什么，今天做什么，卡在哪里了。</div>
+      </div>
+      <div class="rhythm-card">
+        <div class="rhythm-time">09:15 →</div>
+        <div class="rhythm-name">深度构建</div>
+        <div class="rhythm-desc">无打扰构建时间。工具全开，Coach随时可以找。</div>
+      </div>
+      <div class="rhythm-card">
+        <div class="rhythm-time">每日 16:30</div>
+        <div class="rhythm-name">每日展示</div>
+        <div class="rhythm-desc">30分钟。每个人展示今天的进展——哪怕只有1个功能。</div>
+      </div>
+      <div class="rhythm-card">
+        <div class="rhythm-time">每周一次</div>
+        <div class="rhythm-name">1:1 Coach 会议</div>
+        <div class="rhythm-desc">Coach 和你谈：方向对不对？有没有卡住？下一步是什么？</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 1: X-Challenge -->
+  <div class="phase-block">
+    <div class="phase-bar">
+      <div class="phase-badge g">Phase 01 · Day 1–7</div>
+      <div class="phase-name">X-Challenge · 找到你的问题</div>
+      <div class="phase-motto">大多数人从没练习过找问题。这一周修复这个。</div>
+    </div>
+    <div class="weeks-grid">
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 1–2</div>
+          <div class="week-title">画出 AI 的边界 <span>🗺️</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">先搞清楚游戏规则，才能知道我们在练什么。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D1</span>
+              <div>
+                <div class="day-title">AI 能做什么？测试边界</div>
+                <div class="day-sub">让AI写代码、写作文、做分析——实际测试，记录它在哪里崩溃</div>
+                <div class="day-tag">交付：AI 能力/局限地图</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D2</span>
+              <div>
+                <div class="day-title">哪些工作只有人能做？</div>
+                <div class="day-sub">辩论：把一份工作列表分类，争议案例全班讨论</div>
+                <div class="day-tag">交付：个人立场文（200字）</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 3–5</div>
+          <div class="week-title">在真实世界里找问题 <span>🔍</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">问题不是想出来的，是观察到的。去找，不要发明。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D3</span>
+              <div>
+                <div class="day-title">现场观察</div>
+                <div class="day-sub">去一个你熟悉的地方，记录3个让你烦恼或困惑的事</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D4</span>
+              <div>
+                <div class="day-title">采访3个真实的人</div>
+                <div class="day-sub">不是问卷，是对话——问他们什么事情花了最多时间和精力</div>
+                <div class="day-tag">交付：采访笔记整理</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D5</span>
+              <div>
+                <div class="day-title">5个问题陈述，向同伴展示</div>
+                <div class="day-sub">接受质疑。通不过质疑的问题，回去重找。</div>
+                <div class="day-tag">交付：5 个问题陈述</div>
+              </div>
+            </li>
+          </ul>
+          <div class="week-outcome">
+            <span class="outcome-badge">周成果</span>
+            <span class="outcome-text">至少1个通过了同伴质疑的真实问题</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 6–7</div>
+          <div class="week-title">锁定你的 X 问题 <span>🎯</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">不是所有问题都值得你接下来28天的时间。学会取舍。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D6</span>
+              <div>
+                <div class="day-title">4个标准筛选</div>
+                <div class="day-sub">真实性 · 紧迫性 · 可操作性 · 你的关心程度</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D7</span>
+              <div>
+                <div class="day-title">X 问题陈述：一句话说清楚</div>
+                <div class="day-sub">"[某类人] 在 [某情境] 下，无法 [做某事]，因为 [根本原因]。" Coach 签字确认，才能进入 Build Sprint</div>
+                <div class="day-tag">交付：X 问题陈述 · Coach 确认</div>
+              </div>
+            </li>
+          </ul>
+          <div class="week-outcome">
+            <span class="outcome-badge">阶段成果</span>
+            <span class="outcome-text">一个清晰的、真实的、你真正关心的问题</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: Build Sprint -->
+  <div class="phase-block">
+    <div class="phase-bar">
+      <div class="phase-badge c">Phase 02 · Day 8–21</div>
+      <div class="phase-name">Build Sprint · 构建 · 测试 · 迭代</div>
+      <div class="phase-motto">人决定做什么，AI帮你做到。快速构建，快速失败，快速学习。</div>
+    </div>
+    <div class="weeks-grid">
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 8–10</div>
+          <div class="week-title">学会和 AI 协作 <span>🤝</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">AI 是执行者，你是思考者。搞清楚谁该做什么。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D8</span>
+              <div>
+                <div class="day-title">提示词工程：问题的质量决定答案的质量</div>
+                <div class="day-sub">给AI同一个任务，用5种不同方式提问，比较结果差异</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D9</span>
+              <div>
+                <div class="day-title">让AI批评你的想法</div>
+                <div class="day-sub">把你的项目想法告诉AI，让它扮演最尖锐的批评者</div>
+                <div class="day-tag">交付：弱点清单 + 应对策略</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D10</span>
+              <div>
+                <div class="day-title">技术方案选择</div>
+                <div class="day-sub">AI列方案，你来决策——说清楚为什么选这个而不是那个</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 11–14</div>
+          <div class="week-title">构建第一个可用版本 <span>⚙️</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">完成比完美重要。先让它运行，再让它变好。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D11</span>
+              <div>
+                <div class="day-title">MVP 定义</div>
+                <div class="day-sub">哪一个功能，如果做了，你的目标用户就愿意用它？只做这个</div>
+                <div class="day-tag">交付：MVP功能列表（≤3条）</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D12–13</span>
+              <div>
+                <div class="day-title">构建冲刺：每天必须能演示</div>
+                <div class="day-sub">每天结束时，有一个可以演示的版本，哪怕只有一个功能</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D14</span>
+              <div>
+                <div class="day-title">第一次真实用户测试</div>
+                <div class="day-sub">找3个真实的陌生人，不解释，只观察——记录他们在哪里卡住了</div>
+                <div class="day-tag">交付：用户测试笔记</div>
+              </div>
+            </li>
+          </ul>
+          <div class="week-outcome">
+            <span class="outcome-badge">周成果</span>
+            <span class="outcome-text">真实运行的版本 + 3个真实用户测试</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 15–21</div>
+          <div class="week-title">迭代：听用户说话 <span>🔄</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">用户的行为比他们说的话更诚实。看他们怎么用，而不是他们说什么。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D15–16</span>
+              <div>
+                <div class="day-title">分析反馈：哪些是信号，哪些是噪音？</div>
+                <div class="day-sub">这个用户的问题代表普遍情况，还是个案？</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D17–19</span>
+              <div>
+                <div class="day-title">迭代构建：每次只改一件事</div>
+                <div class="day-sub">改一个功能，再测试。不要同时改5件事</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D20–21</span>
+              <div>
+                <div class="day-title">评估：你真的解决了 X 问题吗？</div>
+                <div class="day-sub">回到 Day 7 写的问题陈述。作品解决了它吗？</div>
+                <div class="day-tag">交付：进度报告</div>
+              </div>
+            </li>
+          </ul>
+          <div class="week-outcome">
+            <span class="outcome-badge">阶段成果</span>
+            <span class="outcome-text">迭代3次+ · 10个真实用户的反馈数据</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3: Demo Day -->
+  <div class="phase-block">
+    <div class="phase-bar">
+      <div class="phase-badge a">Phase 03 · Day 22–28</div>
+      <div class="phase-name">Demo Day · 打磨 · 发布 · 亮相</div>
+      <div class="phase-motto">发布不是终点，是下一轮学习的开始。但先要发布。</div>
+    </div>
+    <div class="weeks-grid">
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 22–25</div>
+          <div class="week-title">打磨到你为它自豪 <span>✨</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">完成 ≠ 完美。但完成必须意味着：你愿意把它发给一个你尊重的人看。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D22</span>
+              <div>
+                <div class="day-title">找到让整体感觉差的那个细节</div>
+                <div class="day-sub">产品里总有一个地方，修了它，整个东西都感觉好了。用一天找到它</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D23–24</span>
+              <div>
+                <div class="day-title">写你的产品介绍</div>
+                <div class="day-sub">一句话（给陌生人）· 一段话（给用户）· 一页（给深度了解的人）</div>
+                <div class="day-tag">交付：产品主页</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D25</span>
+              <div>
+                <div class="day-title">正式发布到公网</div>
+                <div class="day-sub">有真实 URL，任何人可以访问。发给5个认识的人，收集真实反应</div>
+                <div class="day-tag">交付：公网可访问地址</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-days">Day 26–28</div>
+          <div class="week-title">Demo Day 亮相 <span>🎤</span></div>
+        </div>
+        <div class="week-body">
+          <div class="week-focus">展示不是为了表演。是为了整理你自己的思考。向别人解释是最好的学习方式。</div>
+          <ul class="day-list">
+            <li>
+              <span class="day-num">D26</span>
+              <div>
+                <div class="day-title">写你学到了什么</div>
+                <div class="day-sub">你假设了什么？什么被证伪了？你现在相信什么是你28天前不相信的？</div>
+                <div class="day-tag">交付：学习总结（500字）</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D27</span>
+              <div>
+                <div class="day-title">同伴互评：质疑和被质疑</div>
+                <div class="day-sub">每人展示10分钟，其他人提问15分钟。问题必须是真实的疑问，不是鼓励</div>
+              </div>
+            </li>
+            <li>
+              <span class="day-num">D28</span>
+              <div>
+                <div class="day-title">Demo Day：向真实受众展示</div>
+                <div class="day-sub">邀请家长、朋友、真实的潜在用户。演示作品，讲思考过程，回答所有问题</div>
+                <div class="day-tag">交付：公网作品 + 15分钟展示</div>
+              </div>
+            </li>
+          </ul>
+          <div class="week-outcome">
+            <span class="outcome-badge">最终成果</span>
+            <span class="outcome-text">真实运行的作品 · 真实用户群 · 一套自己的思考方法</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- MOGWL -->
+<section id="mogwl">
+  <div class="section-tag">// evaluation.mogwl</div>
+  <h2 class="section-title">MOGWL — 评估维度</h2>
+  <p class="section-sub">我们评估的不是成绩，而是你这个人的5个维度。这是深圳零一学院提出的 X 型人才框架，我们用它来理解 AI 时代真正有价值的能力。</p>
+
+  <div class="mogwl-grid">
+    <div class="mogwl-card">
+      <span class="mogwl-letter">M</span>
+      <div class="mogwl-name">内生动力</div>
+      <div class="mogwl-en">Motivation</div>
+      <div class="mogwl-q">你为什么想做这个？是因为真的想，还是因为别人让你做？</div>
+    </div>
+    <div class="mogwl-card">
+      <span class="mogwl-letter">O</span>
+      <div class="mogwl-name">开放性</div>
+      <div class="mogwl-en">Openness</div>
+      <div class="mogwl-q">拿到反馈，你是辩护还是思考？能不能接受被质疑？</div>
+    </div>
+    <div class="mogwl-card">
+      <span class="mogwl-letter">G</span>
+      <div class="mogwl-name">坚毅力</div>
+      <div class="mogwl-en">Grit</div>
+      <div class="mogwl-q">遇到卡壳、失败、推翻重来的时候，你怎么处理？</div>
+    </div>
+    <div class="mogwl-card">
+      <span class="mogwl-letter">W</span>
+      <div class="mogwl-name">判断力</div>
+      <div class="mogwl-en">Wisdom</div>
+      <div class="mogwl-q">在不确定的情况下，你能独立做决定并说清楚理由吗？</div>
+    </div>
+    <div class="mogwl-card">
+      <span class="mogwl-letter">L</span>
+      <div class="mogwl-name">影响力</div>
+      <div class="mogwl-en">Leadership</div>
+      <div class="mogwl-q">你的作品影响了多少真实的人？你帮助过你的同伴吗？</div>
+    </div>
+  </div>
+
+  <div class="mogwl-note">
+    <div class="mogwl-col">
+      <h4>✅ &nbsp;我们看的是</h4>
+      <ul>
+        <li>
+          <span class="check">🎯</span>
+          <div>
+            <div class="assess-title">问题的真实性</div>
+            <div class="assess-desc">你的问题来自真实观察，还是你觉得"应该"解决的事？真实问题通常更具体、更笨拙，但更真实。</div>
+          </div>
+        </li>
+        <li>
+          <span class="check">🚀</span>
+          <div>
+            <div class="assess-title">作品是否真实运行</div>
+            <div class="assess-desc">有真实 URL，真实用户可以访问和使用。不是截图，不是 PPT，是能用的东西。</div>
+          </div>
+        </li>
+        <li>
+          <span class="check">💬</span>
+          <div>
+            <div class="assess-title">推理过程的质量</div>
+            <div class="assess-desc">你做了什么决定？为什么？什么被证伪了，你怎么应对的？我们评价思考，不是结论。</div>
+          </div>
+        </li>
+        <li>
+          <span class="check">🔄</span>
+          <div>
+            <div class="assess-title">迭代能力</div>
+            <div class="assess-desc">收到反馈后，你改了什么？为什么是这些而不是那些？改变是否让作品变好了？</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="mogwl-col">
+      <h4>❌ &nbsp;我们不看的是</h4>
+      <ul>
+        <li>
+          <span class="cross">—</span>
+          <div>
+            <div class="assess-title">你的技术水平</div>
+            <div class="assess-desc">用 AI 构建的东西不比手写代码"差"。工具是次要的，作品是目的。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cross">—</span>
+          <div>
+            <div class="assess-title">你的作品是否"成功"</div>
+            <div class="assess-desc">28天做出来的东西很难大规模成功。重要的是你是否真诚尝试了，是否真实学到了东西。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cross">—</span>
+          <div>
+            <div class="assess-title">和别人比较的排名</div>
+            <div class="assess-desc">没有排名。你的参照系是28天前的自己，以及你自己设定的目标。</div>
+          </div>
+        </li>
+        <li>
+          <span class="cross">—</span>
+          <div>
+            <div class="assess-title">你的想法是否有创意</div>
+            <div class="assess-desc">执行力比创意更重要，真实解决比聪明想法更重要。没有人因为"想法不够原创"而失败。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ARSENAL -->
+<section id="arsenal">
+  <div class="section-tag">// arsenal.config — "不怕你用坏"</div>
+  <h2 class="section-title">弹药库：无限量供给</h2>
+  <p class="section-sub">你不用担心 token 用完、工具不够用、算力不够。这些都是基础设施，不是奖励。就像笔和纸。</p>
+
+  <div class="arsenal-grid">
+    <div class="arsenal-card unlimited">
+      <div class="arsenal-icon">🤖</div>
+      <div class="arsenal-name">AI 大模型</div>
+      <div class="arsenal-detail">Claude、GPT-4o、Gemini — 全部接入，无配额上限</div>
+      <div class="arsenal-badge">∞ 无限量</div>
+    </div>
+    <div class="arsenal-card unlimited">
+      <div class="arsenal-icon">🖥️</div>
+      <div class="arsenal-name">AI 编程 IDE</div>
+      <div class="arsenal-detail">Cursor Pro · Windsurf — 企业授权，不用担心次数</div>
+      <div class="arsenal-badge">∞ 无限量</div>
+    </div>
+    <div class="arsenal-card unlimited">
+      <div class="arsenal-icon">☁️</div>
+      <div class="arsenal-name">云计算资源</div>
+      <div class="arsenal-detail">Vercel · Railway · 阿里云 — 部署不花你的钱</div>
+      <div class="arsenal-badge">∞ 无限量</div>
+    </div>
+    <div class="arsenal-card">
+      <div class="arsenal-icon">🎨</div>
+      <div class="arsenal-name">设计生成</div>
+      <div class="arsenal-detail">v0 · Figma · Midjourney</div>
+    </div>
+    <div class="arsenal-card">
+      <div class="arsenal-icon">📊</div>
+      <div class="arsenal-name">数据工具</div>
+      <div class="arsenal-detail">Tally · Airtable · 用户数据收集和分析</div>
+    </div>
+    <div class="arsenal-card">
+      <div class="arsenal-icon">🎬</div>
+      <div class="arsenal-name">展示工具</div>
+      <div class="arsenal-detail">Loom · 用户测试录制 · Demo 视频制作</div>
+    </div>
+    <div class="arsenal-card">
+      <div class="arsenal-icon">📝</div>
+      <div class="arsenal-name">项目管理</div>
+      <div class="arsenal-detail">Notion · 项目文档 · 思考记录</div>
+    </div>
+    <div class="arsenal-card">
+      <div class="arsenal-icon">💬</div>
+      <div class="arsenal-name">实时协作</div>
+      <div class="arsenal-detail">Discord · 同学和 Coach 的实时讨论</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SHOWCASE -->
+<section id="showcase">
+  <div class="section-tag">// showcase.projects — sample only</div>
+  <h2 class="section-title">学员可以做什么</h2>
+  <p class="section-sub">不是要你复制这些，是让你感受到可能性的范围。你的项目应该是你自己的真实问题。</p>
+
+  <div class="showcase-grid">
+    <div class="showcase-card">
+      <div class="showcase-emoji">🌱</div>
+      <div class="showcase-title">老小区植物识别工具</div>
+      <div class="showcase-age">// age: 12 · days: 25</div>
+      <div class="showcase-desc">发现爷爷奶奶经常问他养的植物叫什么名字，但搜索引擎很难找到。用AI视觉模型做了一个拍照识别植物的网页，支持中文名和养护建议。</div>
+      <div class="showcase-result">▶ 发布后第一周有47个用户，主要是退休老人</div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-emoji">📚</div>
+      <div class="showcase-title">家长作业辅助工具</div>
+      <div class="showcase-age">// age: 14 · days: 28</div>
+      <div class="showcase-desc">发现妈妈每天花2小时帮他整理错题和复习计划，而妈妈并不懂这些知识。做了一个上传错题照片、自动分析薄弱点、生成复习建议的工具。</div>
+      <div class="showcase-result">▶ 在家长群分享后，3天内被100+家长使用</div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-emoji">🎵</div>
+      <div class="showcase-title">小区噪音地图</div>
+      <div class="showcase-age">// age: 13 · days: 26</div>
+      <div class="showcase-desc">家附近有广场舞、施工、狗叫。想知道小区里哪里最安静，适合在户外学习。做了一个社区噪音数据收集和可视化工具。</div>
+      <div class="showcase-result">▶ 被物业公司联系，请她做了一次正式汇报</div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-emoji">🏥</div>
+      <div class="showcase-title">医院挂号时间预测</div>
+      <div class="showcase-age">// age: 15 · days: 28</div>
+      <div class="showcase-desc">陪爷爷去医院时发现很难知道等待时间。收集了公开数据，做了一个预测不同医院不同科室等待时间的工具，帮助老人合理安排时间。</div>
+      <div class="showcase-result">▶ 覆盖本市3家医院，日活用户稳定在80+</div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-emoji">🌍</div>
+      <div class="showcase-title">给外公外婆的视频翻译</div>
+      <div class="showcase-age">// age: 11 · days: 22</div>
+      <div class="showcase-desc">外公外婆不懂普通话，家里录的视频他们看不懂。做了一个把普通话视频自动翻译成粤语字幕的工具，让老人可以看孙子孙女的成长视频。</div>
+      <div class="showcase-result">▶ 在家族群分享后，扩展支持了闽南语版本</div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-emoji">🤔</div>
+      <div class="showcase-title">AI伦理辩论卡</div>
+      <div class="showcase-age">// age: 14 · days: 28</div>
+      <div class="showcase-desc">做了一套可以打印的辩论卡片，每张卡片是一个关于AI的两难问题，背面有多个立场的论据。设计给学校老师用于课堂讨论。不是代码项目，同样有效。</div>
+      <div class="showcase-result">▶ 被4所学校老师下载使用，收到30+条教学反馈</div>
+    </div>
+  </div>
+
+  <p style="text-align:center; color:var(--dim); font-family:var(--mono); font-size:0.78rem; margin-top:2rem;">
+    // 以上为假想参考案例，用于说明项目类型的多样性
+  </p>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap" style="padding: 0 2rem 80px;">
+  <div class="cta-box">
+    <h2>准备好找你的问题了吗？</h2>
+    <p>Project School 的第一步是：找到一个让你真正烦恼或好奇的事情。从今天开始观察。</p>
+    <div class="cta-buttons">
+      <a href="../" class="btn-primary">← 返回 Project School</a>
+      <a href="../challenges/" class="btn-secondary">⚡ 天才挑战</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
