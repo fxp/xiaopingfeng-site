@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F5F1E8">
+<title>Research · 研究 — xiaopingfeng.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #E8E2D3;
+    --ink: #1A1714;
+    --ink-soft: #4A4540;
+    --ink-faint: #8A8278;
+    --accent: #7fb88b;
+    --line: #D4CCB8;
+    --serif: 'Noto Serif SC', serif;
+    --sans: 'Noto Sans SC', 'PingFang SC', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.6; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 64px 28px 64px; min-height: 100vh; display: flex; flex-direction: column; }
+  .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .meta a { color: var(--ink-faint); text-decoration: none; }
+  .meta a:hover { color: var(--accent); }
+  h1 { font-family: var(--serif); font-weight: 900; font-size: 36px; line-height: 1.1; margin: 48px 0 12px; letter-spacing: -0.02em; }
+  .lede { font-family: var(--serif); font-size: 15px; line-height: 1.75; color: var(--ink-soft); margin: 0 0 40px; }
+  .section-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px; }
+  .proj-card { display: block; text-decoration: none; color: inherit; padding: 20px 22px; background: var(--paper-dark); border-left: 3px solid var(--accent); margin-bottom: 12px; transition: transform 0.15s ease; }
+  .proj-card:hover { transform: translateX(4px); }
+  .proj-card-title { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .proj-card-meta { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .proj-card-desc { font-family: var(--serif); font-size: 13px; line-height: 1.65; color: var(--ink-soft); margin-bottom: 10px; }
+  .proj-card-arrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; }
+  footer { margin-top: auto; padding-top: 32px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="meta">
+    <a href="/">← xiaopingfeng.com</a>
+    <span>Research</span>
+  </div>
+
+  <h1>研究</h1>
+  <p class="lede">独立研究项目。每个项目有完整的代码、数据和结论，不是 demo，不是 tutorial。</p>
+
+  <div class="section-label">— 评测 —</div>
+
+  <a class="proj-card" href="/deepdive/abap-bench/">
+    <div class="proj-card-title">ABAP-Bench · AI × SAP 评测</div>
+    <div class="proj-card-meta">Benchmark · 12 个模型 · 2026</div>
+    <div class="proj-card-desc">给 AI 出一张 SAP 顾问资格考试卷。12 个模型实测，覆盖 ABAP 编程、业务配置、系统架构三个维度，附完整排行榜与方法论。</div>
+    <div class="proj-card-arrow">查看排行榜 →</div>
+  </a>
+
+  <div class="section-label">— 系统 —</div>
+
+  <a class="proj-card" href="/deepdive/llm-from-scratch/">
+    <div class="proj-card-title">LLM from Scratch · 全栈 LLM 系统</div>
+    <div class="proj-card-meta">系统实现 · CUDA · ~10K 行 · 2026</div>
+    <div class="proj-card-desc">从预训练到 CUDA 内核，零外部 API 依赖。在 RTX 5090 上 70 秒训练 tool-calling agent。完整实现包括 BPE tokenizer、Transformer、RLHF、量化。</div>
+    <div class="proj-card-arrow">查看项目 →</div>
+  </a>
+
+  <a class="proj-card" href="/research/vit/">
+    <div class="proj-card-title">VIT Secure Inference · 隐私保护视觉推理</div>
+    <div class="proj-card-meta">隐私计算 · macOS · GLM-4V · 2026</div>
+    <div class="proj-card-desc">本地运行视觉推理，图像不离开设备。用 CORS bridge 连接本地服务与 Web 界面，GLM-4V 驱动，支持 ImageNet 分类与自定义图像。</div>
+    <div class="proj-card-arrow">查看项目 →</div>
+  </a>
+
+  <footer>fxp007 · 2026</footer>
+</div>
+</body>
+</html>
