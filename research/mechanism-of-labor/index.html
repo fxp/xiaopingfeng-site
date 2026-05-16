@@ -202,6 +202,16 @@ blockquote small{display:block;margin-top:10px;font-size:12px;font-style:normal;
 .model-prose{font-size:15px;color:#b8b2ab;line-height:1.88}
 .model-prose p{margin-bottom:1em}
 
+/* ─── CALLOUT ────────────────────────────────────── */
+.callout{
+  background:rgba(220,38,38,.07);
+  border:1px solid rgba(220,38,38,.2);
+  border-radius:var(--r);
+  padding:16px 20px;margin:24px 0;
+  font-size:14px;color:var(--mu);line-height:1.7;
+}
+.callout strong{color:#fca5a5}
+.callout code{font-family:var(--mono);font-size:.9em;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;color:var(--api)}
 
 /* ─── FINDINGS ───────────────────────────────────── */
 .finds{
@@ -249,7 +259,6 @@ footer a:hover{text-decoration:underline}
 }
 .callout .ct{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;font-family:var(--mono);display:block}
 .callout strong{color:var(--tx)}
-.callout code{font-family:var(--mono);font-size:.9em;background:rgba(0,0,0,.35);padding:1px 5px;border-radius:3px;color:var(--api)}
 .callout-green{border-left-color:var(--ok)}
 .callout-green .ct{color:var(--ok)}
 
@@ -277,8 +286,9 @@ footer a:hover{text-decoration:underline}
 </head>
 <body>
 
+<a href="/research/" style="position:fixed;top:16px;left:20px;z-index:200;font-size:12px;font-family:var(--mono);color:rgba(255,255,255,.5);text-decoration:none;background:rgba(0,0,0,.35);padding:5px 10px;border-radius:4px;letter-spacing:.04em;transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,.9)'" onmouseout="this.style.color='rgba(255,255,255,.5)'">← 研究</a>
+
 <div id="pgbar"></div>
-<a href="/research/" style="position:fixed;top:10px;left:16px;z-index:1000;font-family:'SF Mono','Fira Code','Courier New',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5a5652;text-decoration:none;background:rgba(11,10,9,.8);padding:5px 10px;border-radius:4px;border:1px solid #2a2622;backdrop-filter:blur(4px)" onmouseover="this.style.color='#e8e5e1'" onmouseout="this.style.color='#5a5652'">← 研究</a>
 
 <!-- ═══════════ HERO ═══════════ -->
 <div class="hero">
@@ -610,7 +620,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">05</div>
     <div><div class="model-name">ChatGPT 5.5 Thinking</div><div class="model-by">OpenAI</div></div>
   </div>
-  <div class="model-quote">「API 版外旋转画得最好（C5=4），但内旋转基本空白（C4=1）。Chat 版步骤编号从 3 直接跳到了 5。」</div>
+  <div class="model-quote">「API 版 C5=4，外旋转全批次最高。Chat 版的 SVG 其实完整画了 8 步——只是截图窗口只有 870px，把 1200px 宽的第 4 列（内旋转 + 娩出）全截掉了。模型没有跳步，是截图跳步了。」</div>
   <div class="pills">
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>Chat &nbsp;11/25*</span>
     <span class="pill pill-ap"><span class="pill-dot"></span>API &nbsp;21/35</span>
@@ -620,8 +630,8 @@ footer a:hover{text-decoration:underline}
     <div class="img2-col"><label class="ap">● API 版</label><img src="Chatgpt%205.5%20thinking/api.png" alt="GPT-5.5 API" onclick="lb(this.src)"></div>
   </div>
   <div class="model-prose">
-    <p>API 版最突出的是外旋转表达（<hl>C5=4</hl>）：紫色弧形箭头 + 肩部椭圆组合，是全批次中 C5 得分最高之一。但内旋转（<hl>C4=1</hl>）几乎空白——在外旋转上花了精力，内旋转被跳过。</p>
-    <p>Chat 版步骤编号<hl>从 3 直接跳到 5</hl>，内旋转步骤消失了。这可能反映了模型对内旋转概念的某种「回避」——它在技术上更难表达，于是在 Chat 版生成时被省略了。</p>
+    <p>API 版最突出的是外旋转表达（<hl>C5=4</hl>）：紫色弧形箭头 + 肩部椭圆组合，全批次最高。内旋转（<hl>C4=1</hl>）得分低，两版均如此——API 版画了箭头但角度不清，Chat 版则因截图裁切问题（见下）评分参考价值有限。</p>
+    <p>Chat 版的 SVG 原始尺寸是 <hl>1200×760px，4 列 × 2 行共 8 个面板</hl>。截图工具只抓到约 870px 宽，把最右一列（第 4 列：第 4 步内旋转 + 第 8 步娩出）完全裁掉。评分时盲评者看到的是「1 → 2 → 3 → 5 → 6 → 7」，以为跳步了——实际上 SVG 里第 4 步 Internal Rotation 面板存在，有旋转箭头路径（<code>class="rotate"</code>）。📸 <span style="color:var(--fa);font-size:13px">这是这批测试里唯一一次因截图质量影响评分可信度的案例。</span></p>
   </div>
 </div>
 </div>
