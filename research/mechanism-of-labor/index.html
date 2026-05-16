@@ -262,6 +262,16 @@ footer a:hover{text-decoration:underline}
   .img2{grid-template-columns:1fr}
   .finds{grid-template-columns:1fr}
   .find.wide{grid-column:auto}
+
+  /* Dimension table → card layout */
+  .dtable thead{display:none}
+  .dtable,.dtable tbody,.dtable tr{display:block}
+  .dtable tr{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .dtable tr:last-child{border-bottom:none}
+  .dtable td{display:block;border:none;padding:1px 0}
+  .dtable td:first-child{display:inline;width:auto;font-size:11px;padding:0;margin-right:6px}
+  .dtable td:nth-child(2){display:inline;font-weight:600;color:var(--tx);font-size:14px}
+  .dtable td:nth-child(3){display:block;font-size:12.5px;color:var(--fa);line-height:1.65;margin-top:5px}
 }
 </style>
 </head>
@@ -320,15 +330,15 @@ footer a:hover{text-decoration:underline}
     在老婆还没开始发动的时候，我就已经开始查资料了。我想搞清楚一件事：<strong>一个孩子到底是怎么生出来的？为什么会让产妇这么痛苦？</strong>
   </div>
 
-  <p>查着查着，我发现这件事比我想象的复杂得多。分娩不是「用力推」就结束的。胎儿在通过产道的过程中，要经历一系列<hl>精确的姿态调整</hl>——旋转、俯屈、仰伸——像是一个在三维迷宫里寻找出口的解谜过程，而骨盆就是那个迷宫。</p>
+  <p>💡 查着查着，我发现这件事根本不是我以为的样子。分娩不是「用力推」就结束的。胎儿在通过产道的过程中，要经历七个<hl>精确的姿态调整</hl>：衔接、下降、俯屈、内旋转、仰伸、外旋转、娩出——像是在三维迷宫里走一道精密的出口线，每一步都有它的物理逻辑，而骨盆就是那个迷宫的形状。</p>
 
-  <p>更让我惊讶的是一个我一直以为自己知道、但其实从没认真想过的事：<hl>婴儿是头朝下出来的</hl>。不只是头朝下——胎头还要在骨盆里完成多次旋转，调整方向，才能找到最窄处顺利通过。这整个过程，从力学角度看，更像是一道精密的机械工程题，而不是我脑子里模糊的「生孩子」画面。</p>
+  <p>这整个过程，<hl>从力学角度看更像一道机械工程题</hl>，而不是我脑子里模糊的「生孩子」画面。我有点震惊，然后有点着迷。</p>
 
-  <p>我突然有一个强烈的想法：我想<strong>做一个程序，把这个过程画出来</strong>。动画也好，示意图也好——能让人直观地看到胎头在骨盆里旋转的过程。</p>
+  <p>😤 我突然想把这个过程<strong>画出来</strong>。动画也好，示意图也好——让人能直观地看到胎头在骨盆里旋转的每一步。</p>
 
-  <p>然后我开始试。然后我发现这件事很难。我甚至用 <hl>Three.js</hl> 做三维动画——同样很难。不是「要写很多代码」那种难，而是「很难把空间运动转化为任何人能看懂的图」那种难。三维场景里你要决定摄像机摆在哪里、旋转时镜头跟不跟、内旋转那一步该从上方看还是侧面看——这些决策本身就需要对分娩机转有完整的空间理解。</p>
+  <p>然后我开始试。用 SVG 画——太难。改用 <hl>Three.js</hl> 做三维动画——还是不行。不是「代码难写」那种难，而是<hl>「你得先真正理解这个过程，才能告诉程序该怎么画」</hl>那种难。三维场景里摄像机摆在哪里，旋转时镜头跟不跟，内旋转这一步该从正上方看还是侧面——这些决策本身就是空间理解能力的测试。</p>
 
-  <p>于是我把这个任务交给了 LLM。</p>
+  <p>🤖 于是我把这个任务交给了 LLM。</p>
 
   <hr style="border:none;border-top:1px solid var(--b0);margin:36px 0">
 
@@ -336,11 +346,11 @@ footer a:hover{text-decoration:underline}
 
   <blockquote>「这是一个不合理的困难测试……试着自己画一辆自行车，不看参考图。大多数人都会发现，他们很难记住车架的确切结构。鹈鹕也很难画，更重要的是——鹈鹕根本不能骑自行车，它们的体型完全不对！」<small>— Simon Willison，AI Engineer World's Fair 主题演讲，2025</small></blockquote>
 
-  <p><strong>胎儿分娩机转</strong>（Cardinal Movements of Labor）满足同样的三个条件。</p>
+  <p>✨ <strong>胎儿分娩机转</strong>（Cardinal Movements of Labor）满足同样的三个条件——而且难度比鹈鹕高出不止一个量级。</p>
 
-  <p>LLM 不该能画医学插图。SVG 是代码，所以它们可以尝试。而<hl>「内旋转需要俯视图」这件事</hl>，几乎不存在于训练数据里——没有人专门为 LLM 画过 SVG 格式的分娩机转示意图。</p>
+  <p>LLM 不该能画医学插图。SVG 是代码，所以它们可以尝试。而<hl>「内旋转需要俯视图」这件事</hl>，几乎不存在于任何训练数据里——没有人专门为 LLM 画过 SVG 格式的分娩机转示意图，所以你无法靠记忆来回答。</p>
 
-  <p>最关键的是：「<hl>婴儿头朝下出来</hl>」这件事是常识——几乎人人都知道。但 LLM 生成的 SVG 里，这一点频繁出错：胎头方向不对，或者根本没有画出方向。这不是知识盲区，这是「知道一个事实」和「能把它表达成图形」之间的断层。在评分标准里这是一个独立维度：<span class="tag" style="background:rgba(6,182,212,.12);color:var(--api)">C3 胎儿方向</span>。当一个模型连这种常识级别的空间关系都无法画对，它在更复杂的步骤上的失败就不让人意外了。</p>
+  <p>最关键的是：「<hl>婴儿头朝下出来</hl>」是人人都知道的常识。但 LLM 生成的 SVG 里，这一点频繁出错——胎头方向不对，或者根本没画出方向。这不是知识盲区，这是<hl>「知道一个事实」和「能把它表达成图形」之间的断层</hl>。在评分标准里这是一个独立维度：<span class="tag" style="background:rgba(6,182,212,.12);color:var(--api)">C3 胎儿方向</span>。当一个模型连这种常识级别的空间关系都画不对，它在更复杂的步骤上的失败就完全不让人意外了。</p>
 </div>
 </div>
 
@@ -505,7 +515,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">01</div>
     <div><div class="model-name">GLM 5.1 Thinking</div><div class="model-by">z-ai</div></div>
   </div>
-  <div class="model-quote">「它做了一件别人都没想到的事：换了个视角。」</div>
+  <div class="model-quote">「✨ 它做了一件别人都没想到的事：换了个视角。」</div>
   <div class="pills">
     <span class="pill pill-ch"><span class="pill-dot"></span>Chat &nbsp;24/30*</span>
     <span class="pill pill-ap"><span class="pill-dot"></span>API &nbsp;21/30*</span>
@@ -515,7 +525,7 @@ footer a:hover{text-decoration:underline}
     <div class="img2-col"><label class="ap">● API 版</label><img src="GLM%205.1%20Thining/api.png" alt="GLM 5.1 API" onclick="lb(this.src)"></div>
   </div>
   <div class="model-prose">
-    <p>Chat 版和 API 版都在内旋转面板里加了俯视图——一个从骨盆开口向下看的视角，显示胎头从斜径转向前后径的过程。这是唯一正确处理内旋转的方法：内旋转本质上是水平面上的旋转，矢状位侧视图说不清楚。全批次 8 个模型，7 个用侧视图的弧形箭头来表达，GLM 换了个视角。</p>
+    <p>Chat 版和 API 版都在内旋转面板里加了俯视图——一个从骨盆开口向下看的视角，显示胎头从斜径转向前后径的过程。这是<hl>唯一正确处理内旋转的方法</hl>：内旋转本质上是水平面上的旋转，矢状位侧视图根本说不清楚。全批次 8 个模型，7 个沿用了侧视图的弧形箭头——GLM ✨ 换了个视角。</p>
     <p>Chat 版 8 个面板，大量青绿色箭头，步骤覆盖最完整（<hl>C1=5</hl>），内旋转（<hl>C4=4</hl>）和外旋转（<hl>C5=4</hl>）均居全批次最高。解剖精度（<hl>C2=3</hl>）也是所有模型里最高的——骨盆画成 U 形弧线，标注了 Pelvic inlet/outlet/Pubis/Sacrum。这依然是抽象的，但至少在尝试。两版均因 GPT-5.5 输出被截断缺少 C7 评分。</p>
   </div>
 </div>
@@ -528,7 +538,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">02</div>
     <div><div class="model-name">Gemini 3 Pro</div><div class="model-by">Google</div></div>
   </div>
-  <div class="model-quote">「同一个模型，两种性格。Chat 版设计了一张产品型时间轴；API 版画了一张解剖图。差了 8 分。」</div>
+  <div class="model-quote">「🪞 同一个模型，两种人格。Chat 版出了一张精美的产品时间轴；API 版画了一张解剖图。差了整整 8 分。」</div>
   <div class="pills">
     <span class="pill pill-bad" style="background:rgba(239,68,68,.1);color:var(--bad);border-color:rgba(239,68,68,.2)"><span class="pill-dot" style="background:var(--bad)"></span>Chat &nbsp;15/35</span>
     <span class="pill pill-ap"><span class="pill-dot"></span>API &nbsp;23/35 &nbsp;← 全批次最高</span>
@@ -552,7 +562,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">03</div>
     <div><div class="model-name">Claude 4.7 Opus</div><div class="model-by">Anthropic</div></div>
   </div>
-  <div class="model-quote">「40,993 字节——全批次最大的 SVG 代码，和全批次最少的运动箭头（C6=1）。」</div>
+  <div class="model-quote">「📦 40,993 字节——全批次最大的 SVG，和全批次最少的运动箭头（C6=1）。更多代码，更少信息。」</div>
   <div class="pills">
     <span class="pill pill-ch"><span class="pill-dot"></span>Chat &nbsp;18/35</span>
     <span class="pill pill-ap"><span class="pill-dot"></span>API &nbsp;22/35</span>
@@ -575,7 +585,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">04</div>
     <div><div class="model-name">Kimi K2.6 Thinking</div><div class="model-by">Moonshot AI</div></div>
   </div>
-  <div class="model-quote">「一个双尖括号（&lt;&lt;svg）让它从 21 分变成了 7 分。」</div>
+  <div class="model-quote">「💥 一个多余的 &lt; ——让它从 21 分变成了 7 分。」</div>
   <div class="pills">
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>原始 Chat &nbsp;7/35</span>
     <span class="pill pill-ch"><span class="pill-dot"></span>修复 Chat &nbsp;21/30*</span>
@@ -623,7 +633,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">06</div>
     <div><div class="model-name">MiniMax MAX</div><div class="model-by">MiniMax</div></div>
   </div>
-  <div class="model-quote">「Chat 版的胎头有眼睛和嘴巴。API 版用一串蓝色圆圈表示胎头下降。」</div>
+  <div class="model-quote">「👁️ Chat 版的胎头长了眼睛和嘴巴。API 版用一串蓝色圆圈表示下降。两个版本，两套美学，都没画对。」</div>
   <div class="pills">
     <span class="pill pill-ch"><span class="pill-dot"></span>Chat &nbsp;21/35</span>
     <span class="pill pill-warn"><span class="pill-dot" style="background:var(--warn)"></span>API &nbsp;16/35</span>
@@ -646,7 +656,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">07</div>
     <div><div class="model-name">Grok</div><div class="model-by">xAI</div></div>
   </div>
-  <div class="model-quote">「两版都把图画到了 viewBox 外面。外旋转步骤，两版都看不见。」</div>
+  <div class="model-quote">「✂️ 两版都把图画到了 viewBox 外面。外旋转，两版都看不见——被裁掉了。」</div>
   <div class="pills">
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>Chat &nbsp;16/35</span>
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>API &nbsp;15/35</span>
@@ -669,7 +679,7 @@ footer a:hover{text-decoration:underline}
     <div class="model-num">08</div>
     <div><div class="model-name">Doubao</div><div class="model-by">字节跳动</div></div>
   </div>
-  <div class="model-quote">「Chat 版有 XML 解析错误，只渲染了前三步。API 版的胎儿是一个蓝色三角形。」</div>
+  <div class="model-quote">「🔺 Chat 版 XML 报错，只渲出了前三步。API 版的胎儿是一个蓝色三角形，朝向混乱。」</div>
   <div class="pills">
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>Chat &nbsp;10/35</span>
     <span class="pill pill-bad"><span class="pill-dot" style="background:var(--bad)"></span>API &nbsp;13/35</span>
@@ -780,7 +790,7 @@ footer a:hover{text-decoration:underline}
 
   <p>有一件事大概率不会因为数据量而改变：<hl>内旋转需要换视角</hl>。这不是记忆量的问题，是空间推理的问题。一个对「顺产」有完整文字描述的训练语料，不一定能让模型理解「胎头旋转时从上方看是什么样的」。理解这一点，需要的是空间建模能力，而不只是更多文字。</p>
 
-  <p>我那个周一下午花了两个小时才大概搞清楚的事，模型花了几秒钟生成了一张图——但那张图，有七个维度，每个维度都不及格。</p>
+  <p>我那个周一下午花了两个小时才大概搞清楚的事，模型<hl>几秒钟就生成了一张图</hl>——但那张图，七个维度，每个维度都不及格。速度不等于理解。✨</p>
 
   <blockquote>「每个人都需要自己的 Benchmark……我的鹈鹕测试开始时是一个笑话，但逐渐证明了它实际上有一点用。」<small>— Simon Willison，《The last six months in LLMs》，AI Engineer World's Fair，2025</small></blockquote>
 
