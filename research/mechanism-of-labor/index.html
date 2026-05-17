@@ -238,6 +238,20 @@ code{font-family:var(--mono);font-size:.88em;background:var(--s2);padding:2px 6p
 #lb.open{display:flex}
 #lb img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
 
+/* ─── BACK BTN ───────────────────────────────────── */
+#back-btn{
+  position:fixed;top:16px;left:20px;z-index:200;
+  font-size:12px;font-family:var(--mono);
+  color:rgba(255,255,255,.5);text-decoration:none;
+  background:rgba(0,0,0,.35);
+  padding:5px 10px;border-radius:4px;
+  letter-spacing:.04em;
+  transition:color .2s, opacity .25s, transform .25s;
+  opacity:1;transform:translateY(0);
+}
+#back-btn:hover{color:rgba(255,255,255,.9)}
+#back-btn.hide{opacity:0;transform:translateY(-10px);pointer-events:none}
+
 /* ─── GITHUB BTN ─────────────────────────────────── */
 .gh-btn{
   display:inline-flex;align-items:center;gap:8px;
@@ -306,12 +320,13 @@ footer a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<a href="/research/" style="position:fixed;top:16px;left:20px;z-index:200;font-size:12px;font-family:var(--mono);color:rgba(255,255,255,.5);text-decoration:none;background:rgba(0,0,0,.35);padding:5px 10px;border-radius:4px;letter-spacing:.04em;transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,.9)'" onmouseout="this.style.color='rgba(255,255,255,.5)'">← 研究</a>
+
+<a id="back-btn" href="/research/">← 研究</a>
 
 <div id="pgbar"></div>
 
 <!-- ═══════════ HERO ═══════════ -->
-<div class="hero">
+<div class="hero" id="s-hero">
   <div class="hero-inner">
     <div class="hero-eyebrow">LLM Benchmark · SVG Generation · 2026-05-16</div>
     <h1>LLM 能画出<br>胎儿分娩机转吗？</h1>
@@ -337,7 +352,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ VIDEO ═══════════ -->
-<div class="vid-section">
+<div class="vid-section" id="s-video">
   <div class="wrap" style="max-width:860px">
     <div class="vid-kicker">参考动画 — 人类标准</div>
     <div class="vid-title">Seven Cardinal Movements of Labor</div>
@@ -352,7 +367,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §01 起因 ═══════════ -->
-<div class="section">
+<div class="section" id="s01">
 <div class="wrap prose reveal">
   <div class="sec-num">§ 01</div>
   <h2 class="sec-h">👶 这个 Benchmark 的起因</h2>
@@ -391,7 +406,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §02 方法论 ═══════════ -->
-<div class="section">
+<div class="section" id="s02">
 <div class="wrap reveal">
   <div class="sec-num">§ 02</div>
   <h2 class="sec-h">怎么测的</h2>
@@ -419,7 +434,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §03 排行榜 ═══════════ -->
-<div class="section">
+<div class="section" id="s03">
 <div class="wrap-lg reveal">
   <div class="wrap" style="padding:0">
     <div class="sec-num">§ 03</div>
@@ -537,7 +552,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §04 各模型 ═══════════ -->
-<div class="section">
+<div class="section" id="s04">
 <div class="wrap">
   <div class="sec-num">§ 04</div>
   <h2 class="sec-h">🤖 每个模型的故事</h2>
@@ -733,7 +748,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §05 关键发现 ═══════════ -->
-<div class="section">
+<div class="section" id="s05">
 <div class="wrap">
   <div class="sec-num">§ 05</div>
   <h2 class="sec-h">五个关键发现</h2>
@@ -783,7 +798,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §06 文生视频 ═══════════ -->
-<div class="section">
+<div class="section" id="s06">
 <div class="wrap-lg reveal">
   <div class="sec-num">§ 06</div>
   <h2 class="sec-h">🎬 换一个输出格式：文生视频模型</h2>
@@ -817,7 +832,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <!-- ═══════════ §07 结语 ═══════════ -->
-<div class="section">
+<div class="section" id="s07">
 <div class="wrap prose reveal">
   <div class="sec-num">§ 07</div>
   <h2 class="sec-h">结语</h2>
@@ -852,11 +867,24 @@ footer a:hover{text-decoration:underline}
 <div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
 
 <script>
-// Progress bar
+// Progress bar + back button scroll direction
 const pgbar = document.getElementById('pgbar');
+const backBtn = document.getElementById('back-btn');
+let lastY = 0;
 window.addEventListener('scroll', () => {
   const d = document.documentElement;
+  const y = window.scrollY;
   pgbar.style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+  if (backBtn) {
+    if (y < 60) {
+      backBtn.classList.remove('hide');       // always show at top
+    } else if (y > lastY + 4) {
+      backBtn.classList.add('hide');          // scrolling down → hide
+    } else if (y < lastY - 4) {
+      backBtn.classList.remove('hide');       // scrolling up → show
+    }
+  }
+  lastY = y;
 }, {passive:true});
 
 // Lightbox
