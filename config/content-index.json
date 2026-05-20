@@ -3,7 +3,7 @@
   "counters": {
     "deepdive": 11,
     "buzzwords": 85,
-    "research": 4,
+    "research": 5,
     "roam": 2,
     "apps": 4
   },
@@ -161,6 +161,13 @@
       "slug": "mechanism-of-labor",
       "date": "2026-05-16",
       "title": "LLM 能画出胎儿分娩机转吗？— SVG 生成 Benchmark"
+    },
+    {
+      "id": "0005",
+      "type": "research",
+      "slug": "wondering-deep-dive",
+      "date": "2026-05-20",
+      "title": "一个 AI 产品经理，用 AI 工具，深度测评了一款 AI 学习产品"
     }
   ]
 }
