@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="mint">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaaS Analyst · 深度产品调研 · xiaopingfeng.com</title>
+<meta name="description" content="基于 Claude Code 的 SaaS 产品深度调研 skill，自动生成竞品矩阵、定价分析与增长路径报告。" />
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      bg:'var(--bg)','bg-2':'var(--bg-2)','bg-3':'var(--bg-3)',
+      fg:'var(--fg)','fg-dim':'var(--fg-dim)','fg-mute':'var(--fg-mute)',
+      line:'var(--line)','line-bright':'var(--line-bright)',
+      accent:'var(--accent)','accent-soft':'var(--accent-soft)',
+    },
+    fontFamily: {
+      serif:["Fraunces","Noto Serif SC","Georgia","serif"],
+      mono:["JetBrains Mono","ui-monospace","monospace"],
+      sans:["Inter Tight","system-ui","sans-serif"],
+    },
+    maxWidth:{ prose:'820px', content:'1020px' },
+  }}
+}
+</script>
+<script src="../../mode-toggle.js" defer></script>
+</head>
+
+<body class="bg-bg text-fg font-sans antialiased">
+
+<!-- META STRIP -->
+<div style="font-family:monospace;font-size:11px;opacity:0.45;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:10;">
+  <a href="/apps/" style="text-decoration:none;color:inherit;">← 工具集</a>
+  <span>AP · 0005 · 2026-05-16</span>
+</div>
+
+<!-- HERO -->
+<section class="max-w-content mx-auto px-6 pt-12 pb-10">
+  <div class="flex items-center gap-3 mb-5">
+    <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent">Claude Code Skill</span>
+    <span class="text-line-bright">·</span>
+    <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-fg-mute">Anthropic</span>
+  </div>
+
+  <h1 class="font-serif text-4xl lg:text-5xl font-light leading-tight mb-4">
+    SaaS Analyst
+  </h1>
+  <p class="text-fg-dim text-lg lg:text-xl leading-relaxed max-w-prose">
+    深度调研任意 SaaS 产品，自动生成竞品矩阵、定价策略分析与增长路径报告。<br />
+    一条命令，完整的 SaaS 情报包。
+  </p>
+
+  <div class="mt-8 flex flex-wrap gap-2">
+    <span class="font-mono text-[11px] px-3 py-1 border border-line rounded-full text-fg-dim">竞品分析</span>
+    <span class="font-mono text-[11px] px-3 py-1 border border-line rounded-full text-fg-dim">功能矩阵</span>
+    <span class="font-mono text-[11px] px-3 py-1 border border-line rounded-full text-fg-dim">定价策略</span>
+    <span class="font-mono text-[11px] px-3 py-1 border border-line rounded-full text-fg-dim">增长路径</span>
+    <span class="font-mono text-[11px] px-3 py-1 border border-line rounded-full text-fg-dim">用户画像</span>
+  </div>
+</section>
+
+<div class="max-w-content mx-auto px-6"><div class="border-t border-line"></div></div>
+
+<!-- WHAT IT DOES -->
+<section class="max-w-content mx-auto px-6 py-10 grid lg:grid-cols-2 gap-10">
+  <div>
+    <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent mb-4">输出内容</p>
+    <ul class="space-y-4">
+      <li class="flex gap-3">
+        <span class="text-accent mt-0.5 flex-shrink-0">▸</span>
+        <div>
+          <div class="font-medium text-fg mb-0.5">竞品全景矩阵</div>
+          <div class="text-fg-dim text-sm leading-relaxed">主要竞品的功能、定价、目标客户、市场定位横向对比表</div>
+        </div>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-accent mt-0.5 flex-shrink-0">▸</span>
+        <div>
+          <div class="font-medium text-fg mb-0.5">定价策略解析</div>
+          <div class="text-fg-dim text-sm leading-relaxed">套餐结构、价格锚点、Free/Trial 设计、付费转化逻辑</div>
+        </div>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-accent mt-0.5 flex-shrink-0">▸</span>
+        <div>
+          <div class="font-medium text-fg mb-0.5">增长路径分析</div>
+          <div class="text-fg-dim text-sm leading-relaxed">获客渠道、留存机制、扩张路线图及关键里程碑</div>
+        </div>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-accent mt-0.5 flex-shrink-0">▸</span>
+        <div>
+          <div class="font-medium text-fg mb-0.5">用户与市场画像</div>
+          <div class="text-fg-dim text-sm leading-relaxed">ICP 定义、痛点地图、决策链与购买触发器</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent mb-4">适合场景</p>
+    <ul class="space-y-3 text-fg-dim text-sm leading-relaxed">
+      <li class="flex gap-2"><span class="text-accent">·</span>进入新市场前的竞品摸底</li>
+      <li class="flex gap-2"><span class="text-accent">·</span>产品定价调研与重新定价决策</li>
+      <li class="flex gap-2"><span class="text-accent">·</span>投资尽调中的 SaaS 标的快速分析</li>
+      <li class="flex gap-2"><span class="text-accent">·</span>GTM 策略制定前的市场情报收集</li>
+      <li class="flex gap-2"><span class="text-accent">·</span>产品经理竞品周报自动化</li>
+    </ul>
+
+    <div class="mt-8 p-4 bg-bg-2 rounded border border-line">
+      <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent mb-2">运行环境</p>
+      <ul class="space-y-1 text-fg-dim text-sm font-mono">
+        <li>Claude Code ≥ 1.0</li>
+        <li>Anthropic API Key</li>
+        <li>网络访问（调研时实时搜索）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-content mx-auto px-6"><div class="border-t border-line"></div></div>
+
+<!-- HOW TO USE -->
+<section class="max-w-content mx-auto px-6 py-10">
+  <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent mb-6">使用方法</p>
+
+  <div class="grid lg:grid-cols-3 gap-6 mb-8">
+    <div class="p-5 bg-bg-2 rounded border border-line">
+      <div class="font-mono text-[10px] tracking-[0.15em] uppercase text-fg-mute mb-2">Step 1</div>
+      <div class="font-medium text-fg mb-1">安装 Claude Code</div>
+      <div class="text-fg-dim text-sm">从 claude.ai/download 下载并登录</div>
+    </div>
+    <div class="p-5 bg-bg-2 rounded border border-line">
+      <div class="font-mono text-[10px] tracking-[0.15em] uppercase text-fg-mute mb-2">Step 2</div>
+      <div class="font-medium text-fg mb-1">激活 Skill</div>
+      <div class="text-sm font-mono text-accent mt-1">/anthropic-skills:saas-analyst</div>
+    </div>
+    <div class="p-5 bg-bg-2 rounded border border-line">
+      <div class="font-mono text-[10px] tracking-[0.15em] uppercase text-fg-mute mb-2">Step 3</div>
+      <div class="font-medium text-fg mb-1">输入目标产品</div>
+      <div class="text-fg-dim text-sm">告诉 Claude 你要调研哪款 SaaS 产品</div>
+    </div>
+  </div>
+
+  <div class="p-5 bg-bg-2 rounded border border-line">
+    <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-fg-mute mb-3">示例 Prompt</p>
+    <pre class="text-sm text-fg font-mono leading-relaxed whitespace-pre-wrap"><span class="text-accent">/anthropic-skills:saas-analyst</span>
+
+调研 Linear（项目管理工具）：
+- 重点分析 vs Jira / Notion / Asana 的差异
+- 定价结构和 Free tier 设计逻辑
+- 近两年的增长策略</pre>
+  </div>
+</section>
+
+<div class="max-w-content mx-auto px-6"><div class="border-t border-line"></div></div>
+
+<!-- FOOTER -->
+<footer class="max-w-content mx-auto px-6 py-8 flex justify-between items-center text-fg-mute font-mono text-[11px]">
+  <span>xiaopingfeng.com · 2026</span>
+  <div class="flex items-center gap-4">
+    <button data-toggle-mode aria-pressed="false"
+      class="font-mono text-[9px] tracking-[0.18em] uppercase text-fg-mute hover:text-accent border border-line-bright px-2 py-0.5 transition-colors"
+      style="background:transparent;cursor:pointer">
+      <span data-mode-icon>◐</span> <span data-mode-label>暗色</span>
+    </button>
+    <a href="/apps/" class="hover:text-accent transition-colors">← 工具集</a>
+  </div>
+</footer>
+
+</body>
+</html>

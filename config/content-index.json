@@ -5,7 +5,7 @@
     "buzzwords": 85,
     "research": 5,
     "roam": 3,
-    "apps": 4
+    "apps": 5
   },
   "items": [
     {
@@ -177,6 +177,13 @@
       "slug": "wondering-deep-dive",
       "date": "2026-05-20",
       "title": "AI 测评 AI 学习产品"
+    },
+    {
+      "id": "0005",
+      "type": "apps",
+      "slug": "saas-analyst",
+      "date": "2026-05-16",
+      "title": "SaaS Analyst"
     }
   ]
 }
