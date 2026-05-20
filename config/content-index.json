@@ -4,7 +4,7 @@
     "deepdive": 11,
     "buzzwords": 85,
     "research": 5,
-    "roam": 2,
+    "roam": 3,
     "apps": 4
   },
   "items": [
@@ -76,7 +76,7 @@
       "type": "deepdive",
       "slug": "bot-dream",
       "date": "2026-05-13",
-      "title": "问野的十六个深夜 · Night Lab"
+      "title": "问野的十七个深夜 · Night Lab"
     },
     {
       "id": "0011",
@@ -118,7 +118,7 @@
       "type": "roam",
       "slug": "bot-dream",
       "date": "2026-05-13",
-      "title": "问野的十六个深夜 · Night Lab"
+      "title": "问野的十七个深夜 · Night Lab"
     },
     {
       "id": "0001",
@@ -170,6 +170,13 @@
       "title": "一个 AI 产品经理，用 AI 工具，深度测评了一款 AI 学习产品",
       "status": "removed",
       "removed_date": "2026-05-20"
+    },
+    {
+      "id": "0003",
+      "type": "roam",
+      "slug": "wondering-deep-dive",
+      "date": "2026-05-20",
+      "title": "AI 测评 AI 学习产品"
     }
   ]
 }
