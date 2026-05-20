@@ -167,7 +167,9 @@
       "type": "research",
       "slug": "wondering-deep-dive",
       "date": "2026-05-20",
-      "title": "一个 AI 产品经理，用 AI 工具，深度测评了一款 AI 学习产品"
+      "title": "一个 AI 产品经理，用 AI 工具，深度测评了一款 AI 学习产品",
+      "status": "removed",
+      "removed_date": "2026-05-20"
     }
   ]
 }
